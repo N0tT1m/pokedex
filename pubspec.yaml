@@ -34,7 +34,7 @@ dependencies:
 
   fancy_bottom_navigation_2: ^0.3.5
   cupertino_icons: ^1.0.2
-  requests: ^5.2.0
+  requests: ^4.7.0
   html: ^0.15.4
   firebase_core: ^2.24.0
   cloud_firestore: ^4.14.0
@@ -53,6 +53,13 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+
+dependency_overrides:
+  wakelock: ^0.6.2
+  wakelock_windows: ^0.2.1
+  wakelock_macos: ^0.4.0
+  wakelock_web: ^0.4.0
+  wakelock_platform_interface: ^0.3.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
