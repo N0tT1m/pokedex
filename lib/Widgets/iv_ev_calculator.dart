@@ -61,6 +61,25 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
   Map<String, int> _calculatedStats = {};
   int _totalEVs = 0;
   Map<String, int> _evYield = {};
+  bool _showTrainingGuide = false;
+  String _selectedGame = 'Scarlet/Violet';
+
+  final List<String> _games = [
+    'Red/Blue/Yellow',
+    'Gold/Silver/Crystal',
+    'Ruby/Sapphire/Emerald',
+    'FireRed/LeafGreen',
+    'Diamond/Pearl/Platinum',
+    'HeartGold/SoulSilver',
+    'Black/White',
+    'Black 2/White 2',
+    'X/Y',
+    'Omega Ruby/Alpha Sapphire',
+    'Sun/Moon',
+    'Ultra Sun/Ultra Moon',
+    'Sword/Shield',
+    'Scarlet/Violet',
+  ];
 
   @override
   void initState() {
@@ -312,6 +331,261 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
     );
   }
 
+  Widget _buildTrainingSection(String statName, List<String> pokemon) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '$statName Training:',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+            color: Colors.blue,
+          ),
+        ),
+        const SizedBox(height: 4),
+        ...pokemon.map((p) => Padding(
+          padding: const EdgeInsets.only(left: 8.0, top: 2.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('• ', style: TextStyle(fontSize: 12)),
+              Expanded(
+                child: Text(
+                  p,
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ),
+            ],
+          ),
+        )).toList(),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  List<Widget> _getTrainingGuideForGame() {
+    Map<String, List<String>> guides = {};
+
+    switch (_selectedGame) {
+      case 'Red/Blue/Yellow':
+        guides = {
+          'HP': ['Chansey (+2 HP) - Unknown Dungeon, Safari Zone', 'Wigglytuff (+3 HP) - Evolve Jigglypuff'],
+          'Attack': ['Machop (+1 Attack) - Rock Tunnel, Victory Road', 'Machoke (+2 Attack) - Victory Road, Cerulean Cave'],
+          'Defense': ['Geodude (+1 Defense) - Mt. Moon, Rock Tunnel', 'Graveler (+2 Defense) - Victory Road, Cerulean Cave'],
+          'Sp. Atk': ['Gastly (+1 Sp. Atk) - Pokemon Tower', 'Haunter (+2 Sp. Atk) - Pokemon Tower'],
+          'Sp. Def': ['Tentacool (+1 Sp. Def) - All water routes', 'Tentacruel (+2 Sp. Def) - Routes 19, 20, 21'],
+          'Speed': ['Zubat (+1 Speed) - Mt. Moon, Rock Tunnel, all caves', 'Diglett (+1 Speed) - Diglett\'s Cave'],
+        };
+        break;
+
+      case 'Gold/Silver/Crystal':
+        guides = {
+          'HP': ['Sentret (+1 HP) - Route 1, 29', 'Chansey (+2 HP) - Route 13, 14, 15', 'Blissey (+3 HP) - Evolve Chansey'],
+          'Attack': ['Machop (+1 Attack) - Rock Tunnel', 'Pinsir (+2 Attack) - Headbutt trees'],
+          'Defense': ['Geodude (+1 Defense) - Dark Cave, Union Cave', 'Graveler (+2 Defense) - Victory Road', 'Skarmory (+2 Defense) - Route 45'],
+          'Sp. Atk': ['Gastly (+1 Sp. Atk) - Sprout Tower, Tin Tower', 'Haunter (+2 Sp. Atk) - Tin Tower'],
+          'Sp. Def': ['Tentacool (+1 Sp. Def) - Routes 19, 20, 21, 40, 41', 'Tentacruel (+2 Sp. Def) - Routes 40, 41'],
+          'Speed': ['Zubat (+1 Speed) - Dark Cave, Union Cave, all caves', 'Diglett (+1 Speed) - Diglett\'s Cave'],
+        };
+        break;
+
+      case 'Ruby/Sapphire/Emerald':
+        guides = {
+          'HP': ['Marill (+2 HP) - Routes 102, 111, 114, 117, 120', 'Azumarill (+3 HP) - Evolve Marill', 'Wailmer (+1 HP) - Ocean routes'],
+          'Attack': ['Poochyena (+1 Attack) - Route 101, 102, 103', 'Zigzagoon (+1 Attack) - Route 101, 102, 103', 'Medicham (+2 Attack) - Victory Road'],
+          'Defense': ['Geodude (+1 Defense) - Granite Cave, Victory Road', 'Graveler (+2 Defense) - Victory Road', 'Aron (+1 Defense) - Granite Cave'],
+          'Sp. Atk': ['Oddish (+1 Sp. Atk) - Route 110, 117, 119, 120', 'Roselia (+2 Sp. Atk) - Route 117', 'Ralts (+1 Sp. Atk) - Route 102'],
+          'Sp. Def': ['Tentacool (+1 Sp. Def) - All water routes', 'Tentacruel (+2 Sp. Def) - Deep water routes', 'Dustox (+3 Sp. Def) - Evolve Cascoon'],
+          'Speed': ['Zubat (+1 Speed) - All caves', 'Wingull (+1 Speed) - All ocean routes', 'Taillow (+1 Speed) - Route 104, 115, 116'],
+        };
+        break;
+
+      case 'FireRed/LeafGreen':
+        guides = {
+          'HP': ['Chansey (+2 HP) - Cerulean Cave', 'Wigglytuff (+3 HP) - Evolve Jigglypuff'],
+          'Attack': ['Machop (+1 Attack) - Rock Tunnel, Victory Road', 'Machoke (+2 Attack) - Victory Road, Cerulean Cave'],
+          'Defense': ['Geodude (+1 Defense) - Mt. Moon, Rock Tunnel', 'Graveler (+2 Defense) - Victory Road, Cerulean Cave'],
+          'Sp. Atk': ['Gastly (+1 Sp. Atk) - Pokemon Tower', 'Haunter (+2 Sp. Atk) - Pokemon Tower'],
+          'Sp. Def': ['Tentacool (+1 Sp. Def) - All water routes', 'Tentacruel (+2 Sp. Def) - Routes 19, 20, 21'],
+          'Speed': ['Zubat (+1 Speed) - Mt. Moon, Rock Tunnel, all caves', 'Diglett (+1 Speed) - Diglett\'s Cave'],
+        };
+        break;
+
+      case 'Diamond/Pearl/Platinum':
+        guides = {
+          'HP': ['Bidoof (+1 HP) - Routes 201, 202, 203, 204, 205', 'Bibarel (+2 HP) - Routes 208, 209, 210'],
+          'Attack': ['Shinx (+1 Attack) - Route 202, 203, 204', 'Luxio (+2 Attack) - Route 222', 'Machop (+1 Attack) - Route 207'],
+          'Defense': ['Geodude (+1 Defense) - Oreburgh Gate, Oreburgh Mine', 'Graveler (+2 Defense) - Victory Road, Iron Island'],
+          'Sp. Atk': ['Gastly (+1 Sp. Atk) - Old Chateau', 'Haunter (+2 Sp. Atk) - Old Chateau', 'Psyduck (+1 Sp. Atk) - Routes 203-205'],
+          'Sp. Def': ['Tentacool (+1 Sp. Def) - Canalave City, Sunyshore City (surf)', 'Tentacruel (+2 Sp. Def) - Canalave City (surf)'],
+          'Speed': ['Starly (+1 Speed) - Route 201, 202, 203, 204, 209', 'Staravia (+2 Speed) - Lake Verity, Lake Valor', 'Zubat (+1 Speed) - All caves'],
+        };
+        break;
+
+      case 'HeartGold/SoulSilver':
+        guides = {
+          'HP': ['Sentret (+1 HP) - Route 1, 29', 'Chansey (+2 HP) - Route 13, 14, 15', 'Blissey (+3 HP) - Evolve Chansey'],
+          'Attack': ['Machop (+1 Attack) - Rock Tunnel', 'Pinsir (+2 Attack) - Headbutt trees', 'Heracross (+2 Attack) - Headbutt trees'],
+          'Defense': ['Geodude (+1 Defense) - Dark Cave, Union Cave', 'Graveler (+2 Defense) - Victory Road', 'Skarmory (+2 Defense) - Route 45'],
+          'Sp. Atk': ['Gastly (+1 Sp. Atk) - Sprout Tower, Tin Tower', 'Haunter (+2 Sp. Atk) - Tin Tower'],
+          'Sp. Def': ['Tentacool (+1 Sp. Def) - All water routes', 'Tentacruel (+2 Sp. Def) - Routes 40, 41'],
+          'Speed': ['Zubat (+1 Speed) - Dark Cave, Union Cave, all caves', 'Diglett (+1 Speed) - Diglett\'s Cave'],
+        };
+        break;
+
+      case 'Black/White':
+      case 'Black 2/White 2':
+        guides = {
+          'HP': ['Lillipup (+1 HP) - Route 1, 2, 3', 'Audino (+2 HP) - Rustling grass anywhere', 'Alomomola (+2 HP) - Surf spots'],
+          'Attack': ['Patrat (+1 Attack) - Route 19, 20', 'Lillipup (+1 Attack) - Route 1, 2, 3', 'Basculin (+2 Attack) - All fishing spots'],
+          'Defense': ['Roggenrola (+1 Defense) - Wellspring Cave', 'Boldore (+2 Defense) - Challenger\'s Cave', 'Sewaddle (+1 Defense) - Pinwheel Forest'],
+          'Sp. Atk': ['Litwick (+1 Sp. Atk) - Celestial Tower', 'Lampent (+2 Sp. Atk) - Strange House', 'Solosis (+1 Sp. Atk) - Route 5'],
+          'Sp. Def': ['Frillish (+1 Sp. Def) - All surf spots', 'Jellicent (+2 Sp. Def) - Deep water spots', 'Munna (+1 Sp. Def) - Dreamyard'],
+          'Speed': ['Purrloin (+1 Speed) - Route 2, 3', 'Zubat (+1 Speed) - All caves', 'Woobat (+1 Speed) - Wellspring Cave'],
+        };
+        break;
+
+      case 'X/Y':
+        guides = {
+          'HP': ['Gulpin (+1 HP) - Route 5', 'Swalot (+2 HP) - Route 19', 'Audino (+2 HP) - Yellow flowers'],
+          'Attack': ['Furfrou (+1 Attack) - Route 5', 'Hawlucha (+2 Attack) - Route 10', 'Binacle (+1 Attack) - Ambrette Town rocks'],
+          'Defense': ['Geodude (+1 Defense) - Terminus Cave', 'Graveler (+2 Defense) - Terminus Cave', 'Rhyhorn (+1 Defense) - Route 9'],
+          'Sp. Atk': ['Psyduck (+1 Sp. Atk) - Route 7', 'Roselia (+2 Sp. Atk) - Route 7', 'Spoink (+1 Sp. Atk) - Route 8'],
+          'Sp. Def': ['Tentacool (+1 Sp. Def) - All surf spots', 'Tentacruel (+2 Sp. Def) - Deep water', 'Stunfisk (+2 Sp. Def) - Route 14'],
+          'Speed': ['Bunnelby (+1 Speed) - Route 2, 3', 'Diggersby (+2 Speed) - Route 22', 'Fletchling (+1 Speed) - Route 2, 3'],
+        };
+        break;
+
+      case 'Omega Ruby/Alpha Sapphire':
+        guides = {
+          'HP': ['Marill (+2 HP) - Routes 102, 111, 114, 117, 120', 'Azumarill (+3 HP) - Evolve Marill', 'Wailmer (+1 HP) - Ocean routes'],
+          'Attack': ['Poochyena (+1 Attack) - Route 101, 102, 103', 'Zigzagoon (+1 Attack) - Route 101, 102, 103', 'Medicham (+2 Attack) - Victory Road'],
+          'Defense': ['Geodude (+1 Defense) - Granite Cave, Victory Road', 'Graveler (+2 Defense) - Victory Road', 'Aron (+1 Defense) - Granite Cave'],
+          'Sp. Atk': ['Oddish (+1 Sp. Atk) - Route 110, 117, 119, 120', 'Roselia (+2 Sp. Atk) - Route 117', 'Ralts (+1 Sp. Atk) - Route 102'],
+          'Sp. Def': ['Tentacool (+1 Sp. Def) - All water routes', 'Tentacruel (+2 Sp. Def) - Deep water routes', 'Dustox (+3 Sp. Def) - Evolve Cascoon'],
+          'Speed': ['Zubat (+1 Speed) - All caves', 'Wingull (+1 Speed) - All ocean routes', 'Taillow (+1 Speed) - Route 104, 115, 116'],
+        };
+        break;
+
+      case 'Sun/Moon':
+      case 'Ultra Sun/Ultra Moon':
+        guides = {
+          'HP': ['Caterpie (+1 HP) - Route 1', 'Metapod (+2 HP) - Melemele Meadow', 'Chansey (+2 HP) - Paniola Ranch SOS'],
+          'Attack': ['Yungoos (+1 Attack) - Route 1, 2', 'Gumshoos (+2 Attack) - Route 10, 15', 'Granbull (+2 Attack) - Route 2'],
+          'Defense': ['Roggenrola (+1 Defense) - Ten Carat Hill', 'Boldore (+2 Defense) - Ten Carat Hill', 'Carbink (+1 Defense) - Ten Carat Hill rare'],
+          'Sp. Atk': ['Gastly (+1 Sp. Atk) - Hau\'oli Cemetery', 'Haunter (+2 Sp. Atk) - Memorial Hill', 'Oricorio (+2 Sp. Atk) - Meadows and gardens'],
+          'Sp. Def': ['Tentacool (+1 Sp. Def) - All surf spots', 'Tentacruel (+2 Sp. Def) - Deep ocean', 'Frillish (+1 Sp. Def) - Poni Wilds surf'],
+          'Speed': ['Zubat (+1 Speed) - All caves', 'Diglett (+1 Speed) - Verdant Cavern', 'Alolan Diglett (+1 Speed) - Diglett\'s Tunnel'],
+        };
+        break;
+
+      case 'Sword/Shield':
+        guides = {
+          'HP': ['Skwovet (+1 HP) - Route 1', 'Wooloo (+1 HP) - Route 1', 'Chansey (+2 HP) - Lake of Outrage'],
+          'Attack': ['Chewtle (+1 Attack) - Route 2 water', 'Drednaw (+2 Attack) - Wild Area water', 'Rookidee (+1 Attack) - Route 1'],
+          'Defense': ['Rolycoly (+1 Defense) - Galar Mine', 'Carkol (+2 Defense) - Galar Mine No. 2', 'Ferroseed (+1 Defense) - Route 6'],
+          'Sp. Atk': ['Gastly (+1 Sp. Atk) - Watchtower Ruins', 'Haunter (+2 Sp. Atk) - Giant\'s Cap', 'Litwick (+1 Sp. Atk) - Watchtower Ruins'],
+          'Sp. Def': ['Gossifleur (+1 Sp. Def) - Route 3', 'Eldegoss (+2 Sp. Def) - Rolling Fields', 'Applin (+1 Sp. Def) - Route 5'],
+          'Speed': ['Rookidee (+1 Speed) - Route 1, 2', 'Corvisquire (+2 Speed) - Bridge Field, Giant\'s Cap', 'Sizzlipede (+1 Speed) - Route 3'],
+        };
+        break;
+
+      case 'Scarlet/Violet':
+        guides = {
+          'HP': ['Lechonk (+1 HP) - South Province Area 1', 'Azurill (+1 HP) - South Province Area 1', 'Chansey (+2 HP) - North Province Area 3'],
+          'Attack': ['Yungoos (+1 Attack) - South Province Area 1', 'Primeape (+2 Attack) - South Province Area 4', 'Mankey (+1 Attack) - South Province Area 4'],
+          'Defense': ['Nacli (+1 Defense) - South Province Area 3', 'Naclstack (+2 Defense) - Glaseado Mountain', 'Pineco (+1 Defense) - East Province Area 2'],
+          'Sp. Atk': ['Gastly (+1 Sp. Atk) - South Province Area 3 night', 'Haunter (+2 Sp. Atk) - Glaseado Mountain night', 'Psyduck (+1 Sp. Atk) - South Province Area 2'],
+          'Sp. Def': ['Shellos (+1 Sp. Def) - Beach areas', 'Gastrodon (+2 Sp. Def) - Beach areas', 'Finizen (+1 Sp. Def) - All ocean areas'],
+          'Speed': ['Rookidee (+1 Speed) - South Province Area 1', 'Fletchling (+1 Speed) - South Province Area 1', 'Wingull (+1 Speed) - Coastal areas'],
+        };
+        break;
+
+      default:
+        guides = {
+          'HP': ['Chansey (+2 HP)', 'Blissey (+3 HP)'],
+          'Attack': ['Machop/Machoke (+1/+2 Attack)'],
+          'Defense': ['Geodude/Graveler (+1/+2 Defense)'],
+          'Sp. Atk': ['Gastly/Haunter (+1/+2 Sp. Atk)'],
+          'Sp. Def': ['Tentacool/Tentacruel (+1/+2 Sp. Def)'],
+          'Speed': ['Zubat (+1 Speed)', 'Diglett (+1 Speed)'],
+        };
+    }
+
+    return guides.entries.map((entry) {
+      return _buildTrainingSection(entry.key, entry.value);
+    }).toList();
+  }
+
+  List<Widget> _getProTipsForGame() {
+    List<String> tips = [
+      '• Use Pokerus for 2x EV gains (works in all games)',
+      '• Vitamins: HP Up, Protein, Iron, Calcium, Zinc, Carbos (+10 EVs up to 100)',
+    ];
+
+    if (_selectedGame == 'Red/Blue/Yellow' || _selectedGame == 'Gold/Silver/Crystal') {
+      tips.addAll([
+        '• No held items for EV training in Gen 1-2',
+        '• Vitamins can be bought at department stores',
+      ]);
+    } else if (_selectedGame.contains('Ruby') || _selectedGame.contains('Sapphire') ||
+               _selectedGame.contains('Emerald') || _selectedGame.contains('FireRed') ||
+               _selectedGame.contains('LeafGreen')) {
+      tips.addAll([
+        '• Power items not available yet',
+        '• Macho Brace (2x EV gains, but halves Speed) - Obtained from Winstrate family',
+      ]);
+    } else if (_selectedGame.contains('Diamond') || _selectedGame.contains('Pearl') ||
+               _selectedGame.contains('Platinum') || _selectedGame.contains('HeartGold') ||
+               _selectedGame.contains('SoulSilver')) {
+      tips.addAll([
+        '• Power items available! (+8 EVs to specific stat)',
+        '  - Power Weight (HP), Power Bracer (Attack), Power Belt (Defense)',
+        '  - Power Lens (Sp. Atk), Power Band (Sp. Def), Power Anklet (Speed)',
+        '• Buy Power items at Battle Tower for 16 BP each',
+        '• Macho Brace (2x EV gains, but halves Speed)',
+      ]);
+    } else if (_selectedGame.contains('Black') || _selectedGame.contains('White')) {
+      tips.addAll([
+        '• Power items (+8 EVs, buy at Battle Subway for 16 BP)',
+        '• Macho Brace (2x EV gains)',
+      ]);
+    } else if (_selectedGame == 'X/Y' || _selectedGame.contains('Omega Ruby') ||
+               _selectedGame.contains('Alpha Sapphire')) {
+      tips.addAll([
+        '• Power items (+8 EVs, buy at Battle Maison for 16 BP)',
+        '• Super Training for targeted EV training',
+        '• Horde Battles give 5x EVs at once!',
+      ]);
+    } else if (_selectedGame.contains('Sun') || _selectedGame.contains('Moon')) {
+      tips.addAll([
+        '• Power items (+8 EVs, buy at Battle Tree for 16 BP)',
+        '• SOS Battles: Each SOS Pokemon gives EVs',
+        '• Adrenaline Orb to trigger SOS battles',
+      ]);
+    } else if (_selectedGame == 'Sword/Shield') {
+      tips.addAll([
+        '• Power items (+8 EVs, buy at Hammerlocke BP shop)',
+        '• Poke Jobs for automatic EV training!',
+        '• Send Pokemon on jobs for easy EVs',
+        '• Vitamins now work up to 252 EVs (game changer!)',
+      ]);
+    } else if (_selectedGame == 'Scarlet/Violet') {
+      tips.addAll([
+        '• Power items (+8 EVs, buy at Delibird Presents)',
+        '• Vitamins work up to 252 EVs!',
+        '• EV-reducing berries available at Porto Marinada auction',
+        '• Use picnics to make sandwiches for encounter boosts',
+      ]);
+    }
+
+    return tips.map((tip) => Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Text(tip, style: const TextStyle(fontSize: 12)),
+    )).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -546,6 +820,80 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
                 ),
               ),
             ),
+
+            const SizedBox(height: 16),
+
+            // Game Selection
+            DropdownButtonFormField<String>(
+              value: _selectedGame,
+              decoration: const InputDecoration(
+                labelText: 'Select Your Game',
+                prefixIcon: Icon(Icons.videogame_asset),
+                border: OutlineInputBorder(),
+              ),
+              items: _games.map((game) {
+                return DropdownMenuItem(
+                  value: game,
+                  child: Text(game),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedGame = value!;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // EV Training Guide Toggle
+            ElevatedButton.icon(
+              onPressed: () {
+                setState(() {
+                  _showTrainingGuide = !_showTrainingGuide;
+                });
+              },
+              icon: Icon(_showTrainingGuide ? Icons.expand_less : Icons.expand_more),
+              label: Text(_showTrainingGuide ? 'Hide EV Training Guide' : 'Show EV Training Guide for $_selectedGame'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // EV Training Guide
+            if (_showTrainingGuide)
+              Card(
+                color: Colors.blue.withOpacity(0.1),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'EV Training Guide - $_selectedGame',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Best Pokemon to defeat for each stat:',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                      const SizedBox(height: 12),
+                      ..._getTrainingGuideForGame(),
+                      const SizedBox(height: 12),
+                      const Divider(),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Pro Tips for $_selectedGame:',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                      const SizedBox(height: 8),
+                      ..._getProTipsForGame(),
+                    ],
+                  ),
+                ),
+              ),
 
             const SizedBox(height: 16),
 
