@@ -1,8 +1,7 @@
 import 'package:advanced_search/advanced_search.dart';
 import 'package:flutter/material.dart';
-import 'package:html/parser.dart' show parse;
-import 'package:requests/requests.dart';
-import 'package:html/parser.dart';
+import '../services/pokeapi_service.dart';
+import '../services/pokemon_data_formatter.dart';
 
 class Search extends StatefulWidget {
   const Search({Key? key}) : super(key: key);
@@ -53,21 +52,10 @@ class _SearchState extends State<Search> {
 
   Future<List<String>> _getPokemon() async {
     try {
-      const String baseUrl = 'https://pokemondb.net/pokedex/national';
-      var r = await Requests.get(baseUrl);
-      r.raiseForStatus();
-      String body = r.content();
-
-      var doc = parse(body);
-      var aTags = doc.querySelectorAll('a');
-
-      List<String> names = [];
-      for (var i = 0; i < aTags.length; i++) {
-        if (aTags[i].className == "ent-name") {
-          names.add(aTags[i].text);
-        }
-      }
-
+      final pokemonList = await PokeApiService.getPokemonList(limit: 1025);
+      List<String> names = pokemonList
+          .map((p) => PokemonDataFormatter.capitalize(p['name']))
+          .toList();
       return names;
     } catch (e) {
       print('Error fetching Pokemon list: $e');
@@ -77,18 +65,6 @@ class _SearchState extends State<Search> {
 
   Future<Map<String, dynamic>> _makeRequest(String pokemon) async {
     try {
-      const String baseUrl = 'https://pokemondb.net/pokedex/';
-      var r = await Requests.get('$baseUrl$pokemon');
-      r.raiseForStatus();
-      String body = r.content();
-
-      var doc = parse(body);
-      var aTags = doc.querySelectorAll('a');
-      var h2Tags = doc.querySelectorAll('h2');
-      var tables = doc.querySelectorAll('table.vitals-table');
-      var pokemonGames = doc.querySelectorAll('table.vitals-table');
-      var evolution = doc.querySelectorAll('div.infocard-list-evo');
-
       // Reset state for new search
       text.clear();
       headers.clear();
@@ -99,113 +75,66 @@ class _SearchState extends State<Search> {
       listOfEvolution.clear();
       evolutions.clear();
 
-      var pokemonImg = aTags
-          .where((element) =>
-              element.attributes['href']?.contains('https://img.pokemondb.net/artwork/') ?? false)
-          .toList();
+      // Fetch data from PokeAPI
+      final pokemonData = await PokeApiService.getPokemon(pokemon.toLowerCase());
+      final speciesData = await PokeApiService.getPokemonSpecies(pokemon.toLowerCase());
 
-      var it = h2Tags.iterator;
-      while (it.moveNext()) {
-        if (!text.contains(it.current.text)) {
-          text.add(it.current.text);
+      // Get evolution chain
+      Map<String, dynamic>? evolutionData;
+      final evolutionChainUrl = speciesData['evolution_chain']?['url'];
+      if (evolutionChainUrl != null) {
+        final evolutionId = PokeApiService.extractIdFromUrl(evolutionChainUrl);
+        if (evolutionId != null) {
+          evolutionData = await PokeApiService.getEvolutionChain(evolutionId);
         }
       }
 
-      var tableIT = tables.iterator;
-      while (tableIT.moveNext()) {
-        doc = parse(tableIT.current.outerHtml);
+      // Format the data using our formatter
+      final formattedData = await PokemonDataFormatter.formatPokemonData(
+        pokemonData,
+        speciesData,
+        evolutionData,
+      );
 
-        var tableHeaders = doc.querySelectorAll('th');
-        var tableData = doc.querySelectorAll('td');
-
-        List<String> localHeaders = [];
-        List<String> localData = [];
-
-        for (var header in tableHeaders) {
-          if (header.text.contains('National')) {
-            localHeaders.add(header.text.replaceAll('National №', 'National'));
-          } else if (header.text.contains('Local')) {
-            localHeaders.add(header.text.replaceAll('Local №', 'Local'));
-          } else {
-            localHeaders.add(header.text);
-          }
-        }
-
-        for (var td in tableData) {
-          localData.add(td.text.replaceAll('\n', ''));
-        }
-
-        for (var i = 0; i < localHeaders.length && i < localData.length; i++) {
-          tableDataFormatted.addAll({localHeaders[i]: localData[i]});
-        }
+      // Fetch encounter locations
+      try {
+        final encounters = await PokeApiService.getPokemonEncounters(pokemon.toLowerCase());
+        pokemonLocations = encounters
+            .map((e) {
+              final locationName = PokemonDataFormatter.capitalize(
+                e['location_area']['name'].replaceAll('-', ' '),
+              );
+              final versionDetails = e['version_details'] as List;
+              if (versionDetails.isNotEmpty) {
+                final gameName = PokemonDataFormatter.capitalize(
+                  versionDetails[0]['version']['name'],
+                );
+                return '$gameName: $locationName';
+              }
+              return locationName;
+            })
+            .toList()
+            .cast<String>();
+      } catch (e) {
+        print('Could not fetch encounter locations: $e');
+        pokemonLocations = [];
       }
 
-      for (var i = 0; i < text.length; i++) {
-        mappedData.addAll({text[i]: tableDataFormatted});
-      }
+      // Update formattedData with locations
+      formattedData['locations'] = pokemonLocations;
 
-      // Locations Logic - with bounds checking
-      if (pokemonGames.length > 5) {
-        var gameData = pokemonGames[5].outerHtml;
-        var gameDataDoc = parse(gameData);
-        var pokemonGameData = gameDataDoc.getElementsByTagName("th");
-        var gameLocations = gameDataDoc.getElementsByTagName("td");
-
-        for (var i = 0; i < gameLocations.length && i < pokemonGameData.length; i++) {
-          pokemonLocations.add("${pokemonGameData[i].text}: ${gameLocations[i].text}");
-        }
-      }
-
-      for (var i = 0; i < evolution.length; i++) {
-        var html = evolution[i].outerHtml;
-        var parsedHtml = parse(html);
-        var listOfChildren = parsedHtml.children;
-
-        for (var i = 0; i < listOfChildren.length; i++) {
-          var img = listOfChildren[i].getElementsByTagName('img');
-          var pokemonElements = listOfChildren[i].getElementsByTagName('a.ent-name');
-
-          for (var j = 0; j < img.length && j < pokemonElements.length; j++) {
-            var srcAttr = img[j].attributes['src'];
-            if (srcAttr != null && srcAttr.contains('https://img.pokemondb.net/sprites/')) {
-              listOfEvolution.add({
-                "img": srcAttr,
-                "info": pokemonElements[j].text,
-              });
-            }
-          }
-        }
-
-        for (var i = 0; i < listOfChildren.length; i++) {
-          var pokemonEvolutions = listOfChildren[i].getElementsByTagName('span.infocard-arrow');
-
-          for (var evolution in pokemonEvolutions) {
-            evolutions.add({"evolution": evolution.text});
-          }
-        }
-      }
-
-      formattedOutput = {
-        'image': pokemonImg.isNotEmpty && pokemonImg[0].attributes['href'] != null
-            ? pokemonImg[0].attributes['href']!
-            : '',
-        'titles': text,
-        'data': mappedData,
-        'evolution': listOfEvolution,
-        'locations': pokemonLocations,
-        'requiredToEvolve': evolutions,
-      };
-
-      return formattedOutput;
+      return formattedData;
     } catch (e) {
       print('Error fetching Pokemon data: $e');
       return {
         'image': '',
+        'name': 'Error',
         'titles': ['Error'],
-        'data': {},
+        'data': {
+          'Pokédex Data': {'Error': 'Failed to load Pokemon data'},
+        },
         'evolution': [],
         'locations': [],
-        'requiredToEvolve': [],
       };
     }
   }
@@ -222,25 +151,25 @@ class _SearchState extends State<Search> {
   Widget getEggs() {
     if (_pokemonData == null) return const SizedBox.shrink();
 
-    final baseStats = _pokemonData!['data']?['Base stats'] as Map<String, dynamic>?;
-    if (baseStats == null) return const SizedBox.shrink();
+    final breedingData = _pokemonData!['data']?['Breeding'] as Map<String, dynamic>?;
+    if (breedingData == null) return const SizedBox.shrink();
 
     return Column(
       children: <Widget>[
         Text(
-          'Egg Groups: ${baseStats['Egg Groups'] ?? 'N/A'}',
+          'Egg Groups: ${breedingData['Egg Groups'] ?? 'N/A'}',
         ),
         const Padding(
           padding: EdgeInsets.all(5),
         ),
         Text(
-          'Gender: ${baseStats['Gender'] ?? 'N/A'}',
+          'Gender: ${breedingData['Gender'] ?? 'N/A'}',
         ),
         const Padding(
           padding: EdgeInsets.all(5),
         ),
         Text(
-          'Egg Cycles: ${baseStats['Egg cycles'] ?? 'N/A'}',
+          'Egg Cycles: ${breedingData['Egg Cycles'] ?? 'N/A'}',
         ),
         const Padding(
           padding: EdgeInsets.all(5),
@@ -276,7 +205,6 @@ class _SearchState extends State<Search> {
 
   Widget _buildEvolutionCard() {
     final evolutions = _getSafeList('evolution') as List;
-    final requiredToEvolve = _getSafeList('requiredToEvolve') as List;
     final titles = _getSafeList('titles') as List;
 
     return Container(
@@ -289,15 +217,15 @@ class _SearchState extends State<Search> {
           padding: const EdgeInsets.all(5),
           child: Column(
             children: <Widget>[
-              if (titles.length > 5)
+              if (titles.length > 4)
                 Text(
-                  '${titles[5]}\n',
+                  '${titles[4]}\n',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               if (evolutions.isEmpty || evolutions.length == 1)
                 const Column(
                   children: <Widget>[
-                    Text('This pokemon does not evolve.'),
+                    Text('This Pokémon does not evolve.'),
                   ],
                 )
               else
@@ -312,14 +240,23 @@ class _SearchState extends State<Search> {
                           },
                         ),
                       const Padding(padding: EdgeInsets.all(5)),
-                      if (evolutions[i]['info'] != null)
-                        Text('${evolutions[i]['info']}'),
+                      if (evolutions[i]['name'] != null)
+                        Text(
+                          '${evolutions[i]['name']}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       const Padding(padding: EdgeInsets.all(5)),
-                      if (i < requiredToEvolve.length &&
-                          requiredToEvolve[i]['evolution'] != null)
-                        Text('${requiredToEvolve[i]['evolution']}'),
+                      if (evolutions[i]['info'] != null &&
+                          evolutions[i]['info'] != evolutions[i]['name'])
+                        Text('${evolutions[i]['info']}'),
                       if (i < evolutions.length - 1)
-                        const Padding(padding: EdgeInsets.all(5)),
+                        const Column(
+                          children: [
+                            Padding(padding: EdgeInsets.all(5)),
+                            Icon(Icons.arrow_downward),
+                            Padding(padding: EdgeInsets.all(5)),
+                          ],
+                        ),
                     ],
                   ],
                 ),
@@ -431,37 +368,37 @@ class _SearchState extends State<Search> {
                               Column(
                                 children: <Widget>[
                                   Text(
-                                    'National No: ${_getSafeData('data', 'Base stats', 'National')}',
+                                    'National No: ${_getSafeData('data', 'Pokédex Data', 'National №')}',
                                   ),
                                   const Padding(
                                     padding: EdgeInsets.all(5),
                                   ),
                                   Text(
-                                    'Type: ${_getSafeData('data', 'Base stats', 'Type')}',
+                                    'Type: ${_getSafeData('data', 'Pokédex Data', 'Type')}',
                                   ),
                                   const Padding(
                                     padding: EdgeInsets.all(5),
                                   ),
                                   Text(
-                                    'Species: ${_getSafeData('data', 'Base stats', 'Species')}',
+                                    'Species: ${_getSafeData('data', 'Pokédex Data', 'Species')}',
                                   ),
                                   const Padding(
                                     padding: EdgeInsets.all(5),
                                   ),
                                   Text(
-                                    'Height: ${_getSafeData('data', 'Base stats', 'Height')}',
+                                    'Height: ${_getSafeData('data', 'Pokédex Data', 'Height')}',
                                   ),
                                   const Padding(
                                     padding: EdgeInsets.all(5),
                                   ),
                                   Text(
-                                    'Weight: ${_getSafeData('data', 'Base stats', 'Weight')}',
+                                    'Weight: ${_getSafeData('data', 'Pokédex Data', 'Weight')}',
                                   ),
                                   const Padding(
                                     padding: EdgeInsets.all(5),
                                   ),
                                   Text(
-                                    'Abilities: ${_getSafeData('data', 'Base stats', 'Abilities')}',
+                                    'Abilities: ${_getSafeData('data', 'Pokédex Data', 'Abilities')}',
                                   ),
                                   const Padding(
                                     padding: EdgeInsets.all(5),
@@ -493,31 +430,31 @@ class _SearchState extends State<Search> {
                               Column(
                                 children: <Widget>[
                                   Text(
-                                    'EV yield: ${_getSafeData('data', 'Base stats', 'EV yield')}',
+                                    'EV yield: ${_getSafeData('data', 'Training', 'EV Yield')}',
                                   ),
                                   const Padding(
                                     padding: EdgeInsets.all(5),
                                   ),
                                   Text(
-                                    'Catch rate: ${_getSafeData('data', 'Base stats', 'Catch rate')}',
+                                    'Catch rate: ${_getSafeData('data', 'Training', 'Catch Rate')}',
                                   ),
                                   const Padding(
                                     padding: EdgeInsets.all(5),
                                   ),
                                   Text(
-                                    'Base Friendship: ${_getSafeData('data', 'Base stats', 'Base Friendship')}',
+                                    'Base Friendship: ${_getSafeData('data', 'Training', 'Base Friendship')}',
                                   ),
                                   const Padding(
                                     padding: EdgeInsets.all(5),
                                   ),
                                   Text(
-                                    'Base Exp.: ${_getSafeData('data', 'Base stats', 'Base Exp.')}',
+                                    'Base Exp.: ${_getSafeData('data', 'Training', 'Base Exp')}',
                                   ),
                                   const Padding(
                                     padding: EdgeInsets.all(5),
                                   ),
                                   Text(
-                                    'Growth Rate: ${_getSafeData('data', 'Base stats', 'Growth Rate')}',
+                                    'Growth Rate: ${_getSafeData('data', 'Training', 'Growth Rate')}',
                                   ),
                                   const Padding(
                                     padding: EdgeInsets.all(5),
@@ -569,6 +506,22 @@ class _SearchState extends State<Search> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                              Column(
+                                children: <Widget>[
+                                  Text('HP: ${_getSafeData('data', 'Base Stats', 'HP')}'),
+                                  const Padding(padding: EdgeInsets.all(5)),
+                                  Text('Attack: ${_getSafeData('data', 'Base Stats', 'Attack')}'),
+                                  const Padding(padding: EdgeInsets.all(5)),
+                                  Text('Defense: ${_getSafeData('data', 'Base Stats', 'Defense')}'),
+                                  const Padding(padding: EdgeInsets.all(5)),
+                                  Text('Sp. Atk: ${_getSafeData('data', 'Base Stats', 'Sp. Atk')}'),
+                                  const Padding(padding: EdgeInsets.all(5)),
+                                  Text('Sp. Def: ${_getSafeData('data', 'Base Stats', 'Sp. Def')}'),
+                                  const Padding(padding: EdgeInsets.all(5)),
+                                  Text('Speed: ${_getSafeData('data', 'Base Stats', 'Speed')}'),
+                                  const Padding(padding: EdgeInsets.all(5)),
+                                ],
+                              ),
                             ],
                           ),
                         ),

@@ -21,6 +21,8 @@ class _NewsState extends State<News> {
 
   Future<List<Map<String, String>>> loadCards() async {
     try {
+      // Fetch Tera Raid Battle Events from Serebii
+      // This covers Pokemon Scarlet & Violet (the only games with Tera Raids)
       var r = await Requests.get(
           'https://www.serebii.net/scarletviolet/teraraidbattleevents.shtml');
       r.raiseForStatus();
@@ -28,13 +30,59 @@ class _NewsState extends State<News> {
 
       var doc = parse(body);
 
+      // Serebii uses a table format with alternating title/description cells
       var title = doc.querySelectorAll('td.fooleft');
       var description = doc.querySelectorAll('td.foocontent');
 
       List<Map<String, String>> raidsList = [];
 
+      // Parse each raid event
       for (var i = 0; i < title.length && i < description.length; i++) {
-        raidsList.add({'title': title[i].text, 'description': description[i].text});
+        final titleText = title[i].text.trim();
+        final descText = description[i].text.trim();
+
+        // Only add if we have valid data
+        if (titleText.isNotEmpty && descText.isNotEmpty) {
+          // Try to extract additional metadata
+          String dateInfo = '';
+          String pokemonName = '';
+          String raidLevel = '';
+          String teraType = '';
+
+          // Extract date from description if present
+          final dateMatch = RegExp(r'(\d{1,2}(?:st|nd|rd|th)?\s+\w+\s+\d{4})')
+              .firstMatch(descText);
+          if (dateMatch != null) {
+            dateInfo = dateMatch.group(0) ?? '';
+          }
+
+          // Extract raid level (e.g., "5★", "6★", "7★")
+          final levelMatch = RegExp(r'([1-7])★').firstMatch(descText);
+          if (levelMatch != null) {
+            raidLevel = '${levelMatch.group(1)}★';
+          }
+
+          // Extract Tera Type if mentioned
+          final teraTypeMatch = RegExp(
+            r'(Normal|Fire|Water|Electric|Grass|Ice|Fighting|Poison|Ground|Flying|Psychic|Bug|Rock|Ghost|Dragon|Dark|Steel|Fairy)\s+Tera\s+Type',
+            caseSensitive: false,
+          ).firstMatch(descText);
+          if (teraTypeMatch != null) {
+            teraType = teraTypeMatch.group(1) ?? '';
+          }
+
+          // Extract Pokemon name from title
+          pokemonName = titleText;
+
+          raidsList.add({
+            'title': titleText,
+            'description': descText,
+            'date': dateInfo,
+            'pokemon': pokemonName,
+            'level': raidLevel,
+            'teraType': teraType,
+          });
+        }
       }
 
       return raidsList;
@@ -97,6 +145,9 @@ class _NewsState extends State<News> {
                   final raid = snapshot.data![index];
                   final title = raid['title'] ?? '';
                   final description = raid['description'] ?? '';
+                  final date = raid['date'] ?? '';
+                  final level = raid['level'] ?? '';
+                  final teraType = raid['teraType'] ?? '';
 
                   if (title.isNotEmpty && title != description) {
                     return Card(
@@ -107,19 +158,68 @@ class _NewsState extends State<News> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text(
-                                title,
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      title,
+                                      style: TextStyle(
+                                        color: Theme.of(context).colorScheme.primary,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                  ),
+                                  if (level.isNotEmpty)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        level,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
+                              if (teraType.isNotEmpty) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Tera Type: $teraType',
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.primary,
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                              if (date.isNotEmpty) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  date,
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.primary,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                               const SizedBox(height: 8),
                               Text(
                                 description,
                                 style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.primary),
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontSize: 14,
+                                ),
                               ),
                             ],
                           ),

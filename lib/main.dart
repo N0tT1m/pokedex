@@ -4,6 +4,7 @@ import 'package:pokedex/Widgets/HomePage.dart';
 import 'package:pokedex/Widgets/News.dart';
 import 'package:pokedex/Widgets/Search.dart';
 import 'package:pokedex/Widgets/Generations.dart';
+import 'package:pokedex/Widgets/iv_ev_calculator.dart';
 
 void main() {
   runApp(const MyApp());
@@ -109,6 +110,11 @@ class _HomeState extends State<Home> {
               title: "News",
               onclick: () => Navigator.of(context)
                   .push(MaterialPageRoute(builder: (context) => const News()))),
+          TabData(
+              iconData: Icons.calculate,
+              title: "IV/EV Calc",
+              onclick: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => const IVEVCalculator()))),
         ],
         activeIconColor: Theme.of(context).colorScheme.secondary,
         inactiveIconColor: Theme.of(context).colorScheme.primary,

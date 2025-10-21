@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:requests/requests.dart';
-import 'package:html/parser.dart' show parse;
+import '../services/pokeapi_service.dart';
+import '../services/pokemon_data_formatter.dart';
 
 class Generations extends StatefulWidget {
   const Generations({Key? key}) : super(key: key);
@@ -10,11 +10,9 @@ class Generations extends StatefulWidget {
 }
 
 class _GenerationsState extends State<Generations> {
-  List<String> pokemonNames = [];
-  List<String> names = [];
-  List<String> pokemonImages = [];
-  List<String> numOfPokemon = [];
-  List<String> typesOfPokemon = [];
+  List<Map<String, dynamic>> pokemonList = [];
+  bool isLoading = true;
+  String? errorMessage;
 
   @override
   void initState() {
@@ -22,101 +20,126 @@ class _GenerationsState extends State<Generations> {
     _getPokemon().then((value) {
       if (mounted) {
         setState(() {
-          pokemonNames = value["pokemonNames"] ?? [];
-          pokemonImages = value["pokemonImages"] ?? [];
-          numOfPokemon = value["numOfPokemon"] ?? [];
-          typesOfPokemon = value["typesOfPokemon"] ?? [];
+          pokemonList = value;
+          isLoading = false;
         });
       }
     }).catchError((error) {
+      if (mounted) {
+        setState(() {
+          errorMessage = 'Error loading Pokemon: $error';
+          isLoading = false;
+        });
+      }
       print('Error loading Pokemon: $error');
     });
   }
 
-  Future<Map<String, dynamic>> _getPokemon() async {
+  Future<List<Map<String, dynamic>>> _getPokemon() async {
     try {
-      const String baseUrl = 'https://pokemondb.net/pokedex/national';
-      var r = await Requests.get(baseUrl);
-      r.raiseForStatus();
-      String body = r.content();
+      // Fetch all Pokemon from PokeAPI (limit 1025 for Gen 1-9)
+      final pokemonListData = await PokeApiService.getPokemonList(limit: 1025);
 
-      var doc = parse(body);
-      var aTags = doc.querySelectorAll('a');
-      var imgs = doc.querySelectorAll('img');
-      var infoAboutPokemon = doc.querySelectorAll('small');
+      final List<Map<String, dynamic>> formattedPokemon = [];
 
-      List<String> localNumOfPokemon = [];
-      List<String> localTypesOfPokemon = [];
-      List<String> localPokemonImages = [];
-      List<String> localPokemonNames = [];
-
-      for (var i = 0; i < infoAboutPokemon.length; i++) {
-        localNumOfPokemon.add(infoAboutPokemon[i].text);
-        if (i + 1 < infoAboutPokemon.length) {
-          localTypesOfPokemon.add(infoAboutPokemon[i + 1].text);
-          i++;
-        }
+      // Format basic list without fetching individual Pokemon details
+      // This is faster for initial display
+      for (int i = 0; i < pokemonListData.length; i++) {
+        final pokemonId = PokeApiService.extractIdFromUrl(pokemonListData[i]['url']) ?? (i + 1);
+        formattedPokemon.add({
+          'id': pokemonId,
+          'name': PokemonDataFormatter.capitalize(pokemonListData[i]['name']),
+          'types': [],
+          'image': 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$pokemonId.png',
+        });
       }
 
-      for (var i = 0; i < imgs.length; i++) {
-        var srcAttr = imgs[i].attributes['src'];
-        if (srcAttr != null && srcAttr.contains("https://img.pokemondb.net/sprites/home/normal/")) {
-          localPokemonImages.add(srcAttr);
-        }
-      }
-
-      for (var i = 0; i < aTags.length; i++) {
-        if (aTags[i].className == "ent-name") {
-          localPokemonNames.add(aTags[i].text);
-        }
-      }
-
-      Map<String, dynamic> pokemonData = {
-        "numOfPokemon": localNumOfPokemon,
-        "typesOfPokemon": localTypesOfPokemon,
-        "pokemonImages": localPokemonImages,
-        "pokemonNames": localPokemonNames
-      };
-
-      return pokemonData;
+      return formattedPokemon;
     } catch (e) {
       print('Error fetching Pokemon data: $e');
-      return {
-        "numOfPokemon": <String>[],
-        "typesOfPokemon": <String>[],
-        "pokemonImages": <String>[],
-        "pokemonNames": <String>[]
-      };
+      return [];
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (pokemonNames.isEmpty) {
+    if (isLoading) {
       return const Center(
         child: CircularProgressIndicator(),
+      );
+    }
+
+    if (errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(errorMessage!, style: const TextStyle(color: Colors.red)),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  errorMessage = null;
+                  isLoading = true;
+                });
+                _getPokemon().then((value) {
+                  if (mounted) {
+                    setState(() {
+                      pokemonList = value;
+                      isLoading = false;
+                    });
+                  }
+                }).catchError((error) {
+                  if (mounted) {
+                    setState(() {
+                      errorMessage = 'Error loading Pokemon: $error';
+                      isLoading = false;
+                    });
+                  }
+                });
+              },
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (pokemonList.isEmpty) {
+      return const Center(
+        child: Text('No Pokemon data available.'),
       );
     }
 
     return SizedBox(
       height: MediaQuery.of(context).size.height - 60,
       child: ListView.builder(
-        itemCount: pokemonNames.length,
+        itemCount: pokemonList.length,
         itemBuilder: (context, index) {
+          final pokemon = pokemonList[index];
           return Card(
-            child: Column(
-              children: <Widget>[
-                if (index < pokemonImages.length)
-                  Image.network(
-                    pokemonImages[index],
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(Icons.error, size: 50);
-                    },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: <Widget>[
+                  if (pokemon['image'] != null && pokemon['image'].isNotEmpty)
+                    Image.network(
+                      pokemon['image'],
+                      height: 100,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.error, size: 50);
+                      },
+                    ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '#${pokemon['id'].toString().padLeft(4, '0')} ${pokemon['name']}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                Text(pokemonNames[index]),
-                if (index < typesOfPokemon.length)
-                  Text(typesOfPokemon[index]),
-              ],
+                ],
+              ),
             ),
           );
         },
