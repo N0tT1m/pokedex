@@ -1,12 +1,29 @@
-import 'package:fancy_bottom_navigation_2/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pokedex/Widgets/HomePage.dart';
 import 'package:pokedex/Widgets/News.dart';
 import 'package:pokedex/Widgets/Search.dart';
 import 'package:pokedex/Widgets/Generations.dart';
 import 'package:pokedex/Widgets/iv_ev_calculator.dart';
+import 'package:pokedex/Widgets/reverse_iv_calculator.dart';
+import 'package:pokedex/Widgets/my_pokemon.dart';
+import 'package:pokedex/models/saved_pokemon.dart';
+import 'package:pokedex/models/pokemon_team.dart';
+import 'package:pokedex/services/pokemon_storage_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Hive
+  await Hive.initFlutter();
+
+  // Register adapters
+  Hive.registerAdapter(SavedPokemonAdapter());
+  Hive.registerAdapter(PokemonTeamAdapter());
+
+  // Initialize storage service
+  await PokemonStorageService().initialize();
+
   runApp(const MyApp());
 }
 
@@ -66,8 +83,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int currentPage = 0;
 
-  GlobalKey bottomNavigationKey = GlobalKey();
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -85,40 +100,42 @@ class _HomeState extends State<Home> {
           child: _getPage(currentPage),
         ),
       ),
-      bottomNavigationBar: FancyBottomNavigation(
-        tabs: [
-          TabData(
-              iconData: Icons.home,
-              title: "Home",
-              onclick: () {}),
-          TabData(
-              iconData: Icons.search,
-              title: "Search",
-              onclick: () {}),
-          TabData(
-              iconData: Icons.category,
-              title: "Generations",
-              onclick: () {}),
-          TabData(
-              iconData: Icons.newspaper,
-              title: "News",
-              onclick: () {}),
-          TabData(
-              iconData: Icons.calculate,
-              title: "IV/EV Calc",
-              onclick: () {}),
-        ],
-        activeIconColor: Theme.of(context).colorScheme.secondary,
-        inactiveIconColor: Theme.of(context).colorScheme.primary,
-        circleColor: Theme.of(context).colorScheme.primary,
-        barBackgroundColor: Theme.of(context).colorScheme.background,
-        initialSelection: 0,
-        key: bottomNavigationKey,
-        onTabChangedListener: (position) {
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentPage,
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Theme.of(context).colorScheme.background,
+        selectedItemColor: Theme.of(context).colorScheme.secondary,
+        unselectedItemColor: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+        selectedFontSize: 12,
+        unselectedFontSize: 11,
+        showUnselectedLabels: true,
+        onTap: (index) {
           setState(() {
-            currentPage = position;
+            currentPage = index;
           });
         },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.catching_pokemon),
+            label: 'My Pokemon',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calculate),
+            label: 'IV Checker',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.functions),
+            label: 'IV/EV Calc',
+          ),
+        ],
       ),
     );
   }
@@ -139,19 +156,9 @@ class _HomeState extends State<Home> {
           ],
         );
       case 2:
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Generations(),
-          ],
-        );
+        return const MyPokemon();
       case 3:
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            News(),
-          ],
-        );
+        return const ReverseIVCalculator();
       case 4:
         return const IVEVCalculator();
       default:
