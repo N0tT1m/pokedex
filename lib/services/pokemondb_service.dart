@@ -46,77 +46,96 @@ class PokemonDBService {
     final Map<String, List<String>> encounters = {};
 
     try {
-      // Find all vitals-table tables (location data is in one of these)
-      final tables = document.querySelectorAll('table.vitals-table');
+      // First, find the "Where to find" section by looking for the heading
+      final headings = document.querySelectorAll('h2');
+      Element? locationSection;
 
-      for (var table in tables) {
-        final rows = table.querySelectorAll('tbody tr');
+      for (var heading in headings) {
+        if (heading.text.toLowerCase().contains('where to find')) {
+          // Found the location heading, now find the next table
+          var sibling = heading.nextElementSibling;
+          while (sibling != null) {
+            if (sibling.localName == 'div' && sibling.classes.contains('resp-scroll')) {
+              locationSection = sibling;
+              break;
+            }
+            sibling = sibling.nextElementSibling;
+          }
+          break;
+        }
+      }
 
-        for (var row in rows) {
-          final cells = row.querySelectorAll('th, td');
-          if (cells.length < 2) continue;
+      if (locationSection == null) {
+        print('PokemonDBService: Could not find location section');
+        return {};
+      }
 
-          // First cell (th) contains the game version spans
-          final gameCell = cells[0];
-          final gameSpans = gameCell.querySelectorAll('span.igame');
+      // Now parse only the table in the location section
+      final table = locationSection.querySelector('table.vitals-table');
+      if (table == null) {
+        print('PokemonDBService: No table found in location section');
+        return {};
+      }
 
-          // Extract game names from the span class names
-          List<String> gameNames = [];
-          for (var span in gameSpans) {
-            final className = span.className;
-            // Extract game name from class like "igame sword" -> "Sword"
-            final gameParts = className.split(' ');
-            if (gameParts.length > 1) {
-              String gameName = gameParts[1]
-                  .split('-')
-                  .map((word) => word[0].toUpperCase() + word.substring(1))
-                  .join(' ');
-              gameNames.add(gameName);
+      final rows = table.querySelectorAll('tbody tr');
+      print('PokemonDBService: Found ${rows.length} location rows');
+
+      for (var row in rows) {
+        final cells = row.querySelectorAll('th, td');
+        if (cells.length < 2) continue;
+
+        // First cell (th) contains the game version spans
+        final gameCell = cells[0];
+        final gameSpans = gameCell.querySelectorAll('span.igame');
+
+        // Extract game names from the span class names
+        List<String> gameNames = [];
+        for (var span in gameSpans) {
+          final className = span.className;
+          // Extract game name from class like "igame sword" -> "Sword"
+          final gameParts = className.split(' ');
+          if (gameParts.length > 1) {
+            String gameName = gameParts[1]
+                .split('-')
+                .map((word) => word[0].toUpperCase() + word.substring(1))
+                .join(' ');
+            gameNames.add(gameName);
+          }
+        }
+
+        // Second cell (td) contains locations
+        final locationCell = cells[1];
+
+        // Skip if it says "Location data not yet available" or "Not available"
+        final cellText = locationCell.text.trim();
+        if (cellText.contains('not yet available') ||
+            cellText.contains('Not available in this game')) {
+          continue;
+        }
+
+        // Extract location names from links or text
+        final locationLinks = locationCell.querySelectorAll('a');
+        final List<String> locations = [];
+
+        if (locationLinks.isNotEmpty) {
+          for (var link in locationLinks) {
+            final locationName = link.text.trim();
+            if (locationName.isNotEmpty) {
+              locations.add(locationName);
             }
           }
-
-          // If no game spans found, try getting text directly
-          if (gameNames.isEmpty) {
-            final gameText = gameCell.text.trim();
-            if (gameText.isNotEmpty) {
-              gameNames = [gameText];
-            }
+        } else {
+          // If no links, just get the text
+          if (cellText.isNotEmpty) {
+            locations.add(cellText);
           }
+        }
 
-          // Second cell (td) contains locations
-          final locationCell = cells[1];
-
-          // Skip if it says "Location data not yet available" or "Not available"
-          final cellText = locationCell.text.trim();
-          if (cellText.contains('not yet available') ||
-              cellText.contains('Not available in this game')) {
-            continue;
-          }
-
-          // Extract location names from links or text
-          final locationLinks = locationCell.querySelectorAll('a');
-          final List<String> locations = [];
-
-          if (locationLinks.isNotEmpty) {
-            for (var link in locationLinks) {
-              final locationName = link.text.trim();
-              if (locationName.isNotEmpty) {
-                locations.add(locationName);
-              }
-            }
-          } else {
-            // If no links, just get the text
-            if (cellText.isNotEmpty) {
-              locations.add(cellText);
-            }
-          }
-
-          // Add encounters for all game versions in this row
-          if (gameNames.isNotEmpty && locations.isNotEmpty) {
-            final gameKey = gameNames.join('/');
-            encounters[gameKey] = locations;
-            print('Added encounter: $gameKey -> ${locations.length} locations');
-          }
+        // Add encounters for all game versions in this row
+        if (gameNames.isNotEmpty && locations.isNotEmpty) {
+          final gameKey = gameNames.join('/');
+          encounters[gameKey] = locations;
+          print('Added encounter: $gameKey -> ${locations.length} locations');
         }
       }
 
