@@ -147,12 +147,25 @@ class _SearchState extends State<Search> {
   }
 
   Widget getPokemonWidget() {
+    // Build a fresh list of location widgets
+    final List<Widget> locationWidgets = [];
+
     for (var i = 0; i < pokemonLocations.length; i++) {
-      listOfWidgets.add(Text(pokemonLocations[i]));
-      listOfWidgets.add(const Padding(padding: EdgeInsets.all(5)));
+      locationWidgets.add(
+        Text(
+          pokemonLocations[i],
+          style: const TextStyle(fontSize: 14),
+        ),
+      );
+      if (i < pokemonLocations.length - 1) {
+        locationWidgets.add(const SizedBox(height: 8));
+      }
     }
 
-    return Column(children: listOfWidgets);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: locationWidgets,
+    );
   }
 
   Widget getEggs() {
