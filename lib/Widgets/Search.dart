@@ -297,12 +297,35 @@ class _SearchState extends State<Search> {
     return _pokemonData == null
         ? AdvancedSearch(
             searchItems: names,
-            maxElementsToDisplay: 5,
+            maxElementsToDisplay: 10,
             onItemTap: (index, text) {
-              // Handle item selection
+              // When user taps a suggestion, submit the search
+              setState(() {
+                pokemon = text;
+                isLoading = true;
+              });
+
+              _makeRequest(text).then((data) {
+                if (mounted) {
+                  setState(() {
+                    _pokemonData = data;
+                    isLoading = false;
+                  });
+                }
+              }).catchError((error) {
+                if (mounted) {
+                  setState(() {
+                    errorMessage = 'Failed to load Pokemon: $error';
+                    isLoading = false;
+                  });
+                }
+              });
             },
             onSearchClear: () {
-              // Handle search clear
+              setState(() {
+                pokemon = null;
+                _pokemonData = null;
+              });
             },
             onSubmitted: (value, value2) {
               setState(() {
@@ -327,7 +350,7 @@ class _SearchState extends State<Search> {
               });
             },
             onEditingProgress: (value, value2) {
-              // Handle editing progress
+              // Update search query as user types
             },
           )
         : SizedBox(

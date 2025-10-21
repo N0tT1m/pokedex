@@ -90,31 +90,23 @@ class _HomeState extends State<Home> {
           TabData(
               iconData: Icons.home,
               title: "Home",
-              onclick: () {
-                final FancyBottomNavigationState fState = bottomNavigationKey
-                    .currentState as FancyBottomNavigationState;
-                fState.setPage(2);
-              }),
+              onclick: () {}),
           TabData(
               iconData: Icons.search,
               title: "Search",
-              onclick: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => const Search()))),
+              onclick: () {}),
           TabData(
               iconData: Icons.category,
               title: "Generations",
-              onclick: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => const Generations()))),
+              onclick: () {}),
           TabData(
               iconData: Icons.newspaper,
               title: "News",
-              onclick: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => const News()))),
+              onclick: () {}),
           TabData(
               iconData: Icons.calculate,
               title: "IV/EV Calc",
-              onclick: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => const IVEVCalculator()))),
+              onclick: () {}),
         ],
         activeIconColor: Theme.of(context).colorScheme.secondary,
         inactiveIconColor: Theme.of(context).colorScheme.primary,
@@ -153,11 +145,24 @@ class _HomeState extends State<Home> {
             Generations(),
           ],
         );
-      default:
+      case 3:
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             News(),
+          ],
+        );
+      case 4:
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            IVEVCalculator(),
+          ],
+        );
+      default:
+        return Column(
+          children: <Widget>[
+            HomePage(),
           ],
         );
     }
