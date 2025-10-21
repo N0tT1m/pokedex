@@ -18,19 +18,26 @@ class PokemonDBService {
 
     try {
       final url = '$_baseUrl/pokedex/${pokemonName.toLowerCase()}';
+      print('PokemonDBService: Fetching from $url');
+
       final response = await Requests.get(url);
+      print('PokemonDBService: Response status code: ${response.statusCode}');
 
       if (response.statusCode != 200) {
         throw Exception('Failed to load Pokemon page: ${response.statusCode}');
       }
 
       final document = html_parser.parse(response.content());
+      print('PokemonDBService: HTML parsed, looking for encounters...');
+
       final encounters = _parseEncounters(document);
+      print('PokemonDBService: Found ${encounters.length} game entries');
 
       _cache[cacheKey] = encounters;
       return encounters;
     } catch (e) {
       print('Error fetching encounter data for $pokemonName: $e');
+      print('Stack trace: ${StackTrace.current}');
       return {};
     }
   }
@@ -39,58 +46,83 @@ class PokemonDBService {
     final Map<String, List<String>> encounters = {};
 
     try {
-      // Find the locations section
-      final locationsDiv = document.querySelector('#dex-locations');
-      if (locationsDiv == null) return {};
+      // Find all vitals-table tables (location data is in one of these)
+      final tables = document.querySelectorAll('table.vitals-table');
 
-      // Find the table with location data
-      final table = locationsDiv.querySelector('table');
-      if (table == null) return {};
+      for (var table in tables) {
+        final rows = table.querySelectorAll('tbody tr');
 
-      final rows = table.querySelectorAll('tbody tr');
+        for (var row in rows) {
+          final cells = row.querySelectorAll('th, td');
+          if (cells.length < 2) continue;
 
-      for (var row in rows) {
-        final cells = row.querySelectorAll('td');
-        if (cells.length < 2) continue;
+          // First cell (th) contains the game version spans
+          final gameCell = cells[0];
+          final gameSpans = gameCell.querySelectorAll('span.igame');
 
-        // First cell contains the game version
-        final gameCell = cells[0];
-        String? gameVersion = gameCell.text.trim();
-
-        // Second cell contains locations
-        final locationCell = cells[1];
-
-        // Skip if it says "Location data not yet available"
-        if (locationCell.text.contains('Location data not yet available')) {
-          continue;
-        }
-
-        // Extract location names from links or text
-        final locationLinks = locationCell.querySelectorAll('a');
-        final List<String> locations = [];
-
-        if (locationLinks.isNotEmpty) {
-          for (var link in locationLinks) {
-            final locationName = link.text.trim();
-            if (locationName.isNotEmpty) {
-              locations.add(locationName);
+          // Extract game names from the span class names
+          List<String> gameNames = [];
+          for (var span in gameSpans) {
+            final className = span.className;
+            // Extract game name from class like "igame sword" -> "Sword"
+            final gameParts = className.split(' ');
+            if (gameParts.length > 1) {
+              String gameName = gameParts[1]
+                  .split('-')
+                  .map((word) => word[0].toUpperCase() + word.substring(1))
+                  .join(' ');
+              gameNames.add(gameName);
             }
           }
-        } else {
-          // If no links, just get the text
-          final locationText = locationCell.text.trim();
-          if (locationText.isNotEmpty &&
-              !locationText.contains('not yet available')) {
-            locations.add(locationText);
+
+          // If no game spans found, try getting text directly
+          if (gameNames.isEmpty) {
+            final gameText = gameCell.text.trim();
+            if (gameText.isNotEmpty) {
+              gameNames = [gameText];
+            }
+          }
+
+          // Second cell (td) contains locations
+          final locationCell = cells[1];
+
+          // Skip if it says "Location data not yet available" or "Not available"
+          final cellText = locationCell.text.trim();
+          if (cellText.contains('not yet available') ||
+              cellText.contains('Not available in this game')) {
+            continue;
+          }
+
+          // Extract location names from links or text
+          final locationLinks = locationCell.querySelectorAll('a');
+          final List<String> locations = [];
+
+          if (locationLinks.isNotEmpty) {
+            for (var link in locationLinks) {
+              final locationName = link.text.trim();
+              if (locationName.isNotEmpty) {
+                locations.add(locationName);
+              }
+            }
+          } else {
+            // If no links, just get the text
+            if (cellText.isNotEmpty) {
+              locations.add(cellText);
+            }
+          }
+
+          // Add encounters for all game versions in this row
+          if (gameNames.isNotEmpty && locations.isNotEmpty) {
+            final gameKey = gameNames.join('/');
+            encounters[gameKey] = locations;
           }
         }
-
-        if (gameVersion.isNotEmpty && locations.isNotEmpty) {
-          encounters[gameVersion] = locations;
-        }
       }
+
+      print('PokemonDBService: Parsed encounters: $encounters');
     } catch (e) {
       print('Error parsing encounter data: $e');
+      print('Stack trace: ${StackTrace.current}');
     }
 
     return encounters;

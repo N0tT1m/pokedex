@@ -101,20 +101,30 @@ class _SearchState extends State<Search> {
 
       // Fetch encounter locations from PokemonDB
       try {
+        print('Fetching encounter data for: $apiName');
         final encounterData = await PokemonDBService.getEncounterLocations(apiName);
+        print('Encounter data received: ${encounterData.keys.length} games found');
         pokemonLocations = [];
 
         // Format encounter data: "Game Version: Location1, Location2, ..."
         for (var entry in encounterData.entries) {
           final game = entry.key;
           final locations = entry.value;
+          print('Game: $game, Locations: ${locations.length}');
           if (locations.isNotEmpty) {
             pokemonLocations.add('$game: ${locations.join(', ')}');
           }
         }
+
+        print('Total location strings created: ${pokemonLocations.length}');
+
+        // If no data from PokemonDB, add a message
+        if (pokemonLocations.isEmpty) {
+          pokemonLocations.add('Location data unavailable from PokemonDB');
+        }
       } catch (e) {
         print('Could not fetch encounter locations from PokemonDB: $e');
-        pokemonLocations = [];
+        pokemonLocations = ['Error loading location data: $e'];
       }
 
       // Update formattedData with locations
