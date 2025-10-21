@@ -115,11 +115,15 @@ class PokemonDBService {
           if (gameNames.isNotEmpty && locations.isNotEmpty) {
             final gameKey = gameNames.join('/');
             encounters[gameKey] = locations;
+            print('Added encounter: $gameKey -> ${locations.length} locations');
           }
         }
       }
 
-      print('PokemonDBService: Parsed encounters: $encounters');
+      print('PokemonDBService: Total parsed encounters: ${encounters.length}');
+      for (var entry in encounters.entries) {
+        print('  ${entry.key}: ${entry.value.take(3).join(", ")}${entry.value.length > 3 ? "..." : ""}');
+      }
     } catch (e) {
       print('Error parsing encounter data: $e');
       print('Stack trace: ${StackTrace.current}');

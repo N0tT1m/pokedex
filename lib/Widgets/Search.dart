@@ -120,11 +120,12 @@ class _SearchState extends State<Search> {
 
         // If no data from PokemonDB, add a message
         if (pokemonLocations.isEmpty) {
-          pokemonLocations.add('Location data unavailable from PokemonDB');
+          pokemonLocations.add('No location data available');
         }
       } catch (e) {
         print('Could not fetch encounter locations from PokemonDB: $e');
-        pokemonLocations = ['Error loading location data: $e'];
+        // Don't show the full error to user, just a simple message
+        pokemonLocations = ['Unable to load location data'];
       }
 
       // Update formattedData with locations
