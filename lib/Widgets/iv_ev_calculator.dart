@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../services/pokeapi_service.dart';
+import '../services/pokemon_data_formatter.dart';
 
 /// IV/EV Calculator Widget for Pokemon training
 /// Supports all generations with proper stat calculations
@@ -11,6 +13,12 @@ class IVEVCalculator extends StatefulWidget {
 }
 
 class _IVEVCalculatorState extends State<IVEVCalculator> {
+  // Pokemon selection
+  String? _selectedPokemon;
+  List<String> _pokemonNames = [];
+  bool _isLoadingPokemon = true;
+  Map<String, dynamic>? _pokemonData;
+
   // Controllers for stat inputs
   final Map<String, TextEditingController> _baseStatControllers = {
     'HP': TextEditingController(),
@@ -52,14 +60,95 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
 
   Map<String, int> _calculatedStats = {};
   int _totalEVs = 0;
+  Map<String, int> _evYield = {};
 
   @override
   void initState() {
     super.initState();
+    _loadPokemonList();
     // Add listeners to EV controllers to track total EVs
     _evControllers.forEach((key, controller) {
       controller.addListener(_updateTotalEVs);
     });
+  }
+
+  Future<void> _loadPokemonList() async {
+    try {
+      final pokemonList = await PokeApiService.getPokemonList(limit: 1025);
+      if (mounted) {
+        setState(() {
+          _pokemonNames = pokemonList
+              .map((p) => PokemonDataFormatter.capitalize(p['name']))
+              .toList();
+          _isLoadingPokemon = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading Pokemon list: $e');
+      if (mounted) {
+        setState(() {
+          _isLoadingPokemon = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _loadPokemonData(String pokemonName) async {
+    try {
+      final data = await PokeApiService.getPokemon(pokemonName.toLowerCase());
+      if (mounted) {
+        setState(() {
+          _pokemonData = data;
+          _populateBaseStats(data);
+          _extractEVYield(data);
+        });
+      }
+    } catch (e) {
+      print('Error loading Pokemon data: $e');
+    }
+  }
+
+  void _populateBaseStats(Map<String, dynamic> data) {
+    final stats = data['stats'] as List;
+    final statMap = {
+      'hp': 'HP',
+      'attack': 'Attack',
+      'defense': 'Defense',
+      'special-attack': 'Sp. Atk',
+      'special-defense': 'Sp. Def',
+      'speed': 'Speed',
+    };
+
+    for (var stat in stats) {
+      final statName = stat['stat']['name'];
+      final baseStat = stat['base_stat'];
+      final mappedName = statMap[statName];
+      if (mappedName != null) {
+        _baseStatControllers[mappedName]?.text = baseStat.toString();
+      }
+    }
+  }
+
+  void _extractEVYield(Map<String, dynamic> data) {
+    final stats = data['stats'] as List;
+    final statMap = {
+      'hp': 'HP',
+      'attack': 'Attack',
+      'defense': 'Defense',
+      'special-attack': 'Sp. Atk',
+      'special-defense': 'Sp. Def',
+      'speed': 'Speed',
+    };
+
+    _evYield.clear();
+    for (var stat in stats) {
+      final statName = stat['stat']['name'];
+      final effort = stat['effort'];
+      final mappedName = statMap[statName];
+      if (mappedName != null && effort > 0) {
+        _evYield[mappedName] = effort;
+      }
+    }
   }
 
   @override
@@ -241,9 +330,101 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Calculate final stats based on Base Stats, IVs, EVs, Level, and Nature.',
+              'Select a Pokemon or manually enter base stats to calculate final stats.',
               style: TextStyle(fontSize: 14, color: Colors.grey),
             ),
+            const SizedBox(height: 16),
+
+            // Pokemon Selection
+            if (_isLoadingPokemon)
+              const Center(child: CircularProgressIndicator())
+            else
+              Autocomplete<String>(
+                optionsBuilder: (TextEditingValue textEditingValue) {
+                  if (textEditingValue.text.isEmpty) {
+                    return const Iterable<String>.empty();
+                  }
+                  return _pokemonNames.where((String option) {
+                    return option.toLowerCase().contains(
+                      textEditingValue.text.toLowerCase(),
+                    );
+                  }).take(10);
+                },
+                onSelected: (String selection) {
+                  setState(() {
+                    _selectedPokemon = selection;
+                  });
+                  _loadPokemonData(selection);
+                },
+                fieldViewBuilder: (
+                  BuildContext context,
+                  TextEditingController fieldTextEditingController,
+                  FocusNode fieldFocusNode,
+                  VoidCallback onFieldSubmitted,
+                ) {
+                  return TextField(
+                    controller: fieldTextEditingController,
+                    focusNode: fieldFocusNode,
+                    decoration: InputDecoration(
+                      labelText: 'Select Pokemon',
+                      hintText: 'Start typing Pokemon name...',
+                      prefixIcon: const Icon(Icons.catching_pokemon),
+                      border: const OutlineInputBorder(),
+                      suffixIcon: fieldTextEditingController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                fieldTextEditingController.clear();
+                                setState(() {
+                                  _selectedPokemon = null;
+                                  _pokemonData = null;
+                                  _evYield.clear();
+                                });
+                              },
+                            )
+                          : null,
+                    ),
+                  );
+                },
+              ),
+            const SizedBox(height: 16),
+
+            // EV Yield Information
+            if (_evYield.isNotEmpty)
+              Card(
+                color: Colors.green.withOpacity(0.1),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'EV Yield (Defeating this Pokemon gives):',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      const SizedBox(height: 8),
+                      ..._evYield.entries.map((entry) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2.0),
+                          child: Text(
+                            '${entry.key}: +${entry.value} EV',
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        );
+                      }).toList(),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Defeat ${_selectedPokemon ?? 'this Pokemon'} to train these stats!',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             const SizedBox(height: 16),
 
             // Level and Nature inputs
@@ -380,6 +561,8 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 8),
+                    Text('• Select a Pokemon to auto-fill base stats'),
+                    Text('• EV Yield shows what EVs you gain from defeating that Pokemon'),
                     Text('• IVs range from 0-31 (individual values)'),
                     Text('• EVs range from 0-252 per stat, 510 total'),
                     Text('• Each 4 EVs = 1 stat point at level 100'),

@@ -1,4 +1,3 @@
-import 'package:advanced_search/advanced_search.dart';
 import 'package:flutter/material.dart';
 import '../services/pokeapi_service.dart';
 import '../services/pokemon_data_formatter.dart';
@@ -295,63 +294,174 @@ class _SearchState extends State<Search> {
     }
 
     return _pokemonData == null
-        ? AdvancedSearch(
-            searchItems: names,
-            maxElementsToDisplay: 10,
-            onItemTap: (index, text) {
-              // When user taps a suggestion, submit the search
-              setState(() {
-                pokemon = text;
-                isLoading = true;
-              });
+        ? Container(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                const Text(
+                  'Search for a Pokemon',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Autocomplete<String>(
+                  optionsBuilder: (TextEditingValue textEditingValue) {
+                    if (textEditingValue.text.isEmpty) {
+                      return const Iterable<String>.empty();
+                    }
+                    return names.where((String option) {
+                      return option.toLowerCase().contains(
+                        textEditingValue.text.toLowerCase(),
+                      );
+                    }).take(10);
+                  },
+                  onSelected: (String selection) {
+                    setState(() {
+                      pokemon = selection;
+                      isLoading = true;
+                    });
 
-              _makeRequest(text).then((data) {
-                if (mounted) {
-                  setState(() {
-                    _pokemonData = data;
-                    isLoading = false;
-                  });
-                }
-              }).catchError((error) {
-                if (mounted) {
-                  setState(() {
-                    errorMessage = 'Failed to load Pokemon: $error';
-                    isLoading = false;
-                  });
-                }
-              });
-            },
-            onSearchClear: () {
-              setState(() {
-                pokemon = null;
-                _pokemonData = null;
-              });
-            },
-            onSubmitted: (value, value2) {
-              setState(() {
-                pokemon = value;
-                isLoading = true;
-              });
+                    _makeRequest(selection).then((data) {
+                      if (mounted) {
+                        setState(() {
+                          _pokemonData = data;
+                          isLoading = false;
+                        });
+                      }
+                    }).catchError((error) {
+                      if (mounted) {
+                        setState(() {
+                          errorMessage = 'Failed to load Pokemon: $error';
+                          isLoading = false;
+                        });
+                      }
+                    });
+                  },
+                  fieldViewBuilder: (
+                    BuildContext context,
+                    TextEditingController fieldTextEditingController,
+                    FocusNode fieldFocusNode,
+                    VoidCallback onFieldSubmitted,
+                  ) {
+                    return TextField(
+                      controller: fieldTextEditingController,
+                      focusNode: fieldFocusNode,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        hintText: 'Enter Pokemon name...',
+                        hintStyle: const TextStyle(color: Colors.white54),
+                        prefixIcon: const Icon(Icons.search, color: Colors.white),
+                        suffixIcon: fieldTextEditingController.text.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear, color: Colors.white),
+                                onPressed: () {
+                                  fieldTextEditingController.clear();
+                                  setState(() {
+                                    pokemon = null;
+                                    _pokemonData = null;
+                                  });
+                                },
+                              )
+                            : null,
+                        filled: true,
+                        fillColor: Colors.red.withOpacity(0.3),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: const BorderSide(color: Colors.white),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: const BorderSide(color: Colors.white, width: 2),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: const BorderSide(color: Colors.red, width: 2),
+                        ),
+                      ),
+                      onSubmitted: (String value) {
+                        if (value.isNotEmpty) {
+                          setState(() {
+                            pokemon = value;
+                            isLoading = true;
+                          });
 
-              _makeRequest(value).then((data) {
-                if (mounted) {
-                  setState(() {
-                    _pokemonData = data;
-                    isLoading = false;
-                  });
-                }
-              }).catchError((error) {
-                if (mounted) {
-                  setState(() {
-                    errorMessage = 'Failed to load Pokemon: $error';
-                    isLoading = false;
-                  });
-                }
-              });
-            },
-            onEditingProgress: (value, value2) {
-              // Update search query as user types
-            },
+                          _makeRequest(value).then((data) {
+                            if (mounted) {
+                              setState(() {
+                                _pokemonData = data;
+                                isLoading = false;
+                              });
+                            }
+                          }).catchError((error) {
+                            if (mounted) {
+                              setState(() {
+                                errorMessage = 'Failed to load Pokemon: $error';
+                                isLoading = false;
+                              });
+                            }
+                          });
+                        }
+                      },
+                    );
+                  },
+                  optionsViewBuilder: (
+                    BuildContext context,
+                    AutocompleteOnSelected<String> onSelected,
+                    Iterable<String> options,
+                  ) {
+                    return Align(
+                      alignment: Alignment.topLeft,
+                      child: Material(
+                        elevation: 4.0,
+                        color: const Color.fromRGBO(99, 118, 184, 1),
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 300),
+                          child: ListView.builder(
+                            padding: const EdgeInsets.all(8.0),
+                            itemCount: options.length,
+                            shrinkWrap: true,
+                            itemBuilder: (BuildContext context, int index) {
+                              final String option = options.elementAt(index);
+                              return InkWell(
+                                onTap: () {
+                                  onSelected(option);
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(16.0),
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: Colors.white.withOpacity(0.2),
+                                      ),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    option,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 20),
+                if (isLoading)
+                  const CircularProgressIndicator(
+                    color: Colors.red,
+                  ),
+              ],
+            ),
           )
         : SizedBox(
             height: MediaQuery.of(context).size.height - 130,
