@@ -153,12 +153,7 @@ class _HomeState extends State<Home> {
           ],
         );
       case 4:
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            IVEVCalculator(),
-          ],
-        );
+        return const IVEVCalculator();
       default:
         return Column(
           children: <Widget>[

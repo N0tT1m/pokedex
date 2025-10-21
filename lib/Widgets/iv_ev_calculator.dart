@@ -588,16 +588,36 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('IV/EV Calculator'),
-        backgroundColor: Colors.red,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      child: Column(
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            color: Colors.red,
+            child: const Row(
+              children: [
+                Icon(Icons.calculate, color: Colors.white),
+                SizedBox(width: 8),
+                Text(
+                  'IV/EV Calculator',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Scrollable content
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
             const Text(
               'Pokemon Training Calculator',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -920,8 +940,11 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
                 ),
               ),
             ),
-          ],
-        ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
