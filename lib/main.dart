@@ -120,6 +120,10 @@ class _HomeState extends State<Home> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.grid_on),
+            label: 'Pokedex',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.search),
             label: 'Search',
           ),
@@ -149,17 +153,19 @@ class _HomeState extends State<Home> {
           ],
         );
       case 1:
+        return const Generations();
+      case 2:
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
            Search(),
           ],
         );
-      case 2:
-        return const MyPokemon();
       case 3:
-        return const ReverseIVCalculator();
+        return const MyPokemon();
       case 4:
+        return const ReverseIVCalculator();
+      case 5:
         return const IVEVCalculator();
       default:
         return Column(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/pokeapi_service.dart';
 import '../services/pokemon_data_formatter.dart';
+import '../services/pokemondb_service.dart';
 
 class Search extends StatefulWidget {
   const Search({Key? key}) : super(key: key);
@@ -98,27 +99,21 @@ class _SearchState extends State<Search> {
         evolutionData,
       );
 
-      // Fetch encounter locations
+      // Fetch encounter locations from PokemonDB
       try {
-        final encounters = await PokeApiService.getPokemonEncounters(apiName);
-        pokemonLocations = encounters
-            .map((e) {
-              final locationName = PokemonDataFormatter.capitalize(
-                e['location_area']['name'].replaceAll('-', ' '),
-              );
-              final versionDetails = e['version_details'] as List;
-              if (versionDetails.isNotEmpty) {
-                final gameName = PokemonDataFormatter.capitalize(
-                  versionDetails[0]['version']['name'],
-                );
-                return '$gameName: $locationName';
-              }
-              return locationName;
-            })
-            .toList()
-            .cast<String>();
+        final encounterData = await PokemonDBService.getEncounterLocations(apiName);
+        pokemonLocations = [];
+
+        // Format encounter data: "Game Version: Location1, Location2, ..."
+        for (var entry in encounterData.entries) {
+          final game = entry.key;
+          final locations = entry.value;
+          if (locations.isNotEmpty) {
+            pokemonLocations.add('$game: ${locations.join(', ')}');
+          }
+        }
       } catch (e) {
-        print('Could not fetch encounter locations: $e');
+        print('Could not fetch encounter locations from PokemonDB: $e');
         pokemonLocations = [];
       }
 

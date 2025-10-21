@@ -63,11 +63,7 @@ dev_dependencies:
   build_runner: ^2.4.7
 
 dependency_overrides:
-  wakelock: ^0.6.2
-  wakelock_windows: ^0.2.1
-  wakelock_macos: ^0.4.0
-  wakelock_web: ^0.4.0
-  wakelock_platform_interface: ^0.3.0
+  
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
