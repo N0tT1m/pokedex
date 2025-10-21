@@ -241,6 +241,12 @@ class PokemonDataFormatter {
     }).join(' ');
   }
 
+  /// Converts display name back to API format (e.g., "Mr Mime" -> "mr-mime")
+  static String toApiFormat(String displayName) {
+    if (displayName.isEmpty) return displayName;
+    return displayName.toLowerCase().replaceAll(' ', '-');
+  }
+
   /// Converts meters to feet and inches
   static String _metersToFeet(double meters) {
     final totalInches = meters * 39.3701;

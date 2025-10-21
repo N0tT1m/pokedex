@@ -74,9 +74,12 @@ class _SearchState extends State<Search> {
       listOfEvolution.clear();
       evolutions.clear();
 
+      // Convert display name to API format (e.g., "Mr Mime" -> "mr-mime")
+      final apiName = PokemonDataFormatter.toApiFormat(pokemon);
+
       // Fetch data from PokeAPI
-      final pokemonData = await PokeApiService.getPokemon(pokemon.toLowerCase());
-      final speciesData = await PokeApiService.getPokemonSpecies(pokemon.toLowerCase());
+      final pokemonData = await PokeApiService.getPokemon(apiName);
+      final speciesData = await PokeApiService.getPokemonSpecies(apiName);
 
       // Get evolution chain
       Map<String, dynamic>? evolutionData;
@@ -97,7 +100,7 @@ class _SearchState extends State<Search> {
 
       // Fetch encounter locations
       try {
-        final encounters = await PokeApiService.getPokemonEncounters(pokemon.toLowerCase());
+        final encounters = await PokeApiService.getPokemonEncounters(apiName);
         pokemonLocations = encounters
             .map((e) {
               final locationName = PokemonDataFormatter.capitalize(
