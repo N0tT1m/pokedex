@@ -4,6 +4,7 @@ import 'package:pokedex/Widgets/HomePage.dart';
 import 'package:pokedex/Widgets/News.dart';
 import 'package:pokedex/Widgets/Search.dart';
 import 'package:pokedex/Widgets/Generations.dart';
+import 'package:pokedex/Widgets/game_version_filter.dart';
 import 'package:pokedex/Widgets/iv_ev_calculator.dart';
 import 'package:pokedex/Widgets/reverse_iv_calculator.dart';
 import 'package:pokedex/Widgets/my_pokemon.dart';
@@ -120,8 +121,8 @@ class _HomeState extends State<Home> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.grid_on),
-            label: 'Pokedex',
+            icon: Icon(Icons.videogame_asset),
+            label: 'By Game',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
@@ -153,7 +154,7 @@ class _HomeState extends State<Home> {
           ],
         );
       case 1:
-        return const Generations();
+        return const GameVersionFilter();
       case 2:
         return Column(
           mainAxisSize: MainAxisSize.min,

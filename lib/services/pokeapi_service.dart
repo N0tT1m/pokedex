@@ -272,4 +272,56 @@ class PokeApiService {
   static int getCacheSize() {
     return _cache.length;
   }
+
+  /// Fetches version group information (game versions)
+  /// [identifier] - Version group name or ID (e.g., 'sword-shield', 'red-blue')
+  /// Returns version group data including available pokedexes
+  static Future<Map<String, dynamic>> getVersionGroup(String identifier) async {
+    final cacheKey = 'version_group_$identifier';
+
+    if (_cache.containsKey(cacheKey)) {
+      return Map<String, dynamic>.from(_cache[cacheKey]);
+    }
+
+    try {
+      final response = await Requests.get(
+        '$_baseUrl/version-group/${identifier.toLowerCase()}',
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.json();
+        _cache[cacheKey] = data;
+        return data;
+      } else {
+        throw Exception('Failed to load version group: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching version group: $e');
+    }
+  }
+
+  /// Fetches pokedex information
+  /// [id] - Pokedex ID or name (e.g., 1 for 'national', 2 for 'kanto')
+  /// Returns pokedex data including all Pokemon entries
+  static Future<Map<String, dynamic>> getPokedex(int id) async {
+    final cacheKey = 'pokedex_$id';
+
+    if (_cache.containsKey(cacheKey)) {
+      return Map<String, dynamic>.from(_cache[cacheKey]);
+    }
+
+    try {
+      final response = await Requests.get('$_baseUrl/pokedex/$id');
+
+      if (response.statusCode == 200) {
+        final data = response.json();
+        _cache[cacheKey] = data;
+        return data;
+      } else {
+        throw Exception('Failed to load pokedex: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching pokedex: $e');
+    }
+  }
 }
