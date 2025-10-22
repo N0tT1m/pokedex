@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/pokeapi_service.dart';
+import '../services/pokemondb_service.dart';
 import '../services/pokemon_data_formatter.dart';
 
 /// Widget for finding Pokemon by EV yields and game version
@@ -17,29 +18,29 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
   bool isFiltering = false;
   String? errorMessage;
 
-  // Available game versions
+  // Available game versions (matching PokemonDB format)
   final Map<String, String> gameVersions = {
-    'red-blue': 'Red/Blue',
+    'red-blue': 'Red',
     'yellow': 'Yellow',
-    'gold-silver': 'Gold/Silver',
+    'gold-silver': 'Gold',
     'crystal': 'Crystal',
-    'ruby-sapphire': 'Ruby/Sapphire',
+    'ruby-sapphire': 'Ruby',
     'emerald': 'Emerald',
-    'firered-leafgreen': 'FireRed/LeafGreen',
-    'diamond-pearl': 'Diamond/Pearl',
+    'firered-leafgreen': 'Firered',
+    'diamond-pearl': 'Diamond',
     'platinum': 'Platinum',
-    'heartgold-soulsilver': 'HeartGold/SoulSilver',
-    'black-white': 'Black/White',
-    'black-2-white-2': 'Black 2/White 2',
-    'x-y': 'X/Y',
-    'omega-ruby-alpha-sapphire': 'Omega Ruby/Alpha Sapphire',
-    'sun-moon': 'Sun/Moon',
-    'ultra-sun-ultra-moon': 'Ultra Sun/Ultra Moon',
-    'lets-go-pikachu-lets-go-eevee': 'Let\'s Go Pikachu/Eevee',
-    'sword-shield': 'Sword/Shield',
-    'brilliant-diamond-and-shining-pearl': 'Brilliant Diamond/Shining Pearl',
-    'legends-arceus': 'Legends: Arceus',
-    'scarlet-violet': 'Scarlet/Violet',
+    'heartgold-soulsilver': 'Heartgold',
+    'black-white': 'Black',
+    'black-2-white-2': 'Black 2',
+    'x-y': 'X',
+    'omega-ruby-alpha-sapphire': 'Omega Ruby',
+    'sun-moon': 'Sun',
+    'ultra-sun-ultra-moon': 'Ultra Sun',
+    'lets-go-pikachu-lets-go-eevee': 'Lets Go Pikachu',
+    'sword-shield': 'Sword',
+    'brilliant-diamond-and-shining-pearl': 'Brilliant Diamond',
+    'legends-arceus': 'Legends',
+    'scarlet-violet': 'Scarlet',
   };
 
   // EV stat types
@@ -162,72 +163,27 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
     });
 
     try {
-      Set<int>? availablePokemonIds;
+      // Convert selected game keys to display names for matching
+      final selectedGameNames = selectedVersions.map((key) => gameVersions[key]!).toSet();
 
-      // Filter by game version if selected
-      if (selectedVersions.isNotEmpty) {
-        availablePokemonIds = {};
-        for (String version in selectedVersions) {
-          final versionData = await PokeApiService.getVersionGroup(version);
-          final List<dynamic> pokemonEntries = versionData['pokedexes'] ?? [];
+      List<Map<String, dynamic>> filtered = [];
 
-          for (var pokedexEntry in pokemonEntries) {
-            final pokedexUrl = pokedexEntry['url'];
-            final pokedexId = PokeApiService.extractIdFromUrl(pokedexUrl);
-            if (pokedexId != null) {
-              final pokedexData = await PokeApiService.getPokedex(pokedexId);
-              final List<dynamic> pokemonSpecies = pokedexData['pokemon_entries'] ?? [];
-
-              for (var entry in pokemonSpecies) {
-                final speciesUrl = entry['pokemon_species']['url'];
-                final pokemonId = PokeApiService.extractIdFromUrl(speciesUrl);
-                if (pokemonId != null) {
-                  availablePokemonIds.add(pokemonId);
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // First pass: filter by game version only
-      var candidatePokemon = pokemonList.where((pokemon) {
-        if (availablePokemonIds != null && !availablePokemonIds.contains(pokemon['id'])) {
-          return false;
-        }
-        return true;
-      }).toList();
-
-      // Load EV data for all candidate Pokemon if not already loaded
-      int loadedCount = 0;
-      final totalToLoad = candidatePokemon.where((p) => (p['evYields'] as Map<String, int>).isEmpty).length;
-
-      for (var pokemon in candidatePokemon) {
+      for (var pokemon in pokemonList) {
+        // Load EV data if not already loaded
         if ((pokemon['evYields'] as Map<String, int>).isEmpty) {
           try {
             final pokemonName = pokemon['name'].toString().toLowerCase();
             final detailedData = await PokeApiService.getPokemon(pokemonName);
             pokemon['evYields'] = _extractEVYields(detailedData);
-
-            loadedCount++;
-            // Update UI every 10 Pokemon to show progress
-            if (loadedCount % 10 == 0 && mounted) {
-              setState(() {
-                // Just to trigger UI update showing progress
-              });
-            }
           } catch (e) {
             print('Error loading EV data for ${pokemon['name']}: $e');
+            continue;
           }
         }
-      }
 
-      // Second pass: filter by EV yields now that data is loaded
-      var filtered = candidatePokemon.where((pokemon) {
+        // Filter by EV yields first (faster check)
         if (selectedEVStats.isNotEmpty) {
           final evYields = pokemon['evYields'] as Map<String, int>;
-
-          // Check if this Pokemon gives EVs for any of the selected stats
           bool hasSelectedEV = false;
           for (String stat in selectedEVStats) {
             if (evYields.containsKey(stat) && evYields[stat]! > 0) {
@@ -235,14 +191,47 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
               break;
             }
           }
-
           if (!hasSelectedEV) {
-            return false;
+            continue; // Skip this Pokemon
           }
         }
 
-        return true;
-      }).toList();
+        // Filter by game version if selected (using PokemonDB)
+        if (selectedGameNames.isNotEmpty) {
+          try {
+            final encounters = await PokemonDBService.getEncounterLocations(pokemon['name'].toString().toLowerCase());
+
+            // Check if Pokemon appears in any of the selected games
+            bool foundInGame = false;
+            for (var gameKey in encounters.keys) {
+              for (var selectedGame in selectedGameNames) {
+                if (gameKey.contains(selectedGame) || selectedGame.contains(gameKey)) {
+                  foundInGame = true;
+                  break;
+                }
+              }
+              if (foundInGame) break;
+            }
+
+            if (!foundInGame) {
+              continue; // Skip this Pokemon
+            }
+          } catch (e) {
+            print('Error checking encounters for ${pokemon['name']}: $e');
+            continue;
+          }
+        }
+
+        // Pokemon passed all filters
+        filtered.add(pokemon);
+
+        // Update UI periodically to show progress
+        if (filtered.length % 10 == 0 && mounted) {
+          setState(() {
+            filteredPokemonList = filtered;
+          });
+        }
+      }
 
       if (mounted) {
         setState(() {
