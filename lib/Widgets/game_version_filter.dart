@@ -165,17 +165,18 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
           color: Colors.red,
           child: Row(
             children: [
-              const Icon(Icons.filter_list, color: Colors.white),
+              const Icon(Icons.videogame_asset, color: Colors.white),
               const SizedBox(width: 8),
-              const Text(
-                'Filter by Game Version',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              const Expanded(
+                child: Text(
+                  'Pokemon by Game',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-              const Spacer(),
               if (selectedVersions.isNotEmpty)
                 IconButton(
                   icon: const Icon(Icons.clear_all, color: Colors.white),
