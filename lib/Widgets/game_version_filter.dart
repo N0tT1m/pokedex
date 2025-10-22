@@ -187,75 +187,83 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
           ),
         ),
 
-        // Game version chips
-        Container(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Select Game Version(s):',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: gameVersions.entries.map((entry) {
-                  final isSelected = selectedVersions.contains(entry.key);
-                  return FilterChip(
-                    label: Text(entry.value),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      setState(() {
-                        if (selected) {
-                          selectedVersions.add(entry.key);
-                        } else {
-                          selectedVersions.remove(entry.key);
-                        }
-                      });
-                      _applyFilter();
-                    },
-                    selectedColor: Colors.red.withOpacity(0.3),
-                    checkmarkColor: Colors.red,
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 8),
-              if (selectedVersions.isNotEmpty)
-                Text(
-                  'Showing Pokemon from: ${selectedVersions.map((v) => gameVersions[v]).join(', ')}',
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-            ],
-          ),
-        ),
-
-        const Divider(),
-
-        // Pokemon count
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Found ${filteredPokemonList.length} Pokemon',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              if (isFiltering)
-                const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-            ],
-          ),
-        ),
-
-        // Pokemon list
+        // Scrollable content
         Expanded(
-          child: _buildPokemonList(),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Game version chips
+                Container(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Select Game Version(s):',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: gameVersions.entries.map((entry) {
+                          final isSelected = selectedVersions.contains(entry.key);
+                          return FilterChip(
+                            label: Text(entry.value),
+                            selected: isSelected,
+                            onSelected: (selected) {
+                              setState(() {
+                                if (selected) {
+                                  selectedVersions.add(entry.key);
+                                } else {
+                                  selectedVersions.remove(entry.key);
+                                }
+                              });
+                              _applyFilter();
+                            },
+                            selectedColor: Colors.red.withOpacity(0.3),
+                            checkmarkColor: Colors.red,
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 8),
+                      if (selectedVersions.isNotEmpty)
+                        Text(
+                          'Showing Pokemon from: ${selectedVersions.map((v) => gameVersions[v]).join(', ')}',
+                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                    ],
+                  ),
+                ),
+
+                const Divider(),
+
+                // Pokemon count
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Found ${filteredPokemonList.length} Pokemon',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      if (isFiltering)
+                        const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                    ],
+                  ),
+                ),
+
+                // Pokemon list
+                _buildPokemonList(),
+              ],
+            ),
+          ),
         ),
       ],
     );
@@ -307,6 +315,8 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
     }
 
     return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(8.0),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,

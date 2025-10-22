@@ -6,8 +6,7 @@ import 'package:pokedex/Widgets/Search.dart';
 import 'package:pokedex/Widgets/Generations.dart';
 import 'package:pokedex/Widgets/game_version_filter.dart';
 import 'package:pokedex/Widgets/ev_training_finder.dart';
-import 'package:pokedex/Widgets/iv_ev_calculator.dart';
-import 'package:pokedex/Widgets/reverse_iv_calculator.dart';
+import 'package:pokedex/Widgets/calculators.dart';
 import 'package:pokedex/Widgets/my_pokemon.dart';
 import 'package:pokedex/models/saved_pokemon.dart';
 import 'package:pokedex/models/pokemon_team.dart';
@@ -127,7 +126,7 @@ class _HomeState extends State<Home> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.fitness_center),
-            label: 'EV Training',
+            label: 'EV Train',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
@@ -135,15 +134,11 @@ class _HomeState extends State<Home> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.catching_pokemon),
-            label: 'My Pokemon',
+            label: 'My Team',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calculate),
-            label: 'IV Checker',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.functions),
-            label: 'IV/EV Calc',
+            label: 'Calculators',
           ),
         ],
       ),
@@ -172,9 +167,7 @@ class _HomeState extends State<Home> {
       case 4:
         return const MyPokemon();
       case 5:
-        return const ReverseIVCalculator();
-      case 6:
-        return const IVEVCalculator();
+        return const Calculators();
       default:
         return Column(
           children: <Widget>[
