@@ -190,14 +190,40 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
         }
       }
 
-      // Filter the pokemon list
-      var filtered = pokemonList.where((pokemon) {
-        // Filter by game version
+      // First pass: filter by game version only
+      var candidatePokemon = pokemonList.where((pokemon) {
         if (availablePokemonIds != null && !availablePokemonIds.contains(pokemon['id'])) {
           return false;
         }
+        return true;
+      }).toList();
 
-        // Filter by EV yields
+      // Load EV data for all candidate Pokemon if not already loaded
+      int loadedCount = 0;
+      final totalToLoad = candidatePokemon.where((p) => (p['evYields'] as Map<String, int>).isEmpty).length;
+
+      for (var pokemon in candidatePokemon) {
+        if ((pokemon['evYields'] as Map<String, int>).isEmpty) {
+          try {
+            final pokemonName = pokemon['name'].toString().toLowerCase();
+            final detailedData = await PokeApiService.getPokemon(pokemonName);
+            pokemon['evYields'] = _extractEVYields(detailedData);
+
+            loadedCount++;
+            // Update UI every 10 Pokemon to show progress
+            if (loadedCount % 10 == 0 && mounted) {
+              setState(() {
+                // Just to trigger UI update showing progress
+              });
+            }
+          } catch (e) {
+            print('Error loading EV data for ${pokemon['name']}: $e');
+          }
+        }
+      }
+
+      // Second pass: filter by EV yields now that data is loaded
+      var filtered = candidatePokemon.where((pokemon) {
         if (selectedEVStats.isNotEmpty) {
           final evYields = pokemon['evYields'] as Map<String, int>;
 
@@ -217,19 +243,6 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
 
         return true;
       }).toList();
-
-      // Load detailed data for filtered Pokemon if not already loaded
-      for (var pokemon in filtered) {
-        if ((pokemon['evYields'] as Map<String, int>).isEmpty) {
-          try {
-            final pokemonName = pokemon['name'].toString().toLowerCase();
-            final detailedData = await PokeApiService.getPokemon(pokemonName);
-            pokemon['evYields'] = _extractEVYields(detailedData);
-          } catch (e) {
-            print('Error loading EV data for ${pokemon['name']}: $e');
-          }
-        }
-      }
 
       if (mounted) {
         setState(() {
