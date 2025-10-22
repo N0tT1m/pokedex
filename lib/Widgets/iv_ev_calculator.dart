@@ -255,6 +255,16 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
     });
   }
 
+  /// Check if the selected game uses the modern EV system (Gen 3+)
+  /// Gen 1-2 used "Stat Experience" instead
+  bool _isModernEVSystem() {
+    final gen1And2Games = [
+      'Red/Blue/Yellow',
+      'Gold/Silver/Crystal',
+    ];
+    return !gen1And2Games.contains(_selectedGame);
+  }
+
   Widget _buildStatRow(String statName) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -683,8 +693,8 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
               ),
             const SizedBox(height: 16),
 
-            // EV Yield Information
-            if (_evYield.isNotEmpty)
+            // EV Yield Information (only for Gen 3+ games)
+            if (_evYield.isNotEmpty && _isModernEVSystem())
               Card(
                 color: Colors.green.withOpacity(0.1),
                 child: Padding(
@@ -714,6 +724,37 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
                           fontStyle: FontStyle.italic,
                           color: Colors.grey,
                         ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+            // Gen 1-2 Notice (Stat Experience instead of EVs)
+            if (_evYield.isNotEmpty && !_isModernEVSystem())
+              Card(
+                color: Colors.orange.withOpacity(0.1),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.info_outline, color: Colors.orange, size: 20),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Stat Experience System',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.orange),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${_selectedGame} uses the Stat Experience system, not EVs. '
+                        'Defeating any Pokemon gives Stat Exp equal to its base stats. '
+                        'See the training guide below for recommended Pokemon.',
+                        style: const TextStyle(fontSize: 14),
                       ),
                     ],
                   ),
