@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:io' show Platform;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pokedex/Widgets/HomePage.dart';
 import 'package:pokedex/Widgets/News.dart';
@@ -92,13 +94,23 @@ class _HomeState extends State<Home> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+
+    // Check if running on Android (not web)
+    final bool isAndroid = !kIsWeb && Platform.isAndroid;
+
     return Scaffold(
       primary: true,
       backgroundColor: Theme.of(context).colorScheme.background,
-      body: Container(
-        decoration: BoxDecoration(color: Theme.of(context).colorScheme.background),
-        child: Center(
-          child: _getPage(currentPage),
+      body: SafeArea(
+        top: isAndroid, // Only add top padding on Android
+        bottom: false,
+        left: false,
+        right: false,
+        child: Container(
+          decoration: BoxDecoration(color: Theme.of(context).colorScheme.background),
+          child: Center(
+            child: _getPage(currentPage),
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(

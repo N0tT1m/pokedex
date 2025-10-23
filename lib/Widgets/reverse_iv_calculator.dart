@@ -368,8 +368,9 @@ class _ReverseIVCalculatorState extends State<ReverseIVCalculator> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('IV Checker'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: const Text('IV Checker', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.red,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
