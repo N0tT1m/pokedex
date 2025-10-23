@@ -38,12 +38,12 @@ class _CalculatorsState extends State<Calculators> with SingleTickerProviderStat
             unselectedLabelColor: Colors.white.withOpacity(0.7),
             tabs: const [
               Tab(
-                icon: Icon(Icons.calculate),
-                text: 'IV Checker',
-              ),
-              Tab(
                 icon: Icon(Icons.functions),
                 text: 'IV/EV Calc',
+              ),
+              Tab(
+                icon: Icon(Icons.calculate),
+                text: 'IV Checker',
               ),
             ],
           ),
