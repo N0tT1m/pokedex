@@ -783,7 +783,7 @@ class _ReverseIVCalculatorState extends State<ReverseIVCalculator> {
 
   Widget _buildEncounterLocationsCard() {
     return Card(
-      color: Colors.green.shade50,
+      color: Colors.red.shade100,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -814,7 +814,7 @@ class _ReverseIVCalculatorState extends State<ReverseIVCalculator> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
-                        color: Colors.green.shade900,
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -827,7 +827,7 @@ class _ReverseIVCalculatorState extends State<ReverseIVCalculator> {
                             location,
                             style: const TextStyle(fontSize: 12),
                           ),
-                          backgroundColor: Colors.white,
+                          backgroundColor: Colors.red,
                           padding: const EdgeInsets.symmetric(horizontal: 4),
                           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         );
