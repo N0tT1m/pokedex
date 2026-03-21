@@ -300,8 +300,8 @@ class PokeApiService {
     }
   }
 
-  /// Fetches pokedex information
-  /// [id] - Pokedex ID or name (e.g., 1 for 'national', 2 for 'kanto')
+  /// Fetches pokedex information by ID
+  /// [id] - Pokedex ID (e.g., 1 for 'national', 2 for 'kanto')
   /// Returns pokedex data including all Pokemon entries
   static Future<Map<String, dynamic>> getPokedex(int id) async {
     final cacheKey = 'pokedex_$id';
@@ -312,6 +312,31 @@ class PokeApiService {
 
     try {
       final response = await Requests.get('$_baseUrl/pokedex/$id');
+
+      if (response.statusCode == 200) {
+        final data = response.json();
+        _cache[cacheKey] = data;
+        return data;
+      } else {
+        throw Exception('Failed to load pokedex: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching pokedex: $e');
+    }
+  }
+
+  /// Fetches pokedex information by name
+  /// [name] - Pokedex name (e.g., 'kanto', 'original-sinnoh')
+  /// Returns pokedex data including all Pokemon entries
+  static Future<Map<String, dynamic>> getPokedexByName(String name) async {
+    final cacheKey = 'pokedex_$name';
+
+    if (_cache.containsKey(cacheKey)) {
+      return Map<String, dynamic>.from(_cache[cacheKey]);
+    }
+
+    try {
+      final response = await Requests.get('$_baseUrl/pokedex/$name');
 
       if (response.statusCode == 200) {
         final data = response.json();
