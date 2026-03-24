@@ -141,6 +141,18 @@ class PokemonDataFormatter {
     final heldItem = detail['held_item']?['name'];
     final minHappiness = detail['min_happiness'];
     final timeOfDay = detail['time_of_day'];
+    final minBeauty = detail['min_beauty'];
+    final minAffection = detail['min_affection'];
+    final knownMove = detail['known_move']?['name'];
+    final knownMoveType = detail['known_move_type']?['name'];
+    final location = detail['location']?['name'];
+    final needsOverworldRain = detail['needs_overworld_rain'] == true;
+    final partySpecies = detail['party_species']?['name'];
+    final partyType = detail['party_type']?['name'];
+    final relativePhysicalStats = detail['relative_physical_stats'];
+    final tradeSpecies = detail['trade_species']?['name'];
+    final turnUpsideDown = detail['turn_upside_down'] == true;
+    final gender = detail['gender'];
 
     final List<String> conditions = [];
 
@@ -149,7 +161,13 @@ class PokemonDataFormatter {
         conditions.add('Level $minLevel');
       }
       if (minHappiness != null) {
-        conditions.add('Happiness $minHappiness');
+        conditions.add('Happiness $minHappiness+');
+      }
+      if (minBeauty != null) {
+        conditions.add('Beauty $minBeauty+');
+      }
+      if (minAffection != null) {
+        conditions.add('Affection $minAffection+');
       }
       if (timeOfDay != null && timeOfDay.isNotEmpty) {
         conditions.add('at ${capitalize(timeOfDay)}');
@@ -157,18 +175,66 @@ class PokemonDataFormatter {
       if (heldItem != null) {
         conditions.add('holding ${capitalize(heldItem.replaceAll('-', ' '))}');
       }
+      if (knownMove != null) {
+        conditions.add('knowing ${capitalize(knownMove.replaceAll('-', ' '))}');
+      }
+      if (knownMoveType != null) {
+        conditions.add('knowing a ${capitalize(knownMoveType)} move');
+      }
+      if (location != null) {
+        conditions.add('at ${capitalize(location.replaceAll('-', ' '))}');
+      }
+      if (needsOverworldRain) {
+        conditions.add('while raining');
+      }
+      if (partySpecies != null) {
+        conditions.add('with ${capitalize(partySpecies.replaceAll('-', ' '))} in party');
+      }
+      if (partyType != null) {
+        conditions.add('with ${capitalize(partyType)} type in party');
+      }
+      if (relativePhysicalStats != null) {
+        if (relativePhysicalStats == 1) conditions.add('Atk > Def');
+        if (relativePhysicalStats == -1) conditions.add('Atk < Def');
+        if (relativePhysicalStats == 0) conditions.add('Atk = Def');
+      }
+      if (turnUpsideDown) {
+        conditions.add('holding console upside down');
+      }
+      if (gender != null) {
+        conditions.add(gender == 1 ? '(Female)' : '(Male)');
+      }
     } else if (trigger == 'use-item') {
       if (item != null) {
         conditions.add(capitalize(item.replaceAll('-', ' ')));
+      }
+      if (gender != null) {
+        conditions.add(gender == 1 ? '(Female)' : '(Male)');
       }
     } else if (trigger == 'trade') {
       conditions.add('Trade');
       if (heldItem != null) {
         conditions.add('holding ${capitalize(heldItem.replaceAll('-', ' '))}');
       }
+      if (tradeSpecies != null) {
+        conditions.add('for ${capitalize(tradeSpecies.replaceAll('-', ' '))}');
+      }
+    } else if (trigger == 'shed') {
+      conditions.add('Empty party slot + Poke Ball in bag');
+    } else if (trigger == 'spin') {
+      conditions.add('Spin and strike a pose');
+    } else if (trigger == 'three-critical-hits') {
+      conditions.add('Land 3 critical hits in one battle');
+    } else if (trigger == 'take-damage') {
+      conditions.add('Travel under stone bridge after taking damage');
+    } else if (trigger == 'other') {
+      conditions.add('Special condition');
     }
 
-    return conditions.isNotEmpty ? conditions.join(' ') : capitalize(trigger.replaceAll('-', ' '));
+    if (conditions.isEmpty) {
+      return capitalize(trigger.replaceAll('-', ' '));
+    }
+    return conditions.join(' ');
   }
 
   /// Formats EV yield from stats

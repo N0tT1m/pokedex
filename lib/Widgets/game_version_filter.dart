@@ -90,6 +90,8 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
       'generation': 'Generation IX',
       'games': [
         {'key': 'scarlet-violet', 'name': 'Scarlet / Violet', 'color': Colors.deepPurple},
+        {'key': 'the-teal-mask', 'name': 'The Teal Mask (DLC)', 'color': Colors.teal},
+        {'key': 'the-indigo-disk', 'name': 'The Indigo Disk (DLC)', 'color': Colors.indigo},
       ],
     },
   ];
