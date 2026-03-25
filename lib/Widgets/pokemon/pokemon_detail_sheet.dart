@@ -2,10 +2,53 @@ import 'package:flutter/material.dart';
 import '../../services/pokeapi_service.dart';
 import '../../theme/app_theme.dart';
 
+// Map of Pokemon that need a form suffix for the /pokemon/ endpoint
+const _defaultForms = <String, String>{
+  'giratina': 'giratina-altered',
+  'shaymin': 'shaymin-land',
+  'deoxys': 'deoxys-normal',
+  'wormadam': 'wormadam-plant',
+  'basculin': 'basculin-red-striped',
+  'darmanitan': 'darmanitan-standard',
+  'tornadus': 'tornadus-incarnate',
+  'thundurus': 'thundurus-incarnate',
+  'landorus': 'landorus-incarnate',
+  'keldeo': 'keldeo-ordinary',
+  'meloetta': 'meloetta-aria',
+  'meowstic': 'meowstic-male',
+  'aegislash': 'aegislash-shield',
+  'pumpkaboo': 'pumpkaboo-average',
+  'gourgeist': 'gourgeist-average',
+  'oricorio': 'oricorio-baile',
+  'lycanroc': 'lycanroc-midday',
+  'wishiwashi': 'wishiwashi-solo',
+  'minior': 'minior-red-meteor',
+  'mimikyu': 'mimikyu-disguised',
+  'toxtricity': 'toxtricity-amped',
+  'eiscue': 'eiscue-ice',
+  'indeedee': 'indeedee-male',
+  'morpeko': 'morpeko-full-belly',
+  'urshifu': 'urshifu-single-strike',
+  'basculegion': 'basculegion-male',
+  'enamorus': 'enamorus-incarnate',
+  'oinkologne': 'oinkologne-male',
+  'palafin': 'palafin-zero',
+  'tatsugiri': 'tatsugiri-curly',
+  'dudunsparce': 'dudunsparce-two-segment',
+  'gimmighoul': 'gimmighoul-full',
+  'ogerpon': 'ogerpon-teal-mask',
+  'zygarde': 'zygarde-50',
+};
+
 /// Shows a bottom sheet with Pokemon details loaded from PokeAPI.
 /// [pokemonName] should be the Pokemon's name in API format (lowercase, hyphenated).
 void showPokemonDetailSheet(BuildContext context, String pokemonName) {
-  final apiName = pokemonName.toLowerCase().replaceAll(' ', '-').replaceAll('.', '').replaceAll("'", '');
+  var apiName = pokemonName.toLowerCase().replaceAll(' ', '-').replaceAll('.', '').replaceAll("'", '');
+
+  // Use default form name if this Pokemon requires it
+  if (_defaultForms.containsKey(apiName)) {
+    apiName = _defaultForms[apiName]!;
+  }
 
   showModalBottomSheet(
     context: context,
@@ -41,6 +84,15 @@ class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> 
       final data = await PokeApiService.getPokemon(widget.apiName);
       if (mounted) setState(() { _data = data; _isLoading = false; });
     } catch (e) {
+      // If the name failed, try stripping the form suffix and using just the base name
+      final baseName = widget.apiName.split('-').first;
+      if (baseName != widget.apiName) {
+        try {
+          final data = await PokeApiService.getPokemon(baseName);
+          if (mounted) setState(() { _data = data; _isLoading = false; });
+          return;
+        } catch (_) {}
+      }
       if (mounted) setState(() { _error = 'Could not load Pokemon data'; _isLoading = false; });
     }
   }

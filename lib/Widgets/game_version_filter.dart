@@ -82,7 +82,7 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
       'generation': 'Generation VIII',
       'games': [
         {'key': 'sword-shield', 'name': 'Sword / Shield', 'color': Colors.blue},
-        {'key': 'brilliant-diamond-and-shining-pearl', 'name': 'Brilliant Diamond / Shining Pearl', 'color': Colors.lightBlue},
+        {'key': 'brilliant-diamond-shining-pearl', 'name': 'Brilliant Diamond / Shining Pearl', 'color': Colors.lightBlue},
         {'key': 'legends-arceus', 'name': 'Legends: Arceus', 'color': Colors.teal},
       ],
     },
@@ -328,7 +328,7 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white70,
+                  color: Colors.grey.shade700,
                 ),
               ),
             ),
@@ -366,7 +366,7 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
           children: [
             CircularProgressIndicator(color: Colors.red),
             SizedBox(height: 16),
-            Text('Loading Pokedex...', style: TextStyle(color: Colors.white70)),
+            Text('Loading Pokedex...', style: TextStyle(color: Colors.grey)),
           ],
         ),
       );
@@ -447,7 +447,7 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
           children: [
             CircularProgressIndicator(color: Colors.red),
             SizedBox(height: 16),
-            Text('Loading Pokemon...', style: TextStyle(color: Colors.white70)),
+            Text('Loading Pokemon...', style: TextStyle(color: Colors.grey)),
           ],
         ),
       );

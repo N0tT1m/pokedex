@@ -13,6 +13,7 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
   List<Map<String, dynamic>> _allMoves = [];
   List<Map<String, dynamic>> _filteredMoves = [];
   bool _isLoading = true;
+  String? _error;
   String _searchQuery = '';
   String? _filterType;
   String? _filterCategory;
@@ -45,7 +46,7 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
         });
       }
     } catch (e) {
-      setState(() => _isLoading = false);
+      setState(() { _error = 'Could not load moves'; _isLoading = false; });
     }
   }
 
@@ -97,6 +98,21 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
   Widget _buildMoveList() {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            const SizedBox(height: 16),
+            Text(_error!, style: const TextStyle(color: Colors.red)),
+            const SizedBox(height: 16),
+            ElevatedButton(onPressed: () { setState(() { _isLoading = true; _error = null; }); _loadMoves(); }, child: const Text('Retry')),
+          ],
+        ),
+      );
     }
 
     return Column(

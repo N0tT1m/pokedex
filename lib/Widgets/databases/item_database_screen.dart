@@ -12,6 +12,7 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
   List<Map<String, dynamic>> _allItems = [];
   List<Map<String, dynamic>> _filtered = [];
   bool _isLoading = true;
+  String? _error;
   String _searchQuery = '';
   Map<String, dynamic>? _selectedItem;
   bool _isLoadingDetail = false;
@@ -44,7 +45,7 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
         });
       }
     } catch (e) {
-      setState(() => _isLoading = false);
+      setState(() { _error = 'Could not load items'; _isLoading = false; });
     }
   }
 
@@ -128,6 +129,21 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
   Widget _buildList() {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
 
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            const SizedBox(height: 16),
+            Text(_error!, style: const TextStyle(color: Colors.red)),
+            const SizedBox(height: 16),
+            ElevatedButton(onPressed: () { setState(() { _isLoading = true; _error = null; }); _loadItems(); }, child: const Text('Retry')),
+          ],
+        ),
+      );
+    }
+
     return Column(
       children: [
         Padding(
@@ -168,7 +184,12 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
             }).toList(),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Text('${_filtered.length} items', style: TextStyle(color: Colors.grey.shade600)),
+        ),
+        const SizedBox(height: 4),
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 8),

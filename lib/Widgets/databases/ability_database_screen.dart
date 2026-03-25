@@ -12,6 +12,7 @@ class _AbilityDatabaseScreenState extends State<AbilityDatabaseScreen> {
   List<Map<String, dynamic>> _allAbilities = [];
   List<Map<String, dynamic>> _filtered = [];
   bool _isLoading = true;
+  String? _error;
   String _searchQuery = '';
   Map<String, dynamic>? _selectedAbility;
   bool _isLoadingDetail = false;
@@ -41,7 +42,7 @@ class _AbilityDatabaseScreenState extends State<AbilityDatabaseScreen> {
         });
       }
     } catch (e) {
-      setState(() => _isLoading = false);
+      setState(() { _error = 'Could not load abilities'; _isLoading = false; });
     }
   }
 
@@ -77,6 +78,21 @@ class _AbilityDatabaseScreenState extends State<AbilityDatabaseScreen> {
   Widget _buildList() {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
 
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            const SizedBox(height: 16),
+            Text(_error!, style: const TextStyle(color: Colors.red)),
+            const SizedBox(height: 16),
+            ElevatedButton(onPressed: () { setState(() { _isLoading = true; _error = null; }); _loadAbilities(); }, child: const Text('Retry')),
+          ],
+        ),
+      );
+    }
+
     return Column(
       children: [
         Padding(
@@ -98,15 +114,23 @@ class _AbilityDatabaseScreenState extends State<AbilityDatabaseScreen> {
             },
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Text('${_filtered.length} abilities', style: TextStyle(color: Colors.grey.shade600)),
+        ),
         Expanded(
           child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             itemCount: _filtered.length,
             itemBuilder: (context, index) {
               final ability = _filtered[index];
-              return ListTile(
-                title: Text(ability['displayName']),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => _loadAbilityDetail(ability['url']),
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 2),
+                child: ListTile(
+                  title: Text(ability['displayName']),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _loadAbilityDetail(ability['url']),
+                ),
               );
             },
           ),

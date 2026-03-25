@@ -291,26 +291,38 @@ class _SearchState extends State<Search> {
   @override
   Widget build(BuildContext context) {
     if (errorMessage != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(errorMessage!, style: const TextStyle(color: Colors.red)),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  errorMessage = null;
-                  _getPokemon().then((value) {
-                    if (mounted) {
-                      setState(() => names = value);
-                    }
-                  });
-                });
-              },
-              child: const Text('Retry'),
+      return Container(
+        color: Colors.red,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.cloud_off, size: 64, color: Colors.white70),
+                const SizedBox(height: 16),
+                Text(errorMessage!, style: const TextStyle(color: Colors.white, fontSize: 16), textAlign: TextAlign.center),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      errorMessage = null;
+                      isLoading = false;
+                      _pokemonData = null;
+                      _getPokemon().then((value) {
+                        if (mounted) {
+                          setState(() => names = value);
+                        }
+                      });
+                    });
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry'),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.red),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       );
     }

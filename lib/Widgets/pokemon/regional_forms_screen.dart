@@ -14,6 +14,22 @@ class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTi
   late TabController _tabController;
   bool _isLoading = true;
 
+  // Map display region names to PokeAPI region suffixes
+  static const _regionToApi = <String, String>{
+    'Alolan': 'alola',
+    'Galarian': 'galar',
+    'Hisuian': 'hisui',
+    'Paldean': 'paldea',
+  };
+
+  // Pokemon whose PokeAPI name doesn't match the simple "{base}-{region}" pattern
+  static const _specialFormNames = <String, String>{
+    'darmanitan-galar': 'darmanitan-galar-standard',
+    'tauros (combat)-paldea': 'tauros-paldea-combat-breed',
+    'tauros (blaze)-paldea': 'tauros-paldea-blaze-breed',
+    'tauros (aqua)-paldea': 'tauros-paldea-aqua-breed',
+  };
+
   // Hardcoded regional form data since PokeAPI doesn't have a clean endpoint for this
   static const Map<String, List<Map<String, String>>> _regionalForms = {
     'Alolan': [
@@ -95,8 +111,12 @@ class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTi
               final types = form['types']!.split(', ');
 
               // Build API name for regional form lookup
-              final baseName = form['name']!.split(' (')[0].toLowerCase().replaceAll('. ', '-').replaceAll("'", '');
-              final apiName = '${baseName}-${region.toLowerCase()}';
+              final rawName = form['name']!;
+              final baseName = rawName.toLowerCase().replaceAll('. ', '-').replaceAll("'", '');
+              final regionApi = _regionToApi[region] ?? region.toLowerCase();
+              // Special cases where PokeAPI uses a different name
+              final specialKey = '$baseName-$regionApi';
+              final apiName = _specialFormNames[specialKey] ?? '${baseName.split(' (')[0]}-$regionApi';
 
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 4),

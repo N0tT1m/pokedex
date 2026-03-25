@@ -14,6 +14,7 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
   List<Map<String, dynamic>> _locations = [];
   Map<String, dynamic>? _selectedArea;
   bool _isLoading = true;
+  String? _error;
   bool _isLoadingLocations = false;
   bool _isLoadingArea = false;
   String? _selectedRegionName;
@@ -35,7 +36,7 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
         });
       }
     } catch (e) {
-      setState(() => _isLoading = false);
+      setState(() { _error = 'Could not load regions'; _isLoading = false; });
     }
   }
 
@@ -124,6 +125,21 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
 
   Widget _buildRegionList() {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
+
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            const SizedBox(height: 16),
+            Text(_error!, style: const TextStyle(color: Colors.red)),
+            const SizedBox(height: 16),
+            ElevatedButton(onPressed: () { setState(() { _isLoading = true; _error = null; }); _loadRegions(); }, child: const Text('Retry')),
+          ],
+        ),
+      );
+    }
 
     return ListView.builder(
       padding: const EdgeInsets.all(8),
