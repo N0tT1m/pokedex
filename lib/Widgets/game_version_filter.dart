@@ -328,7 +328,7 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade700,
+                  color: Color(0xFF616161),
                 ),
               ),
             ),
