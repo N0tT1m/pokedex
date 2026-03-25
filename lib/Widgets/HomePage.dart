@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height - 60,
+    return Container(
+      color: Colors.red,
+      width: double.infinity,
+      height: double.infinity,
       child: Column(
         children: <Widget>[
-          Image.asset(
-            'assets/images/charizard.webp',
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height - 60,
+          Expanded(
+            child: Image.asset(
+              'assets/images/charizard.webp',
+              width: double.infinity,
+              fit: BoxFit.contain,
+            ),
           ),
         ],
       ),

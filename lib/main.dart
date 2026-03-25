@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'dart:io' show Platform;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pokedex/Widgets/Search.dart';
+import 'package:pokedex/Widgets/HomePage.dart';
 import 'package:pokedex/Widgets/game_version_filter.dart';
 import 'package:pokedex/Widgets/my_pokemon.dart';
 import 'package:pokedex/Widgets/calculators.dart';
@@ -90,6 +91,10 @@ class _HomeState extends State<Home> {
         },
         items: const [
           BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.catching_pokemon),
             label: 'Pokedex',
           ),
@@ -117,17 +122,19 @@ class _HomeState extends State<Home> {
   Widget _getPage(int page) {
     switch (page) {
       case 0:
-        return const _PokedexTab();
+        return const HomePage();
       case 1:
-        return const ToolsHub();
+        return const _PokedexTab();
       case 2:
-        return const MyPokemon();
+        return const ToolsHub();
       case 3:
-        return const DatabasesHub();
+        return const MyPokemon();
       case 4:
+        return const DatabasesHub();
+      case 5:
         return const MoreHub();
       default:
-        return const _PokedexTab();
+        return const HomePage();
     }
   }
 }
