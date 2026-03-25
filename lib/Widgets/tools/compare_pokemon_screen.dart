@@ -192,7 +192,7 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
                               FractionallySizedBox(
                                 widthFactor: val2 / max,
                                 child: Container(height: 14, decoration: BoxDecoration(
-                                  color: Colors.red.shade400, borderRadius: BorderRadius.circular(7))),
+                                  color: Colors.orange.shade400, borderRadius: BorderRadius.circular(7))),
                               ),
                             ],
                           ),

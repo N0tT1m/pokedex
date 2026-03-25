@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
+import 'pokemon_detail_sheet.dart';
 
 class RegionalFormsScreen extends StatefulWidget {
   const RegionalFormsScreen({Key? key}) : super(key: key);
@@ -93,6 +94,10 @@ class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTi
               final form = forms[index];
               final types = form['types']!.split(', ');
 
+              // Build API name for regional form lookup
+              final baseName = form['name']!.split(' (')[0].toLowerCase().replaceAll('. ', '-').replaceAll("'", '');
+              final apiName = '${baseName}-${region.toLowerCase()}';
+
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 4),
                 child: ListTile(
@@ -108,6 +113,8 @@ class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTi
                       child: Text(t.trim(), style: const TextStyle(color: Colors.white, fontSize: 11)),
                     )).toList(),
                   ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => showPokemonDetailSheet(context, apiName),
                 ),
               );
             },

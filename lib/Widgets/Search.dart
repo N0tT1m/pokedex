@@ -318,6 +318,7 @@ class _SearchState extends State<Search> {
     return _pokemonData == null
         ? Container(
             padding: const EdgeInsets.all(16.0),
+            color: Colors.red,
             child: Column(
               children: [
                 const SizedBox(height: 20),
@@ -485,8 +486,9 @@ class _SearchState extends State<Search> {
               ],
             ),
           )
-        : SizedBox(
+        : Container(
             height: MediaQuery.of(context).size.height - 130,
+            color: Colors.red,
             child: ListView.builder(
               itemCount: 1,
               itemBuilder: (context, index) {

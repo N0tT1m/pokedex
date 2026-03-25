@@ -156,7 +156,7 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
               return Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: FilterChip(
-                  label: Text(cat, style: TextStyle(fontSize: 12, color: isSelected ? Colors.white : null)),
+                  label: Text(cat, style: TextStyle(fontSize: 12, color: isSelected ? Colors.white : Colors.black87)),
                   selected: isSelected,
                   selectedColor: Colors.red,
                   onSelected: (_) {
@@ -171,13 +171,17 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
         const SizedBox(height: 8),
         Expanded(
           child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             itemCount: _filtered.length,
             itemBuilder: (context, index) {
               final item = _filtered[index];
-              return ListTile(
-                title: Text(item['displayName']),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => _loadItemDetail(item['url']),
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 2),
+                child: ListTile(
+                  title: Text(item['displayName']),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _loadItemDetail(item['url']),
+                ),
               );
             },
           ),

@@ -151,34 +151,64 @@ class _WeaknessAnalyzerScreenState extends State<WeaknessAnalyzerScreen> {
       crossAxisCount: 3,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      childAspectRatio: 2.5,
-      crossAxisSpacing: 4,
-      mainAxisSpacing: 4,
+      childAspectRatio: 2.2,
+      crossAxisSpacing: 6,
+      mainAxisSpacing: 6,
       children: TypeEffectivenessService.allTypes.map((type) {
         final weak = weaknesses[type] ?? 0;
         final resist = resistances[type] ?? 0;
-        Color bgColor;
-        if (weak >= 3) bgColor = Colors.red.shade300;
-        else if (weak >= 2) bgColor = Colors.orange.shade200;
-        else if (weak >= 1) bgColor = Colors.yellow.shade100;
-        else if (resist >= 3) bgColor = Colors.green.shade300;
-        else if (resist >= 1) bgColor = Colors.green.shade100;
-        else bgColor = Colors.grey.shade200;
+        final typeColor = AppTheme.typeColors[type] ?? Colors.grey;
+
+        String label;
+        IconData icon;
+        Color badgeColor;
+        if (weak >= 3) {
+          label = '$weak weak';
+          icon = Icons.error;
+          badgeColor = Colors.red.shade700;
+        } else if (weak >= 1) {
+          label = '$weak weak';
+          icon = Icons.warning_amber;
+          badgeColor = Colors.orange.shade700;
+        } else if (resist >= 3) {
+          label = '$resist resist';
+          icon = Icons.shield;
+          badgeColor = Colors.green.shade700;
+        } else if (resist >= 1) {
+          label = '$resist resist';
+          icon = Icons.shield_outlined;
+          badgeColor = Colors.green;
+        } else {
+          label = 'neutral';
+          icon = Icons.remove;
+          badgeColor = Colors.grey;
+        }
 
         return Container(
           decoration: BoxDecoration(
-            color: bgColor,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppTheme.typeColors[type] ?? Colors.grey, width: 2),
+            color: typeColor,
+            borderRadius: BorderRadius.circular(10),
           ),
           alignment: Alignment.center,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(type, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-              Text(
-                weak > 0 ? '$weak weak' : resist > 0 ? '$resist resist' : 'neutral',
-                style: TextStyle(fontSize: 9, color: weak > 0 ? Colors.red : Colors.green),
+              Text(type, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
+              const SizedBox(height: 2),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                decoration: BoxDecoration(
+                  color: Colors.black38,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(icon, size: 10, color: Colors.white),
+                    const SizedBox(width: 2),
+                    Text(label, style: const TextStyle(fontSize: 9, color: Colors.white, fontWeight: FontWeight.bold)),
+                  ],
+                ),
               ),
             ],
           ),

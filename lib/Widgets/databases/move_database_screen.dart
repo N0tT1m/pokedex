@@ -120,17 +120,21 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Text('${_filteredMoves.length} moves', style: const TextStyle(color: Colors.white70)),
+          child: Text('${_filteredMoves.length} moves', style: TextStyle(color: Colors.grey.shade600)),
         ),
         Expanded(
           child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             itemCount: _filteredMoves.length,
             itemBuilder: (context, index) {
               final move = _filteredMoves[index];
-              return ListTile(
-                title: Text(move['displayName']),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => _loadMoveDetail(move['url']),
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 2),
+                child: ListTile(
+                  title: Text(move['displayName']),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _loadMoveDetail(move['url']),
+                ),
               );
             },
           ),

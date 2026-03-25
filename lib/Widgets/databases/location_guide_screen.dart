@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:requests/requests.dart';
+import '../pokemon/pokemon_detail_sheet.dart';
 
 class LocationGuideScreen extends StatefulWidget {
   const LocationGuideScreen({Key? key}) : super(key: key);
@@ -188,7 +189,15 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(pokemonName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                InkWell(
+                  onTap: () => showPokemonDetailSheet(context, encounter['pokemon']['name'] ?? ''),
+                  child: Row(
+                    children: [
+                      Expanded(child: Text(pokemonName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue))),
+                      const Icon(Icons.open_in_new, size: 16, color: Colors.blue),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 4),
                 ...versionDetails.take(5).map((vd) {
                   final version = _formatName(vd['version']['name'] ?? '');
