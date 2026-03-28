@@ -7,6 +7,7 @@ import '../databases/item_database_screen.dart';
 import '../databases/location_guide_screen.dart';
 import '../databases/battle_mechanics_screen.dart';
 import '../databases/legendary_pokemon_screen.dart';
+import '../databases/grand_underground_screen.dart';
 
 class DatabasesHub extends StatelessWidget {
   const DatabasesHub({Key? key}) : super(key: key);
@@ -19,7 +20,8 @@ class DatabasesHub extends StatelessWidget {
     {'title': 'Items', 'icon': Icons.backpack, 'color': Colors.teal},
     {'title': 'Locations', 'icon': Icons.map, 'color': Colors.brown},
     {'title': 'Battle Mechanics', 'icon': Icons.sports_mma, 'color': Colors.red},
-    {'title': 'Legendary Pokemon', 'icon': Icons.twenty_two_mp_sharp, 'color': Colors.blueAccent}
+    {'title': 'Legendary Pokemon', 'icon': Icons.twenty_two_mp_sharp, 'color': Colors.blueAccent},
+    {'title': 'Grand Underground', 'icon': Icons.layers, 'color': Colors.blueGrey},
   ];
 
   void _navigate(BuildContext context, int index) {
@@ -31,7 +33,8 @@ class DatabasesHub extends StatelessWidget {
       const ItemDatabaseScreen(),
       const LocationGuideScreen(),
       const BattleMechanicsScreen(),
-      const LegendaryPokemonScreen()
+      const LegendaryPokemonScreen(),
+      const GrandUndergroundScreen(),
     ];
     Navigator.push(context, MaterialPageRoute(builder: (_) => screens[index]));
   }
