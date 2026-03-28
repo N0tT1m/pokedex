@@ -129,6 +129,20 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
     }
   }
 
+  Widget _infoBlock(String title, String body) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+          const SizedBox(height: 4),
+          Text(body, style: TextStyle(fontSize: 12, color: Colors.grey.shade800, height: 1.4)),
+        ],
+      ),
+    );
+  }
+
   String _formatName(String name) {
     return name.split('-').map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1)).join(' ');
   }
@@ -144,6 +158,54 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Card(
+                    color: Colors.pink.shade50,
+                    child: Theme(
+                      data: ThemeData(dividerColor: Colors.transparent),
+                      child: ExpansionTile(
+                        leading: Icon(Icons.egg_outlined, color: Colors.pink.shade700),
+                        title: Text('How Egg Moves Work', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.pink.shade700)),
+                        subtitle: Text('Tap to learn about egg move inheritance', style: TextStyle(fontSize: 12, color: Colors.pink.shade400)),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _infoBlock('What are Egg Moves?',
+                                  'Egg moves are moves that a Pokemon can\'t learn by leveling up or TM, '
+                                  'but can inherit from a parent during breeding. For example, Charmander '
+                                  'can learn Dragon Dance as an egg move, but never by level-up.'),
+                                _infoBlock('How to Pass Egg Moves',
+                                  '1. Find a Pokemon that learns the move naturally (level-up, TM, or tutor).\n'
+                                  '2. That Pokemon must share an Egg Group with your target Pokemon.\n'
+                                  '3. Breed them together — the baby will know the egg move.\n\n'
+                                  'In Gen 8 and earlier, only the father can pass egg moves. '
+                                  'In Gen 9 (Scarlet/Violet), either parent can pass them.'),
+                                _infoBlock('Breeding Chains',
+                                  'Sometimes no Pokemon in the same egg group learns the move directly. '
+                                  'In that case, you need a chain: breed Move onto an intermediate Pokemon '
+                                  'first (as an egg move), then breed that intermediate with your target.\n\n'
+                                  'Example: Pokemon A learns Move X by level-up → breed with Pokemon B '
+                                  '(same egg group) → B now has Move X as egg move → breed B with '
+                                  'Pokemon C (B and C share an egg group) → C now has Move X.'),
+                                _infoBlock('Mirror Herb (Gen 9)',
+                                  'In Scarlet/Violet, you can skip breeding entirely for egg moves. '
+                                  'Have one Pokemon hold a Mirror Herb and place it in a picnic with '
+                                  'a Pokemon of the same species that knows the egg move. The Mirror Herb '
+                                  'Pokemon will copy the move. This also works on male and genderless Pokemon.'),
+                                _infoBlock('How to Use This Tool',
+                                  'Select your target Pokemon below, pick an egg move, and this tool '
+                                  'will find parents that can pass it down. It shows which egg group they '
+                                  'share and how the parent learns the move (level-up, TM, or tutor).'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(12),

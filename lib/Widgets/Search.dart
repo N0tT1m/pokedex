@@ -175,27 +175,101 @@ class _SearchState extends State<Search> {
     final breedingData = _pokemonData!['data']?['Breeding'] as Map<String, dynamic>?;
     if (breedingData == null) return const SizedBox.shrink();
 
+    final eggGroups = breedingData['Egg Groups'] ?? 'N/A';
+    final gender = breedingData['Gender'] ?? 'N/A';
+    final eggCycles = breedingData['Egg Cycles'] ?? 'N/A';
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          'Egg Groups: ${breedingData['Egg Groups'] ?? 'N/A'}',
+          'Egg Groups: $eggGroups',
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        const Padding(
-          padding: EdgeInsets.all(5),
-        ),
+        const SizedBox(height: 2),
         Text(
-          'Gender: ${breedingData['Gender'] ?? 'N/A'}',
+          'Pokemon in the same egg group can breed together. '
+          '${eggGroups == 'Undiscovered' || eggGroups == 'N/A' ? 'This Pokemon cannot breed.' : 'Pair this Pokemon with others in the ${eggGroups.toString().replaceAll(";", " or ")} group(s) to produce eggs.'}',
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
         ),
-        const Padding(
-          padding: EdgeInsets.all(5),
-        ),
+        const SizedBox(height: 10),
         Text(
-          'Egg Cycles: ${breedingData['Egg Cycles'] ?? 'N/A'}',
+          'Gender: $gender',
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        const Padding(
-          padding: EdgeInsets.all(5),
+        const SizedBox(height: 2),
+        Text(
+          gender.toString().contains('Genderless')
+              ? 'Genderless Pokemon can only breed with Ditto.'
+              : 'Breeding requires one male and one female from the same egg group. '
+                'The offspring is always the same species as the mother (or non-Ditto parent).',
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
         ),
+        const SizedBox(height: 10),
+        Text(
+          'Egg Cycles: $eggCycles',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          'Each egg cycle is 257 steps. More cycles means longer to hatch. '
+          'Pokemon with Flame Body or Magma Armor in your party halve the steps needed.',
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+        ),
+        const SizedBox(height: 10),
+        _buildBreedingTipsCard(),
       ],
+    );
+  }
+
+  Widget _buildBreedingTipsCard() {
+    final abilities = _getSafeData('data', 'Pokédex Data', 'Abilities');
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.blue.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.lightbulb_outline, size: 16, color: Colors.blue),
+              SizedBox(width: 4),
+              Text('Breeding Tips', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blue)),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Ability Inheritance: Mothers have an 80% chance to pass down their ability. '
+            'Hidden Abilities (marked with "H") can only be passed down if the parent has it. '
+            'Males and genderless Pokemon can pass Hidden Abilities only when breeding with Ditto.',
+            style: TextStyle(fontSize: 11, color: Colors.grey.shade800),
+          ),
+          if (abilities.contains('(H)') || abilities.toLowerCase().contains('hidden')) ...[
+            const SizedBox(height: 4),
+            Text(
+              'This Pokemon has a Hidden Ability. To breed for it, use a parent that already has '
+              'the Hidden Ability — there is a 60% chance it will be passed to the offspring.',
+              style: TextStyle(fontSize: 11, color: Colors.orange.shade800, fontWeight: FontWeight.w500),
+            ),
+          ],
+          const SizedBox(height: 4),
+          Text(
+            'Nature: Have a parent hold an Everstone to guarantee its Nature passes down.',
+            style: TextStyle(fontSize: 11, color: Colors.grey.shade800),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'IVs: Have a parent hold a Destiny Knot to pass down 5 of the 12 combined IVs instead of 3.',
+            style: TextStyle(fontSize: 11, color: Colors.grey.shade800),
+          ),
+        ],
+      ),
     );
   }
 
