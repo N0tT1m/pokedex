@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/pokeapi_service.dart';
 import '../services/pokemon_data_formatter.dart';
 import '../services/pokemondb_service.dart';
+import '../services/nature_recommendation_service.dart';
 
 class Search extends StatefulWidget {
   const Search({Key? key}) : super(key: key);
@@ -296,6 +297,80 @@ class _SearchState extends State<Search> {
   dynamic _getSafeList(String key) {
     if (_pokemonData == null) return [];
     return _pokemonData![key] ?? [];
+  }
+
+  Widget _buildRecommendedNatureCard() {
+    if (_pokemonData == null) return const SizedBox.shrink();
+
+    final baseStatsRaw = _pokemonData!['data']?['Base Stats'] as Map<String, dynamic>?;
+    if (baseStatsRaw == null) return const SizedBox.shrink();
+
+    final baseStats = <String, int>{};
+    for (var entry in baseStatsRaw.entries) {
+      final val = int.tryParse(entry.value.toString());
+      if (val != null) baseStats[entry.key] = val;
+    }
+
+    final pokemonName = _pokemonData!['name']?.toString() ?? '';
+    final natures = NatureRecommendationService.getRecommendedNatures(pokemonName, baseStats);
+
+    if (natures.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(5),
+      width: double.infinity,
+      child: Card(
+        margin: const EdgeInsets.all(5),
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Recommended Natures',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Based on base stats for competitive play',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+              ),
+              const SizedBox(height: 10),
+              ...natures.map((n) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.star, size: 16, color: Colors.amber),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${n['nature']}',
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          ),
+                          Text(
+                            '${n['reason']}',
+                            style: TextStyle(fontSize: 12, color: Colors.green.shade700),
+                          ),
+                          Text(
+                            '${n['role']}',
+                            style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildEvolutionCard() {
@@ -770,6 +845,7 @@ class _SearchState extends State<Search> {
                         ),
                       ),
                     ),
+                    _buildRecommendedNatureCard(),
                     _buildEvolutionCard(),
                     if (pokemonLocations.isNotEmpty)
                       Container(
