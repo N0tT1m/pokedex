@@ -3,6 +3,7 @@ import 'package:hive/hive.dart';
 import '../nuzlocke/nuzlocke_tracker_screen.dart';
 import '../favorites_screen.dart';
 import '../News.dart';
+import '../databases/walkthrough_screen.dart';
 
 class MoreHub extends StatelessWidget {
   const MoreHub({Key? key}) : super(key: key);
@@ -19,6 +20,9 @@ class MoreHub extends StatelessWidget {
           }),
           _tile(context, 'Nuzlocke Tracker', Icons.catching_pokemon, Colors.deepOrange, () {
             Navigator.push(context, MaterialPageRoute(builder: (_) => const NuzlockeTrackerScreen()));
+          }),
+          _tile(context, 'Walkthrough Checklist', Icons.checklist, Colors.green, () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const WalkthroughScreen()));
           }),
           _tile(context, 'News & Events', Icons.newspaper, Colors.blue, () {
             Navigator.push(context, MaterialPageRoute(builder: (_) => const News()));

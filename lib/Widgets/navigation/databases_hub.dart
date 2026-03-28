@@ -4,10 +4,15 @@ import '../databases/nature_chart_screen.dart';
 import '../databases/move_database_screen.dart';
 import '../databases/ability_database_screen.dart';
 import '../databases/item_database_screen.dart';
+import '../databases/item_location_screen.dart';
 import '../databases/location_guide_screen.dart';
 import '../databases/battle_mechanics_screen.dart';
+import '../databases/field_effects_screen.dart';
 import '../databases/legendary_pokemon_screen.dart';
 import '../databases/grand_underground_screen.dart';
+import '../databases/tm_finder_screen.dart';
+import '../databases/berry_guide_screen.dart';
+import '../databases/friendship_reference_screen.dart';
 
 class DatabasesHub extends StatelessWidget {
   const DatabasesHub({Key? key}) : super(key: key);
@@ -18,9 +23,14 @@ class DatabasesHub extends StatelessWidget {
     {'title': 'Moves', 'icon': Icons.flash_on, 'color': Colors.blue},
     {'title': 'Abilities', 'icon': Icons.auto_awesome, 'color': Colors.purple},
     {'title': 'Items', 'icon': Icons.backpack, 'color': Colors.teal},
+    {'title': 'Item Locations', 'icon': Icons.location_on, 'color': Colors.deepOrange},
+    {'title': 'TM / HM Finder', 'icon': Icons.disc_full, 'color': Colors.indigo},
+    {'title': 'Berry Guide', 'icon': Icons.eco, 'color': Colors.lightGreen},
     {'title': 'Locations', 'icon': Icons.map, 'color': Colors.brown},
     {'title': 'Battle Mechanics', 'icon': Icons.sports_mma, 'color': Colors.red},
-    {'title': 'Legendary Pokemon', 'icon': Icons.twenty_two_mp_sharp, 'color': Colors.blueAccent},
+    {'title': 'Field Effects', 'icon': Icons.landscape, 'color': Colors.cyan},
+    {'title': 'Friendship & Pokerus', 'icon': Icons.favorite, 'color': Colors.pink},
+    {'title': 'Legendary Pokemon', 'icon': Icons.star, 'color': Colors.blueAccent},
     {'title': 'Grand Underground', 'icon': Icons.layers, 'color': Colors.blueGrey},
   ];
 
@@ -31,8 +41,13 @@ class DatabasesHub extends StatelessWidget {
       const MoveDatabaseScreen(),
       const AbilityDatabaseScreen(),
       const ItemDatabaseScreen(),
+      const ItemLocationScreen(),
+      const TMFinderScreen(),
+      const BerryGuideScreen(),
       const LocationGuideScreen(),
       const BattleMechanicsScreen(),
+      const FieldEffectsScreen(),
+      const FriendshipReferenceScreen(),
       const LegendaryPokemonScreen(),
       const GrandUndergroundScreen(),
     ];
