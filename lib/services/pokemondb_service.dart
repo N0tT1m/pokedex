@@ -3,7 +3,7 @@ import 'package:requests/requests.dart';
 
 class PokemonDBService {
   // Use the local Go API for encounter data (falls back to empty if unavailable)
-  static const String _apiBaseUrl = 'https://poke-api.duocore.dev/api/v2';
+  static const String _apiBaseUrl = 'https://poke-api.duocore.dev:158/api/v2';
   static final Map<String, Map<String, List<String>>> _cache = {};
 
   /// Fetch encounter locations for a Pokemon from the local API

@@ -3,7 +3,7 @@ import 'package:requests/requests.dart';
 /// Service class for interacting with the Pokemon API
 /// Supports both the local Go API and PokeAPI v2 as fallback
 class PokeApiService {
-  static const String baseUrl = 'https://poke-api.duocore.dev/api/v2';
+  static const String baseUrl = 'https://poke-api.duocore.dev:158/api/v2';
 
   // Cache for API responses to reduce network calls
   static final Map<String, dynamic> _cache = {};
