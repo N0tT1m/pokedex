@@ -11,11 +11,14 @@ class GameVersionFilter extends StatefulWidget {
   State<GameVersionFilter> createState() => _GameVersionFilterState();
 }
 
-class _GameVersionFilterState extends State<GameVersionFilter> {
+class _GameVersionFilterState extends State<GameVersionFilter>
+    with SingleTickerProviderStateMixin {
   // Current view state
   String? _selectedVersionKey;
   String? _selectedVersionName;
-  List<Map<String, dynamic>> _pokedexEntries = [];
+  Map<String, List<Map<String, dynamic>>> _pokedexGroups = {};
+  List<String> _pokedexNames = [];
+  int _selectedPokedexIndex = 0;
   bool _isLoadingPokedex = false;
   String? _errorMessage;
 
@@ -23,6 +26,9 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
   Map<String, dynamic>? _selectedPokemonData;
   bool _isLoadingDetail = false;
   List<String> _pokemonLocations = [];
+
+  // Tab controller for pokedex switching
+  TabController? _tabController;
 
   // Available game versions grouped by generation
   final List<Map<String, dynamic>> _gameGroups = [
@@ -102,15 +108,21 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
       _selectedVersionName = versionName;
       _isLoadingPokedex = true;
       _errorMessage = null;
-      _pokedexEntries = [];
+      _pokedexGroups = {};
+      _pokedexNames = [];
+      _selectedPokedexIndex = 0;
       _selectedPokemonData = null;
+      _tabController?.dispose();
+      _tabController = null;
     });
 
     try {
       final versionData = await PokeApiService.getVersionGroup(versionKey);
       final List<dynamic> pokedexes = versionData['pokedexes'] ?? [];
 
-      List<Map<String, dynamic>> allEntries = [];
+      Map<String, List<Map<String, dynamic>>> groups = {};
+      List<String> names = [];
+      bool hasNational = false;
 
       for (var pokedexRef in pokedexes) {
         final pokedexUrl = pokedexRef['url'];
@@ -124,13 +136,18 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
             (pokedexData['name'] ?? pokedexName ?? 'Unknown').toString().replaceAll('-', ' '),
           );
 
+          if (pokedexId == 1 || pokedexName == 'national') {
+            hasNational = true;
+          }
+
+          List<Map<String, dynamic>> entries = [];
           for (var entry in pokemonSpecies) {
             final entryNumber = entry['entry_number'];
             final speciesName = entry['pokemon_species']['name'];
             final speciesUrl = entry['pokemon_species']['url'];
             final speciesId = PokeApiService.extractIdFromUrl(speciesUrl);
 
-            allEntries.add({
+            entries.add({
               'entry_number': entryNumber,
               'name': PokemonDataFormatter.capitalize(speciesName),
               'api_name': speciesName,
@@ -141,15 +158,55 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
                   : '',
             });
           }
+
+          entries.sort((a, b) => (a['entry_number'] as int).compareTo(b['entry_number'] as int));
+          names.add(dexName);
+          groups[dexName] = entries;
         }
       }
 
-      // Sort by entry number
-      allEntries.sort((a, b) => (a['entry_number'] as int).compareTo(b['entry_number'] as int));
+      // Add the national pokedex if not already included
+      if (!hasNational) {
+        final nationalData = await PokeApiService.getPokedex(1);
+        final List<dynamic> nationalSpecies = nationalData['pokemon_entries'] ?? [];
+
+        List<Map<String, dynamic>> nationalEntries = [];
+        for (var entry in nationalSpecies) {
+          final entryNumber = entry['entry_number'];
+          final speciesName = entry['pokemon_species']['name'];
+          final speciesUrl = entry['pokemon_species']['url'];
+          final speciesId = PokeApiService.extractIdFromUrl(speciesUrl);
+
+          nationalEntries.add({
+            'entry_number': entryNumber,
+            'name': PokemonDataFormatter.capitalize(speciesName),
+            'api_name': speciesName,
+            'id': speciesId ?? 0,
+            'dex_name': 'National',
+            'image': speciesId != null
+                ? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$speciesId.png'
+                : '',
+          });
+        }
+
+        nationalEntries.sort((a, b) => (a['entry_number'] as int).compareTo(b['entry_number'] as int));
+        names.add('National');
+        groups['National'] = nationalEntries;
+      }
 
       if (mounted) {
+        _tabController = TabController(length: names.length, vsync: this);
+        _tabController!.addListener(() {
+          if (!_tabController!.indexIsChanging) {
+            setState(() {
+              _selectedPokedexIndex = _tabController!.index;
+            });
+          }
+        });
         setState(() {
-          _pokedexEntries = allEntries;
+          _pokedexGroups = groups;
+          _pokedexNames = names;
+          _selectedPokedexIndex = 0;
           _isLoadingPokedex = false;
         });
       }
@@ -161,6 +218,12 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
         });
       }
     }
+  }
+
+  @override
+  void dispose() {
+    _tabController?.dispose();
+    super.dispose();
   }
 
   Future<void> _loadPokemonDetail(String apiName) async {
@@ -231,7 +294,10 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
       } else {
         _selectedVersionKey = null;
         _selectedVersionName = null;
-        _pokedexEntries = [];
+        _pokedexGroups = {};
+        _pokedexNames = [];
+        _tabController?.dispose();
+        _tabController = null;
       }
     });
   }
@@ -288,9 +354,9 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
                   ),
                 ),
               ),
-              if (_selectedVersionKey != null && _selectedPokemonData == null)
+              if (_selectedVersionKey != null && _selectedPokemonData == null && _pokedexNames.isNotEmpty)
                 Text(
-                  '${_pokedexEntries.length} Pokemon',
+                  '${_pokedexNames.length} ${_pokedexNames.length == 1 ? "Dex" : "Dexes"}',
                   style: const TextStyle(color: Colors.white70, fontSize: 14),
                 ),
             ],
@@ -390,7 +456,7 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
       );
     }
 
-    if (_pokedexEntries.isEmpty) {
+    if (_pokedexNames.isEmpty) {
       return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -403,11 +469,76 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
       );
     }
 
+    return Column(
+      children: [
+        // Pokedex tab bar
+        if (_pokedexNames.length > 1 && _tabController != null)
+          Material(
+            color: Colors.red.shade700,
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: _pokedexNames.length > 3,
+              indicatorColor: Colors.white,
+              indicatorWeight: 3,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.white60,
+              labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+              unselectedLabelStyle: const TextStyle(fontSize: 13),
+              tabs: _pokedexNames.map((name) {
+                final count = _pokedexGroups[name]?.length ?? 0;
+                return Tab(text: '$name ($count)');
+              }).toList(),
+            ),
+          ),
+        // Pokemon count summary
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: Row(
+            children: [
+              Icon(Icons.catching_pokemon, size: 16, color: Colors.grey.shade600),
+              const SizedBox(width: 4),
+              Text(
+                '${_currentEntries.length} Pokemon',
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+              ),
+            ],
+          ),
+        ),
+        // Pokemon list
+        Expanded(
+          child: _pokedexNames.length > 1 && _tabController != null
+              ? TabBarView(
+                  controller: _tabController,
+                  children: _pokedexNames.map((name) {
+                    final entries = _pokedexGroups[name] ?? [];
+                    return _buildEntryList(entries);
+                  }).toList(),
+                )
+              : _buildEntryList(_currentEntries),
+        ),
+      ],
+    );
+  }
+
+  List<Map<String, dynamic>> get _currentEntries {
+    if (_pokedexNames.isEmpty) return [];
+    final name = _pokedexNames[_selectedPokedexIndex];
+    return _pokedexGroups[name] ?? [];
+  }
+
+  Widget _buildEntryList(List<Map<String, dynamic>> entries) {
+    if (entries.isEmpty) {
+      return const Center(
+        child: Text('No Pokemon in this Pokedex', style: TextStyle(color: Colors.grey)),
+      );
+    }
+
     return ListView.builder(
       padding: const EdgeInsets.all(8),
-      itemCount: _pokedexEntries.length,
+      itemCount: entries.length,
       itemBuilder: (context, index) {
-        final entry = _pokedexEntries[index];
+        final entry = entries[index];
+        final isNational = entry['dex_name'] == 'National';
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
           child: ListTile(
@@ -427,7 +558,9 @@ class _GameVersionFilterState extends State<GameVersionFilter> {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Text(
-              '#${entry['entry_number'].toString().padLeft(3, '0')}  (National #${entry['id'].toString().padLeft(4, '0')})',
+              isNational
+                  ? 'National #${entry['entry_number'].toString().padLeft(4, '0')}'
+                  : '#${entry['entry_number'].toString().padLeft(3, '0')}  (National #${entry['id'].toString().padLeft(4, '0')})',
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
             trailing: const Icon(Icons.chevron_right),
