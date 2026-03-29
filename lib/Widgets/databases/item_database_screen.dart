@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:requests/requests.dart';
+import '../../services/pokeapi_service.dart';
 
 class ItemDatabaseScreen extends StatefulWidget {
   const ItemDatabaseScreen({Key? key}) : super(key: key);
@@ -28,7 +29,7 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
 
   Future<void> _loadItems() async {
     try {
-      final response = await Requests.get('https://pokeapi.co/api/v2/item?limit=2000');
+      final response = await Requests.get('${PokeApiService.baseUrl}/item?limit=2000');
       if (response.statusCode == 200) {
         final data = response.json();
         setState(() {

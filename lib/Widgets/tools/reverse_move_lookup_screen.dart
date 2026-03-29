@@ -27,7 +27,7 @@ class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
 
   Future<void> _loadMoveList() async {
     try {
-      final response = await Requests.get('https://pokeapi.co/api/v2/move?limit=1000');
+      final response = await Requests.get('${PokeApiService.baseUrl}/move?limit=1000');
       if (response.statusCode == 200) {
         final data = response.json();
         setState(() {
@@ -43,7 +43,7 @@ class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
   Future<void> _loadMoveDetails(String moveName) async {
     setState(() { _loadingResults = true; _selectedMove = moveName; });
     try {
-      final response = await Requests.get('https://pokeapi.co/api/v2/move/${moveName.toLowerCase()}');
+      final response = await Requests.get('${PokeApiService.baseUrl}/move/${moveName.toLowerCase()}');
       if (response.statusCode == 200) {
         final data = response.json();
         final machines = data['machines'] as List? ?? [];

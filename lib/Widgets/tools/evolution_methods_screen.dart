@@ -88,7 +88,7 @@ class _EvolutionMethodsScreenState extends State<EvolutionMethodsScreen> {
                       final evo = _evolutions[index];
                       final method = EvolutionService.describeMethod(evo);
                       final fromId = PokeApiService.extractIdFromUrl(
-                        'https://pokeapi.co/api/v2/pokemon-species/${evo['fromApi']}/');
+                        '${PokeApiService.baseUrl}/pokemon-species/${evo['fromApi']}/');
 
                       return Card(
                         margin: const EdgeInsets.only(bottom: 8),

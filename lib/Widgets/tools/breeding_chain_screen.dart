@@ -61,7 +61,7 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
           .map((g) => g['name'] as String).toList();
 
       // Get all Pokemon that learn this move by level-up or TM (potential parents)
-      final moveResponse = await Requests.get('https://pokeapi.co/api/v2/move/${_targetMove!.toLowerCase()}');
+      final moveResponse = await Requests.get('${PokeApiService.baseUrl}/move/${_targetMove!.toLowerCase()}');
       if (moveResponse.statusCode != 200) {
         setState(() { _errorMessage = 'Could not load move data'; _searching = false; });
         return;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:requests/requests.dart';
+import '../../services/pokeapi_service.dart';
 
 class TMFinderScreen extends StatefulWidget {
   const TMFinderScreen({Key? key}) : super(key: key);
@@ -36,7 +37,7 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
     setState(() => _isLoading = true);
     try {
       // Load machines list from PokeAPI
-      final response = await Requests.get('https://pokeapi.co/api/v2/machine?limit=2000');
+      final response = await Requests.get('${PokeApiService.baseUrl}/machine?limit=2000');
       if (response.statusCode == 200) {
         final data = response.json();
         final machines = data['results'] as List;

@@ -24,7 +24,7 @@ class _ReverseAbilityLookupScreenState extends State<ReverseAbilityLookupScreen>
 
   Future<void> _loadAbilityList() async {
     try {
-      final response = await Requests.get('https://pokeapi.co/api/v2/ability?limit=400');
+      final response = await Requests.get('${PokeApiService.baseUrl}/ability?limit=400');
       if (response.statusCode == 200) {
         final data = response.json();
         setState(() {

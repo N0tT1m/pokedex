@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:requests/requests.dart';
+import '../../services/pokeapi_service.dart';
 
 class AbilityDatabaseScreen extends StatefulWidget {
   const AbilityDatabaseScreen({Key? key}) : super(key: key);
@@ -25,7 +26,7 @@ class _AbilityDatabaseScreenState extends State<AbilityDatabaseScreen> {
 
   Future<void> _loadAbilities() async {
     try {
-      final response = await Requests.get('https://pokeapi.co/api/v2/ability?limit=400');
+      final response = await Requests.get('${PokeApiService.baseUrl}/ability?limit=400');
       if (response.statusCode == 200) {
         final data = response.json();
         setState(() {

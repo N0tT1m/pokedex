@@ -1,9 +1,9 @@
 import 'package:requests/requests.dart';
 
-/// Service class for interacting with PokeAPI v2
-/// Base URL: https://pokeapi.co/api/v2/
+/// Service class for interacting with the Pokemon API
+/// Supports both the local Go API and PokeAPI v2 as fallback
 class PokeApiService {
-  static const String _baseUrl = 'https://pokeapi.co/api/v2';
+  static const String baseUrl = 'https://poke-api.duocore.dev/api/v2';
 
   // Cache for API responses to reduce network calls
   static final Map<String, dynamic> _cache = {};
@@ -24,7 +24,7 @@ class PokeApiService {
 
     try {
       final response = await Requests.get(
-        '$_baseUrl/pokemon?limit=$limit&offset=$offset',
+        '$baseUrl/pokemon?limit=$limit&offset=$offset',
       );
 
       if (response.statusCode == 200) {
@@ -52,7 +52,7 @@ class PokeApiService {
 
     try {
       final response = await Requests.get(
-        '$_baseUrl/pokemon/${identifier.toLowerCase()}',
+        '$baseUrl/pokemon/${identifier.toLowerCase()}',
       );
 
       if (response.statusCode == 200) {
@@ -79,7 +79,7 @@ class PokeApiService {
 
     try {
       final response = await Requests.get(
-        '$_baseUrl/pokemon-species/${identifier.toLowerCase()}',
+        '$baseUrl/pokemon-species/${identifier.toLowerCase()}',
       );
 
       if (response.statusCode == 200) {
@@ -105,7 +105,7 @@ class PokeApiService {
     }
 
     try {
-      final response = await Requests.get('$_baseUrl/evolution-chain/$id');
+      final response = await Requests.get('$baseUrl/evolution-chain/$id');
 
       if (response.statusCode == 200) {
         final data = response.json();
@@ -131,7 +131,7 @@ class PokeApiService {
 
     try {
       final response = await Requests.get(
-        '$_baseUrl/ability/${identifier.toLowerCase()}',
+        '$baseUrl/ability/${identifier.toLowerCase()}',
       );
 
       if (response.statusCode == 200) {
@@ -158,7 +158,7 @@ class PokeApiService {
 
     try {
       final response = await Requests.get(
-        '$_baseUrl/type/${identifier.toLowerCase()}',
+        '$baseUrl/type/${identifier.toLowerCase()}',
       );
 
       if (response.statusCode == 200) {
@@ -184,7 +184,7 @@ class PokeApiService {
     }
 
     try {
-      final response = await Requests.get('$_baseUrl/generation/$id');
+      final response = await Requests.get('$baseUrl/generation/$id');
 
       if (response.statusCode == 200) {
         final data = response.json();
@@ -210,7 +210,7 @@ class PokeApiService {
 
     try {
       final response = await Requests.get(
-        '$_baseUrl/location-area/${identifier.toLowerCase()}',
+        '$baseUrl/location-area/${identifier.toLowerCase()}',
       );
 
       if (response.statusCode == 200) {
@@ -237,7 +237,7 @@ class PokeApiService {
 
     try {
       final response = await Requests.get(
-        '$_baseUrl/pokemon/${identifier.toLowerCase()}/encounters',
+        '$baseUrl/pokemon/${identifier.toLowerCase()}/encounters',
       );
 
       if (response.statusCode == 200) {
@@ -285,7 +285,7 @@ class PokeApiService {
 
     try {
       final response = await Requests.get(
-        '$_baseUrl/version-group/${identifier.toLowerCase()}',
+        '$baseUrl/version-group/${identifier.toLowerCase()}',
       );
 
       if (response.statusCode == 200) {
@@ -311,7 +311,7 @@ class PokeApiService {
     }
 
     try {
-      final response = await Requests.get('$_baseUrl/pokedex/$id');
+      final response = await Requests.get('$baseUrl/pokedex/$id');
 
       if (response.statusCode == 200) {
         final data = response.json();
@@ -336,7 +336,7 @@ class PokeApiService {
     }
 
     try {
-      final response = await Requests.get('$_baseUrl/pokedex/$name');
+      final response = await Requests.get('$baseUrl/pokedex/$name');
 
       if (response.statusCode == 200) {
         final data = response.json();

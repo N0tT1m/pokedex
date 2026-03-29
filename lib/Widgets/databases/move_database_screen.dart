@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:requests/requests.dart';
+import '../../services/pokeapi_service.dart';
 import '../../theme/app_theme.dart';
 
 class MoveDatabaseScreen extends StatefulWidget {
@@ -28,7 +29,7 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
 
   Future<void> _loadMoves() async {
     try {
-      final response = await Requests.get('https://pokeapi.co/api/v2/move?limit=1000');
+      final response = await Requests.get('${PokeApiService.baseUrl}/move?limit=1000');
       if (response.statusCode == 200) {
         final data = response.json();
         final results = List<Map<String, dynamic>>.from(data['results']);

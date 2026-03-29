@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:requests/requests.dart';
+import '../../services/pokeapi_service.dart';
 import '../pokemon/pokemon_detail_sheet.dart';
 
 class LocationGuideScreen extends StatefulWidget {
@@ -27,7 +28,7 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
 
   Future<void> _loadRegions() async {
     try {
-      final response = await Requests.get('https://pokeapi.co/api/v2/region?limit=20');
+      final response = await Requests.get('${PokeApiService.baseUrl}/region?limit=20');
       if (response.statusCode == 200) {
         final data = response.json();
         setState(() {
