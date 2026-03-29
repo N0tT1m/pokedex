@@ -16,6 +16,7 @@ class _GameVersionFilterState extends State<GameVersionFilter>
   // Current view state
   String? _selectedVersionKey;
   String? _selectedVersionName;
+  int? _selectedNationalDexMax;
   Map<String, List<Map<String, dynamic>>> _pokedexGroups = {};
   List<String> _pokedexNames = [];
   int _selectedPokedexIndex = 0;
@@ -49,31 +50,31 @@ class _GameVersionFilterState extends State<GameVersionFilter>
     {
       'generation': 'Generation III',
       'games': [
-        {'key': 'ruby-sapphire', 'name': 'Ruby / Sapphire', 'color': Colors.redAccent},
-        {'key': 'emerald', 'name': 'Emerald', 'color': Colors.green},
-        {'key': 'firered-leafgreen', 'name': 'FireRed / LeafGreen', 'color': Colors.deepOrange},
+        {'key': 'ruby-sapphire', 'name': 'Ruby / Sapphire', 'color': Colors.redAccent, 'nationalDexMax': 386},
+        {'key': 'emerald', 'name': 'Emerald', 'color': Colors.green, 'nationalDexMax': 386},
+        {'key': 'firered-leafgreen', 'name': 'FireRed / LeafGreen', 'color': Colors.deepOrange, 'nationalDexMax': 386},
       ],
     },
     {
       'generation': 'Generation IV',
       'games': [
-        {'key': 'diamond-pearl', 'name': 'Diamond / Pearl', 'color': Colors.blueAccent},
-        {'key': 'platinum', 'name': 'Platinum', 'color': Colors.grey},
-        {'key': 'heartgold-soulsilver', 'name': 'HeartGold / SoulSilver', 'color': Colors.amber},
+        {'key': 'diamond-pearl', 'name': 'Diamond / Pearl', 'color': Colors.blueAccent, 'nationalDexMax': 493},
+        {'key': 'platinum', 'name': 'Platinum', 'color': Colors.grey, 'nationalDexMax': 493},
+        {'key': 'heartgold-soulsilver', 'name': 'HeartGold / SoulSilver', 'color': Colors.amber, 'nationalDexMax': 493},
       ],
     },
     {
       'generation': 'Generation V',
       'games': [
-        {'key': 'black-white', 'name': 'Black / White', 'color': Colors.blueGrey},
-        {'key': 'black-2-white-2', 'name': 'Black 2 / White 2', 'color': Colors.blueGrey},
+        {'key': 'black-white', 'name': 'Black / White', 'color': Colors.blueGrey, 'nationalDexMax': 649},
+        {'key': 'black-2-white-2', 'name': 'Black 2 / White 2', 'color': Colors.blueGrey, 'nationalDexMax': 649},
       ],
     },
     {
       'generation': 'Generation VI',
       'games': [
-        {'key': 'x-y', 'name': 'X / Y', 'color': Colors.indigo},
-        {'key': 'omega-ruby-alpha-sapphire', 'name': 'Omega Ruby / Alpha Sapphire', 'color': Colors.redAccent},
+        {'key': 'x-y', 'name': 'X / Y', 'color': Colors.indigo, 'nationalDexMax': 721},
+        {'key': 'omega-ruby-alpha-sapphire', 'name': 'Omega Ruby / Alpha Sapphire', 'color': Colors.redAccent, 'nationalDexMax': 721},
       ],
     },
     {
@@ -88,7 +89,7 @@ class _GameVersionFilterState extends State<GameVersionFilter>
       'generation': 'Generation VIII',
       'games': [
         {'key': 'sword-shield', 'name': 'Sword / Shield', 'color': Colors.blue},
-        {'key': 'brilliant-diamond-shining-pearl', 'name': 'Brilliant Diamond / Shining Pearl', 'color': Colors.lightBlue},
+        {'key': 'brilliant-diamond-shining-pearl', 'name': 'Brilliant Diamond / Shining Pearl', 'color': Colors.lightBlue, 'nationalDexMax': 493},
         {'key': 'legends-arceus', 'name': 'Legends: Arceus', 'color': Colors.teal},
       ],
     },
@@ -102,10 +103,11 @@ class _GameVersionFilterState extends State<GameVersionFilter>
     },
   ];
 
-  Future<void> _loadGamePokedex(String versionKey, String versionName) async {
+  Future<void> _loadGamePokedex(String versionKey, String versionName, {int? nationalDexMax}) async {
     setState(() {
       _selectedVersionKey = versionKey;
       _selectedVersionName = versionName;
+      _selectedNationalDexMax = nationalDexMax;
       _isLoadingPokedex = true;
       _errorMessage = null;
       _pokedexGroups = {};
@@ -122,6 +124,7 @@ class _GameVersionFilterState extends State<GameVersionFilter>
 
       Map<String, List<Map<String, dynamic>>> groups = {};
       List<String> names = [];
+      bool hasNational = false;
 
       for (var pokedexRef in pokedexes) {
         final pokedexUrl = pokedexRef['url'];
@@ -129,6 +132,10 @@ class _GameVersionFilterState extends State<GameVersionFilter>
         final pokedexId = PokeApiService.extractIdFromUrl(pokedexUrl);
 
         if (pokedexId != null) {
+          if (pokedexId == 1 || pokedexName == 'national') {
+            hasNational = true;
+          }
+
           final pokedexData = await PokeApiService.getPokedex(pokedexId);
           final List<dynamic> pokemonSpecies = pokedexData['pokemon_entries'] ?? [];
           final dexName = PokemonDataFormatter.capitalize(
@@ -158,6 +165,37 @@ class _GameVersionFilterState extends State<GameVersionFilter>
           names.add(dexName);
           groups[dexName] = entries;
         }
+      }
+
+      // Add filtered national dex for games that had one
+      if (!hasNational && nationalDexMax != null) {
+        final nationalData = await PokeApiService.getPokedex(1);
+        final List<dynamic> nationalSpecies = nationalData['pokemon_entries'] ?? [];
+
+        List<Map<String, dynamic>> nationalEntries = [];
+        for (var entry in nationalSpecies) {
+          final entryNumber = entry['entry_number'] as int;
+          if (entryNumber > nationalDexMax) continue;
+
+          final speciesName = entry['pokemon_species']['name'];
+          final speciesUrl = entry['pokemon_species']['url'];
+          final speciesId = PokeApiService.extractIdFromUrl(speciesUrl);
+
+          nationalEntries.add({
+            'entry_number': entryNumber,
+            'name': PokemonDataFormatter.capitalize(speciesName),
+            'api_name': speciesName,
+            'id': speciesId ?? 0,
+            'dex_name': 'National',
+            'image': speciesId != null
+                ? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$speciesId.png'
+                : '',
+          });
+        }
+
+        nationalEntries.sort((a, b) => (a['entry_number'] as int).compareTo(b['entry_number'] as int));
+        names.add('National');
+        groups['National'] = nationalEntries;
       }
 
       if (mounted) {
@@ -444,7 +482,7 @@ class _GameVersionFilterState extends State<GameVersionFilter>
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _loadGamePokedex(game['key'], game['name']),
+                  onTap: () => _loadGamePokedex(game['key'], game['name'], nationalDexMax: game['nationalDexMax'] as int?),
                 ),
               );
             }),
@@ -480,7 +518,7 @@ class _GameVersionFilterState extends State<GameVersionFilter>
             Text(_errorMessage!, style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () => _loadGamePokedex(_selectedVersionKey!, _selectedVersionName!),
+              onPressed: () => _loadGamePokedex(_selectedVersionKey!, _selectedVersionName!, nationalDexMax: _selectedNationalDexMax),
               child: const Text('Retry'),
             ),
           ],
