@@ -197,7 +197,7 @@ class _MyPokemonState extends State<MyPokemon> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Pokemon'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Theme.of(context).colorScheme.background,
         actions: [
           IconButton(
             icon: const Icon(Icons.sort),
@@ -223,7 +223,7 @@ class _MyPokemonState extends State<MyPokemon> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 filled: true,
-                fillColor: Colors.grey.shade100,
+                fillColor: Colors.red,
               ),
               onChanged: (value) {
                 setState(() {

@@ -17,6 +17,7 @@ class ReverseIVCalculator extends StatefulWidget {
 
 class _ReverseIVCalculatorState extends State<ReverseIVCalculator> {
   final _storageService = PokemonStorageService();
+  final TextEditingController _searchController = TextEditingController();
 
   // Pokemon selection
   List<String> _pokemonList = [];
@@ -422,6 +423,7 @@ class _ReverseIVCalculatorState extends State<ReverseIVCalculator> {
             ),
             const SizedBox(height: 8),
             AdvancedSearch(
+              textEditingController: _searchController,
               searchItems: _pokemonList,
               maxElementsToDisplay: 10,
               singleItemHeight: 50,
