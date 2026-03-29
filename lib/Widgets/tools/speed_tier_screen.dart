@@ -106,7 +106,7 @@ class _SpeedTierScreenState extends State<SpeedTierScreen> {
                     children: [
                       Expanded(
                         child: DropdownButtonFormField<int>(
-                          value: _showLevel,
+                          initialValue: _showLevel,
                           decoration: const InputDecoration(
                             labelText: 'Level', border: OutlineInputBorder(), isDense: true),
                           items: [1, 5, 10, 25, 50, 100].map((l) =>
@@ -117,7 +117,7 @@ class _SpeedTierScreenState extends State<SpeedTierScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: DropdownButtonFormField<String?>(
-                          value: _filterType,
+                          initialValue: _filterType,
                           decoration: const InputDecoration(
                             labelText: 'Type', border: OutlineInputBorder(), isDense: true),
                           items: [

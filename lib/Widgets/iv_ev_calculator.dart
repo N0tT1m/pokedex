@@ -696,7 +696,7 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
             // EV Yield Information (only for Gen 3+ games)
             if (_evYield.isNotEmpty && _isModernEVSystem())
               Card(
-                color: Colors.green.withOpacity(0.1),
+                color: Colors.green.withValues(alpha: 0.1),
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Column(
@@ -733,7 +733,7 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
             // Gen 1-2 Notice (Stat Experience instead of EVs)
             if (_evYield.isNotEmpty && !_isModernEVSystem())
               Card(
-                color: Colors.orange.withOpacity(0.1),
+                color: Colors.orange.withValues(alpha: 0.1),
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Column(
@@ -783,7 +783,7 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
                 Expanded(
                   flex: 2,
                   child: DropdownButtonFormField<String>(
-                    value: _selectedNature,
+                    initialValue: _selectedNature,
                     decoration: const InputDecoration(
                       labelText: 'Nature',
                       border: OutlineInputBorder(),
@@ -810,8 +810,8 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: _totalEVs > 510
-                    ? Colors.red.withOpacity(0.2)
-                    : Colors.green.withOpacity(0.2),
+                    ? Colors.red.withValues(alpha: 0.2)
+                    : Colors.green.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: _totalEVs > 510 ? Colors.red : Colors.green,
@@ -886,7 +886,7 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
 
             // Game Selection
             DropdownButtonFormField<String>(
-              value: _selectedGame,
+              initialValue: _selectedGame,
               decoration: const InputDecoration(
                 labelText: 'Select Your Game',
                 prefixIcon: Icon(Icons.videogame_asset),
@@ -925,7 +925,7 @@ class _IVEVCalculatorState extends State<IVEVCalculator> {
             // EV Training Guide
             if (_showTrainingGuide)
               Card(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withValues(alpha: 0.1),
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Column(

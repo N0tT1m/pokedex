@@ -184,7 +184,7 @@ class _TypeChartScreenState extends State<TypeChartScreen> with SingleTickerProv
               return FilterChip(
                 label: Text(type, style: TextStyle(color: isSelected ? Colors.white : null, fontSize: 12)),
                 selected: isSelected,
-                backgroundColor: AppTheme.typeColors[type]?.withOpacity(0.3),
+                backgroundColor: AppTheme.typeColors[type]?.withValues(alpha: 0.3),
                 selectedColor: AppTheme.typeColors[type],
                 onSelected: (selected) {
                   setState(() {
@@ -232,7 +232,7 @@ class _TypeChartScreenState extends State<TypeChartScreen> with SingleTickerProv
               child: Text('${entry.value}x', style: const TextStyle(fontSize: 8, color: Colors.white)),
             ),
             label: Text(entry.key),
-            backgroundColor: color.withOpacity(0.1),
+            backgroundColor: color.withValues(alpha: 0.1),
           )).toList(),
         ),
         const SizedBox(height: 16),

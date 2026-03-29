@@ -552,7 +552,7 @@ class _SearchState extends State<Search> {
                               )
                             : null,
                         filled: true,
-                        fillColor: Colors.red.withOpacity(0.3),
+                        fillColor: Colors.red.withValues(alpha: 0.3),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
                           borderSide: const BorderSide(color: Colors.white),
@@ -619,7 +619,7 @@ class _SearchState extends State<Search> {
                                   decoration: BoxDecoration(
                                     border: Border(
                                       bottom: BorderSide(
-                                        color: Colors.white.withOpacity(0.2),
+                                        color: Colors.white.withValues(alpha: 0.2),
                                       ),
                                     ),
                                   ),

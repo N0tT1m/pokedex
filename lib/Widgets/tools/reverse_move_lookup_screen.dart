@@ -164,7 +164,7 @@ class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: (AppTheme.typeColors[typeTitle] ?? Colors.grey).withOpacity(0.1),
+        color: (AppTheme.typeColors[typeTitle] ?? Colors.grey).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppTheme.typeColors[typeTitle] ?? Colors.grey),
       ),

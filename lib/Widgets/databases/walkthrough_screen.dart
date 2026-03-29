@@ -146,7 +146,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
           Padding(
             padding: const EdgeInsets.all(12),
             child: DropdownButtonFormField<String>(
-              value: _selectedGame, isExpanded: true,
+              initialValue: _selectedGame, isExpanded: true,
               decoration: const InputDecoration(labelText: 'Game', border: OutlineInputBorder()),
               items: _walkthroughs.keys.map((g) =>
                 DropdownMenuItem(value: g, child: Text(g))).toList(),

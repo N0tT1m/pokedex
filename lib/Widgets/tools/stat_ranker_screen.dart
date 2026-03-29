@@ -177,7 +177,7 @@ class _StatRankerScreenState extends State<StatRankerScreen> {
                                 child: ChoiceChip(
                                   label: Text(t, style: const TextStyle(fontSize: 11)),
                                   selected: _filterType == t,
-                                  backgroundColor: AppTheme.typeColors[t]?.withOpacity(0.2),
+                                  backgroundColor: AppTheme.typeColors[t]?.withValues(alpha: 0.2),
                                   onSelected: (v) {
                                     setState(() { _filterType = v ? t : null; _applyFilters(); });
                                   },

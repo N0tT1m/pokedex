@@ -150,7 +150,7 @@ class _CatchCalculatorScreenState extends State<CatchCalculatorScreen> {
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<String>(
-                            value: _ballType, isExpanded: true,
+                            initialValue: _ballType, isExpanded: true,
                             decoration: const InputDecoration(labelText: 'Ball Type', border: OutlineInputBorder()),
                             items: CatchCalculatorService.allBalls.map((b) =>
                               DropdownMenuItem(value: b, child: Text(b))).toList(),
@@ -158,7 +158,7 @@ class _CatchCalculatorScreenState extends State<CatchCalculatorScreen> {
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<String>(
-                            value: _statusCondition, isExpanded: true,
+                            initialValue: _statusCondition, isExpanded: true,
                             decoration: const InputDecoration(labelText: 'Status', border: OutlineInputBorder()),
                             items: CatchCalculatorService.allStatuses.map((s) =>
                               DropdownMenuItem(value: s, child: Text(s))).toList(),
@@ -202,7 +202,7 @@ class _CatchCalculatorScreenState extends State<CatchCalculatorScreen> {
     final color = prob >= 75 ? Colors.green : prob >= 30 ? Colors.orange : Colors.red;
 
     return Card(
-      color: color.withOpacity(0.1),
+      color: color.withValues(alpha: 0.1),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

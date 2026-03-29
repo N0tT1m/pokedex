@@ -490,7 +490,7 @@ class _ReverseIVCalculatorState extends State<ReverseIVCalculator> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              value: _selectedNature,
+              initialValue: _selectedNature,
               decoration: const InputDecoration(
                 labelText: 'Nature',
                 border: OutlineInputBorder(),
@@ -706,7 +706,7 @@ class _ReverseIVCalculatorState extends State<ReverseIVCalculator> {
               },
             ),
             DropdownButtonFormField<String>(
-              value: _gender,
+              initialValue: _gender,
               decoration: const InputDecoration(
                 labelText: 'Gender',
                 border: OutlineInputBorder(),
@@ -725,7 +725,7 @@ class _ReverseIVCalculatorState extends State<ReverseIVCalculator> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              value: _game,
+              initialValue: _game,
               decoration: const InputDecoration(
                 labelText: 'Game Version',
                 border: OutlineInputBorder(),
@@ -905,7 +905,7 @@ class _ReverseIVCalculatorState extends State<ReverseIVCalculator> {
                   _location = location;
                 });
               },
-              backgroundColor: Colors.blue.withOpacity(0.1),
+              backgroundColor: Colors.blue.withValues(alpha: 0.1),
             );
           }).toList(),
         ),

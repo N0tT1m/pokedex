@@ -45,8 +45,8 @@ class NatureChartScreen extends StatelessWidget {
                 final isNeutral = increased == '-';
 
                 return DataRow(
-                  color: MaterialStateProperty.resolveWith((states) {
-                    return isNeutral ? Colors.grey.withOpacity(0.1) : null;
+                  color: WidgetStateProperty.resolveWith((states) {
+                    return isNeutral ? Colors.grey.withValues(alpha: 0.1) : null;
                   }),
                   cells: [
                     DataCell(Text(nature, style: TextStyle(

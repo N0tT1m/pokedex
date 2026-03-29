@@ -35,7 +35,7 @@ class _CalculatorsState extends State<Calculators> with SingleTickerProviderStat
             controller: _tabController,
             indicatorColor: Colors.white,
             labelColor: Colors.white,
-            unselectedLabelColor: Colors.white.withOpacity(0.7),
+            unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
             tabs: const [
               Tab(
                 icon: Icon(Icons.functions),

@@ -153,7 +153,7 @@ class _BerryGuideScreenState extends State<BerryGuideScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                             decoration: BoxDecoration(
-                              color: Colors.amber.withOpacity(0.2), borderRadius: BorderRadius.circular(4)),
+                              color: Colors.amber.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(4)),
                             child: const Text('Comp', style: TextStyle(fontSize: 9, color: Colors.amber)),
                           ),
                         ],

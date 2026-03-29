@@ -241,7 +241,7 @@ class _DamageCalculatorScreenState extends State<DamageCalculatorScreen> {
           Expanded(
             flex: 2,
             child: DropdownButtonFormField<String>(
-              value: nature, isExpanded: true,
+              initialValue: nature, isExpanded: true,
               decoration: const InputDecoration(labelText: 'Nature', border: OutlineInputBorder()),
               items: IVCalculatorService.allNatures.map((n) => DropdownMenuItem(value: n, child: Text(n, style: const TextStyle(fontSize: 13)))).toList(),
               onChanged: (v) => onNatureChanged(v!),
@@ -274,7 +274,7 @@ class _DamageCalculatorScreenState extends State<DamageCalculatorScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: _moveCategory, isExpanded: true,
+                    initialValue: _moveCategory, isExpanded: true,
                     decoration: const InputDecoration(labelText: 'Category', border: OutlineInputBorder()),
                     items: ['physical', 'special'].map((c) => DropdownMenuItem(value: c, child: Text(c[0].toUpperCase() + c.substring(1)))).toList(),
                     onChanged: (v) => setState(() => _moveCategory = v!),
@@ -284,7 +284,7 @@ class _DamageCalculatorScreenState extends State<DamageCalculatorScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: _moveType, isExpanded: true,
+              initialValue: _moveType, isExpanded: true,
               decoration: const InputDecoration(labelText: 'Type', border: OutlineInputBorder()),
               items: TypeEffectivenessService.allTypes.map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
               onChanged: (v) => setState(() => _moveType = v!),

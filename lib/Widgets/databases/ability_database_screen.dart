@@ -230,7 +230,7 @@ class _AbilityDatabaseScreenState extends State<AbilityDatabaseScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                               decoration: BoxDecoration(
-                                color: Colors.purple.withOpacity(0.2),
+                                color: Colors.purple.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: const Text('Hidden', style: TextStyle(fontSize: 10, color: Colors.purple)),

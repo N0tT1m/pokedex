@@ -110,7 +110,7 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
           Padding(
             padding: const EdgeInsets.all(12),
             child: DropdownButtonFormField<String>(
-              value: _selectedGame, isExpanded: true,
+              initialValue: _selectedGame, isExpanded: true,
               decoration: const InputDecoration(labelText: 'Game', border: OutlineInputBorder()),
               items: _games.entries.map((e) =>
                 DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),

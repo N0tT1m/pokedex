@@ -115,7 +115,7 @@ class _ReverseAbilityLookupScreenState extends State<ReverseAbilityLookupScreen>
                     margin: const EdgeInsets.symmetric(horizontal: 16),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.purple.withOpacity(0.1),
+                      color: Colors.purple.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(
@@ -166,7 +166,7 @@ class _ReverseAbilityLookupScreenState extends State<ReverseAbilityLookupScreen>
                           ? Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: Colors.orange.withOpacity(0.2),
+                                color: Colors.orange.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: const Text('Hidden', style: TextStyle(fontSize: 11, color: Colors.orange)),

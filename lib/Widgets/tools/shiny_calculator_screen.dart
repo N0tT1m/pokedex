@@ -67,7 +67,7 @@ class _ShinyCalculatorScreenState extends State<ShinyCalculatorScreen> {
                     const Text('Game', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      value: _selectedGame, isExpanded: true,
+                      initialValue: _selectedGame, isExpanded: true,
                       decoration: const InputDecoration(border: OutlineInputBorder()),
                       items: ShinyCalculatorService.methodsByGame.keys.map((g) =>
                         DropdownMenuItem(value: g, child: Text(g, style: const TextStyle(fontSize: 13)))).toList(),
@@ -84,7 +84,7 @@ class _ShinyCalculatorScreenState extends State<ShinyCalculatorScreen> {
                     const Text('Method', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      value: _selectedMethod, isExpanded: true,
+                      initialValue: _selectedMethod, isExpanded: true,
                       decoration: const InputDecoration(border: OutlineInputBorder()),
                       items: _availableMethods.map((m) =>
                         DropdownMenuItem(value: m, child: Text(m))).toList(),

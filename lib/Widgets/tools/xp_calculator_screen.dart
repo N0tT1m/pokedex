@@ -104,7 +104,7 @@ class _XPCalculatorScreenState extends State<XPCalculatorScreen> {
                           const Text('Growth Rate', style: TextStyle(fontWeight: FontWeight.bold)),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<String>(
-                            value: _growthRate, isExpanded: true,
+                            initialValue: _growthRate, isExpanded: true,
                             decoration: const InputDecoration(border: OutlineInputBorder()),
                             items: ExperienceService.allGrowthRates.map((r) =>
                               DropdownMenuItem(value: r,
@@ -203,7 +203,7 @@ class _XPCalculatorScreenState extends State<XPCalculatorScreen> {
           rows: table.where((r) => r['level'] % 5 == 0 || r['level'] == 1).map((r) =>
             DataRow(
               color: r['level'] >= _currentLevel && r['level'] <= _targetLevel
-                ? WidgetStateProperty.all(Colors.blue.withOpacity(0.1)) : null,
+                ? WidgetStateProperty.all(Colors.blue.withValues(alpha: 0.1)) : null,
               cells: [
                 DataCell(Text('${r['level']}')),
                 DataCell(Text(_formatNumber(r['totalXP']))),

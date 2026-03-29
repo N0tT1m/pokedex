@@ -191,7 +191,7 @@ class _GrandUndergroundScreenState extends State<GrandUndergroundScreen>
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(12),
-          color: color.withOpacity(0.85),
+          color: color.withValues(alpha: 0.85),
           child: Column(
             children: [
               Text(hideaway.biome,
@@ -239,9 +239,9 @@ class _GrandUndergroundScreenState extends State<GrandUndergroundScreen>
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           margin: const EdgeInsets.only(top: 8, bottom: 4),
           decoration: BoxDecoration(
-            color: tierColor.withOpacity(0.15),
+            color: tierColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: tierColor.withOpacity(0.3)),
+            border: Border.all(color: tierColor.withValues(alpha: 0.3)),
           ),
           child: Text(
             '$label  (${pokemon.length})',

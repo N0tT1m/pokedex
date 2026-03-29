@@ -146,7 +146,7 @@ class _LearnsetScreenState extends State<LearnsetScreen> with SingleTickerProvid
                   Padding(
                     padding: const EdgeInsets.all(8),
                     child: DropdownButtonFormField<String>(
-                      value: _selectedVersion,
+                      initialValue: _selectedVersion,
                       decoration: const InputDecoration(
                         labelText: 'Game Version', border: OutlineInputBorder(), isDense: true),
                       isExpanded: true,

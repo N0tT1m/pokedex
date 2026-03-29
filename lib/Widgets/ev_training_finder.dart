@@ -325,7 +325,7 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
                               });
                               _applyFilter();
                             },
-                            selectedColor: evStatColors[entry.key]?.withOpacity(0.3),
+                            selectedColor: evStatColors[entry.key]?.withValues(alpha: 0.3),
                             checkmarkColor: evStatColors[entry.key],
                             avatar: isSelected
                                 ? null
@@ -368,7 +368,7 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
                               });
                               _applyFilter();
                             },
-                            selectedColor: Colors.blue.withOpacity(0.3),
+                            selectedColor: Colors.blue.withValues(alpha: 0.3),
                             checkmarkColor: Colors.blue,
                           );
                         }).toList(),
@@ -552,10 +552,10 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
                       return Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: evStatColors[entry.key]?.withOpacity(0.2),
+                          color: evStatColors[entry.key]?.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: evStatColors[entry.key]?.withOpacity(0.5) ?? Colors.grey,
+                            color: evStatColors[entry.key]?.withValues(alpha: 0.5) ?? Colors.grey,
                             width: 1,
                           ),
                         ),
