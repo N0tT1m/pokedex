@@ -312,9 +312,10 @@ class _SearchState extends State<Search> {
     }
 
     final pokemonName = _pokemonData!['name']?.toString() ?? '';
-    final natures = NatureRecommendationService.getRecommendedNatures(pokemonName, baseStats);
+    final competitiveNatures = NatureRecommendationService.getCompetitiveNatures(pokemonName, baseStats);
+    final ingameNatures = NatureRecommendationService.getIngameNatures(pokemonName, baseStats);
 
-    if (natures.isEmpty) return const SizedBox.shrink();
+    if (competitiveNatures.isEmpty && ingameNatures.isEmpty) return const SizedBox.shrink();
 
     return Container(
       padding: const EdgeInsets.all(5),
@@ -329,46 +330,95 @@ class _SearchState extends State<Search> {
             children: [
               const Text(
                 'Recommended Natures',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
-              const SizedBox(height: 4),
-              Text(
-                'Based on base stats for competitive play',
-                style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-              ),
-              const SizedBox(height: 10),
-              ...natures.map((n) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 12),
+
+              // In-Game section
+              if (ingameNatures.isNotEmpty) ...[
+                Row(
                   children: [
-                    const Icon(Icons.star, size: 16, color: Colors.amber),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${n['nature']}',
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                          ),
-                          Text(
-                            '${n['reason']}',
-                            style: TextStyle(fontSize: 12, color: Colors.green.shade700),
-                          ),
-                          Text(
-                            '${n['role']}',
-                            style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
-                          ),
-                        ],
+                    Icon(Icons.videogame_asset, size: 16, color: Colors.blue.shade700),
+                    const SizedBox(width: 4),
+                    Text(
+                      'In-Game (Story)',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: Colors.blue.shade700,
                       ),
                     ),
                   ],
                 ),
-              )),
+                const SizedBox(height: 2),
+                Text(
+                  'Best for beating the game — max damage, simple picks',
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                ),
+                const SizedBox(height: 6),
+                ...ingameNatures.map((n) => _buildNatureRow(n, Colors.blue.shade700)),
+                const SizedBox(height: 12),
+              ],
+
+              // Competitive section
+              if (competitiveNatures.isNotEmpty) ...[
+                Row(
+                  children: [
+                    Icon(Icons.emoji_events, size: 16, color: Colors.amber.shade700),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Competitive (PvP)',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: Colors.amber.shade700,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Optimized for ranked battles and team roles',
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                ),
+                const SizedBox(height: 6),
+                ...competitiveNatures.map((n) => _buildNatureRow(n, Colors.amber.shade700)),
+              ],
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildNatureRow(Map<String, String> n, Color accentColor) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.star, size: 16, color: accentColor),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${n['nature']}',
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+                Text(
+                  '${n['reason']}',
+                  style: TextStyle(fontSize: 12, color: Colors.green.shade700),
+                ),
+                Text(
+                  '${n['role']}',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
