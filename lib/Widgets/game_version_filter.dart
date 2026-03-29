@@ -12,7 +12,7 @@ class GameVersionFilter extends StatefulWidget {
 }
 
 class _GameVersionFilterState extends State<GameVersionFilter>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   // Current view state
   String? _selectedVersionKey;
   String? _selectedVersionName;
