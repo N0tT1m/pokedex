@@ -122,7 +122,6 @@ class _GameVersionFilterState extends State<GameVersionFilter>
 
       Map<String, List<Map<String, dynamic>>> groups = {};
       List<String> names = [];
-      bool hasNational = false;
 
       for (var pokedexRef in pokedexes) {
         final pokedexUrl = pokedexRef['url'];
@@ -135,10 +134,6 @@ class _GameVersionFilterState extends State<GameVersionFilter>
           final dexName = PokemonDataFormatter.capitalize(
             (pokedexData['name'] ?? pokedexName ?? 'Unknown').toString().replaceAll('-', ' '),
           );
-
-          if (pokedexId == 1 || pokedexName == 'national') {
-            hasNational = true;
-          }
 
           List<Map<String, dynamic>> entries = [];
           for (var entry in pokemonSpecies) {
@@ -163,35 +158,6 @@ class _GameVersionFilterState extends State<GameVersionFilter>
           names.add(dexName);
           groups[dexName] = entries;
         }
-      }
-
-      // Add the national pokedex if not already included
-      if (!hasNational) {
-        final nationalData = await PokeApiService.getPokedex(1);
-        final List<dynamic> nationalSpecies = nationalData['pokemon_entries'] ?? [];
-
-        List<Map<String, dynamic>> nationalEntries = [];
-        for (var entry in nationalSpecies) {
-          final entryNumber = entry['entry_number'];
-          final speciesName = entry['pokemon_species']['name'];
-          final speciesUrl = entry['pokemon_species']['url'];
-          final speciesId = PokeApiService.extractIdFromUrl(speciesUrl);
-
-          nationalEntries.add({
-            'entry_number': entryNumber,
-            'name': PokemonDataFormatter.capitalize(speciesName),
-            'api_name': speciesName,
-            'id': speciesId ?? 0,
-            'dex_name': 'National',
-            'image': speciesId != null
-                ? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$speciesId.png'
-                : '',
-          });
-        }
-
-        nationalEntries.sort((a, b) => (a['entry_number'] as int).compareTo(b['entry_number'] as int));
-        names.add('National');
-        groups['National'] = nationalEntries;
       }
 
       if (mounted) {
@@ -320,6 +286,72 @@ class _GameVersionFilterState extends State<GameVersionFilter>
   dynamic _getSafeList(String key) {
     if (_selectedPokemonData == null) return [];
     return _selectedPokemonData![key] ?? [];
+  }
+
+  Widget _buildEvolutionNode(Map<String, dynamic> node, {bool showInfo = false}) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (showInfo &&
+            node['info'] != null &&
+            node['info'] != node['name'])
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Text(
+              '${node['info']}',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12),
+            ),
+          ),
+        if (node['img'] != null && node['img'] != '')
+          Image.network(
+            node['img'],
+            height: 80,
+            errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+          ),
+        const SizedBox(height: 4),
+        if (node['name'] != null)
+          Text(
+            '${node['name']}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+      ],
+    );
+  }
+
+  Widget _buildEvolutionTree(Map<String, dynamic> node, {bool isRoot = true}) {
+    final List<dynamic> evolvesTo = node['evolves_to'] ?? [];
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildEvolutionNode(node, showInfo: !isRoot),
+        if (evolvesTo.isNotEmpty) ...[
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            child: Icon(Icons.arrow_downward),
+          ),
+          if (evolvesTo.length == 1)
+            _buildEvolutionTree(evolvesTo[0] as Map<String, dynamic>, isRoot: false)
+          else
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (var child in evolvesTo)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: _buildEvolutionTree(child as Map<String, dynamic>, isRoot: false),
+                    ),
+                ],
+              ),
+            ),
+        ],
+      ],
+    );
   }
 
   @override
@@ -589,7 +621,7 @@ class _GameVersionFilterState extends State<GameVersionFilter>
     if (_selectedPokemonData == null) return const SizedBox.shrink();
 
     final titles = _getSafeList('titles') as List;
-    final evolutions = _getSafeList('evolution') as List;
+    final evolution = _selectedPokemonData?['evolution'];
 
     return ListView(
       padding: const EdgeInsets.all(8),
@@ -687,35 +719,11 @@ class _GameVersionFilterState extends State<GameVersionFilter>
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
-                  if (evolutions.isEmpty || evolutions.length == 1)
+                  if (evolution == null ||
+                      (evolution is Map && (evolution.isEmpty || (evolution['evolves_to'] as List?)?.isEmpty == true)))
                     const Text('This Pokemon does not evolve.')
                   else
-                    Column(
-                      children: [
-                        for (int i = 0; i < evolutions.length; i++) ...[
-                          if (evolutions[i]['img'] != null)
-                            Image.network(
-                              evolutions[i]['img'],
-                              height: 80,
-                              errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
-                            ),
-                          const SizedBox(height: 4),
-                          if (evolutions[i]['name'] != null)
-                            Text(
-                              '${evolutions[i]['name']}',
-                              style: const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          if (evolutions[i]['info'] != null &&
-                              evolutions[i]['info'] != evolutions[i]['name'])
-                            Text('${evolutions[i]['info']}'),
-                          if (i < evolutions.length - 1)
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 4),
-                              child: Icon(Icons.arrow_downward),
-                            ),
-                        ],
-                      ],
-                    ),
+                    _buildEvolutionTree(evolution as Map<String, dynamic>),
                 ],
               ),
             ),

@@ -142,7 +142,7 @@ class _SearchState extends State<Search> {
         'data': {
           'Pokédex Data': {'Error': 'Failed to load Pokemon data'},
         },
-        'evolution': [],
+        'evolution': {},
         'locations': [],
       };
     }
@@ -423,9 +423,79 @@ class _SearchState extends State<Search> {
     );
   }
 
+  Widget _buildEvolutionNode(Map<String, dynamic> node, {bool showInfo = false}) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (showInfo &&
+            node['info'] != null &&
+            node['info'] != node['name'])
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Text(
+              '${node['info']}',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12),
+            ),
+          ),
+        if (node['img'] != null && node['img'] != '')
+          Image.network(
+            node['img'],
+            height: 80,
+            errorBuilder: (context, error, stackTrace) {
+              return const Icon(Icons.error);
+            },
+          ),
+        const SizedBox(height: 4),
+        if (node['name'] != null)
+          Text(
+            '${node['name']}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+      ],
+    );
+  }
+
+  Widget _buildEvolutionTree(Map<String, dynamic> node, {bool isRoot = true}) {
+    final List<dynamic> evolvesTo = node['evolves_to'] ?? [];
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildEvolutionNode(node, showInfo: !isRoot),
+        if (evolvesTo.isNotEmpty) ...[
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            child: Icon(Icons.arrow_downward),
+          ),
+          if (evolvesTo.length == 1)
+            _buildEvolutionTree(evolvesTo[0] as Map<String, dynamic>, isRoot: false)
+          else
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (var child in evolvesTo)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: _buildEvolutionTree(child as Map<String, dynamic>, isRoot: false),
+                    ),
+                ],
+              ),
+            ),
+        ],
+      ],
+    );
+  }
+
   Widget _buildEvolutionCard() {
-    final evolutions = _getSafeList('evolution') as List;
+    final evolution = _pokemonData?['evolution'];
     final titles = _getSafeList('titles') as List;
+    final bool noEvolution = evolution == null ||
+        (evolution is Map && (evolution.isEmpty || (evolution['evolves_to'] as List?)?.isEmpty == true));
 
     return Container(
       padding: const EdgeInsets.all(5),
@@ -442,44 +512,14 @@ class _SearchState extends State<Search> {
                   '${titles[4]}\n',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-              if (evolutions.isEmpty || evolutions.length == 1)
+              if (noEvolution)
                 const Column(
                   children: <Widget>[
                     Text('This Pokémon does not evolve.'),
                   ],
                 )
               else
-                Column(
-                  children: [
-                    for (int i = 0; i < evolutions.length; i++) ...[
-                      if (evolutions[i]['img'] != null)
-                        Image.network(
-                          evolutions[i]['img'],
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(Icons.error);
-                          },
-                        ),
-                      const Padding(padding: EdgeInsets.all(5)),
-                      if (evolutions[i]['name'] != null)
-                        Text(
-                          '${evolutions[i]['name']}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      const Padding(padding: EdgeInsets.all(5)),
-                      if (evolutions[i]['info'] != null &&
-                          evolutions[i]['info'] != evolutions[i]['name'])
-                        Text('${evolutions[i]['info']}'),
-                      if (i < evolutions.length - 1)
-                        const Column(
-                          children: [
-                            Padding(padding: EdgeInsets.all(5)),
-                            Icon(Icons.arrow_downward),
-                            Padding(padding: EdgeInsets.all(5)),
-                          ],
-                        ),
-                    ],
-                  ],
-                ),
+                _buildEvolutionTree(evolution as Map<String, dynamic>),
             ],
           ),
         ),

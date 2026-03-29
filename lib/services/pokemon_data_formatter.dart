@@ -99,35 +99,33 @@ class PokemonDataFormatter {
     };
   }
 
-  /// Formats evolution chain recursively
-  static List<Map<String, dynamic>> _formatEvolutionChain(Map<String, dynamic> chain) {
-    final List<Map<String, dynamic>> result = [];
-
-    void processChain(Map<String, dynamic> node, String? evolutionDetails) {
+  /// Formats evolution chain recursively as a tree structure
+  static Map<String, dynamic> _formatEvolutionChain(Map<String, dynamic> chain) {
+    Map<String, dynamic> processNode(Map<String, dynamic> node, String? evolutionDetails) {
       final speciesName = node['species']['name'];
       final speciesId = PokeApiService.extractIdFromUrl(node['species']['url']);
 
-      result.add({
+      final List<Map<String, dynamic>> children = [];
+      final evolvesTo = node['evolves_to'] as List?;
+      if (evolvesTo != null && evolvesTo.isNotEmpty) {
+        for (var evolution in evolvesTo) {
+          final details = _formatEvolutionDetails(evolution['evolution_details']);
+          children.add(processNode(evolution, details));
+        }
+      }
+
+      return {
         'name': capitalize(speciesName),
         'id': speciesId,
         'img': speciesId != null
             ? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$speciesId.png'
             : '',
         'info': evolutionDetails ?? speciesName,
-      });
-
-      // Process evolutions
-      final evolvesTo = node['evolves_to'] as List?;
-      if (evolvesTo != null && evolvesTo.isNotEmpty) {
-        for (var evolution in evolvesTo) {
-          final details = _formatEvolutionDetails(evolution['evolution_details']);
-          processChain(evolution, details);
-        }
-      }
+        'evolves_to': children,
+      };
     }
 
-    processChain(chain, null);
-    return result;
+    return processNode(chain, null);
   }
 
   /// Formats evolution details (trigger, level, item, etc.)
