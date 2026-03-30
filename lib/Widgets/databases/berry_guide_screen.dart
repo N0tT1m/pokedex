@@ -102,8 +102,7 @@ class _BerryGuideScreenState extends State<BerryGuideScreen> {
 
         for (final berry in results) {
           try {
-            final detailUrl = '${PokeApiService.baseUrl}/berry/${berry['name']}';
-            final detailResponse = await Requests.get(detailUrl);
+            final detailResponse = await Requests.get('${PokeApiService.baseUrl}/berry/${berry['name']}');
             if (detailResponse.statusCode == 200) {
               final detail = detailResponse.json();
               final rawName = detail['name'] as String;

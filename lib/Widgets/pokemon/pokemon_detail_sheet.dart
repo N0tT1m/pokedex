@@ -70,6 +70,7 @@ class _PokemonDetailSheetContent extends StatefulWidget {
 
 class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> {
   Map<String, dynamic>? _data;
+  List<Map<String, dynamic>> _typeDefenses = [];
   bool _isLoading = true;
   String? _error;
 
@@ -82,14 +83,21 @@ class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> 
   Future<void> _load() async {
     try {
       final data = await PokeApiService.getPokemon(widget.apiName);
-      if (mounted) setState(() { _data = data; _isLoading = false; });
+      List<Map<String, dynamic>> defenses = [];
+      try {
+        defenses = await PokeApiService.getPokemonTypeDefenses(widget.apiName);
+      } catch (_) {}
+      if (mounted) setState(() { _data = data; _typeDefenses = defenses; _isLoading = false; });
     } catch (e) {
-      // If the name failed, try stripping the form suffix and using just the base name
       final baseName = widget.apiName.split('-').first;
       if (baseName != widget.apiName) {
         try {
           final data = await PokeApiService.getPokemon(baseName);
-          if (mounted) setState(() { _data = data; _isLoading = false; });
+          List<Map<String, dynamic>> defenses = [];
+          try {
+            defenses = await PokeApiService.getPokemonTypeDefenses(baseName);
+          } catch (_) {}
+          if (mounted) setState(() { _data = data; _typeDefenses = defenses; _isLoading = false; });
           return;
         } catch (_) {}
       }
@@ -218,10 +226,77 @@ class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> 
                 ),
               ),
             ),
+            if (_typeDefenses.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Type Defenses', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      const SizedBox(height: 8),
+                      ..._buildDefenseSections(),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ],
         );
       },
     );
+  }
+
+  List<Widget> _buildDefenseSections() {
+    final weaknesses = _typeDefenses.where((t) => (t['multiplier'] as num) > 1).toList();
+    final resistances = _typeDefenses.where((t) => (t['multiplier'] as num) < 1 && (t['multiplier'] as num) > 0).toList();
+    final immunities = _typeDefenses.where((t) => (t['multiplier'] as num) == 0).toList();
+
+    final List<Widget> widgets = [];
+
+    if (weaknesses.isNotEmpty) {
+      widgets.add(Text('Weak to:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.red.shade700)));
+      widgets.add(const SizedBox(height: 4));
+      widgets.add(Wrap(
+        spacing: 4, runSpacing: 4,
+        children: weaknesses.map((t) => Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(color: Colors.red.shade100, borderRadius: BorderRadius.circular(8)),
+          child: Text('${t['type_name']} ${t['multiplier']}x', style: TextStyle(fontSize: 11, color: Colors.red.shade800, fontWeight: FontWeight.bold)),
+        )).toList(),
+      ));
+      widgets.add(const SizedBox(height: 6));
+    }
+
+    if (resistances.isNotEmpty) {
+      widgets.add(Text('Resists:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.green.shade700)));
+      widgets.add(const SizedBox(height: 4));
+      widgets.add(Wrap(
+        spacing: 4, runSpacing: 4,
+        children: resistances.map((t) => Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(color: Colors.green.shade100, borderRadius: BorderRadius.circular(8)),
+          child: Text('${t['type_name']} ${t['multiplier']}x', style: TextStyle(fontSize: 11, color: Colors.green.shade800, fontWeight: FontWeight.bold)),
+        )).toList(),
+      ));
+      widgets.add(const SizedBox(height: 6));
+    }
+
+    if (immunities.isNotEmpty) {
+      widgets.add(Text('Immune to:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.blue.shade700)));
+      widgets.add(const SizedBox(height: 4));
+      widgets.add(Wrap(
+        spacing: 4, runSpacing: 4,
+        children: immunities.map((t) => Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(color: Colors.blue.shade100, borderRadius: BorderRadius.circular(8)),
+          child: Text('${t['type_name']}', style: TextStyle(fontSize: 11, color: Colors.blue.shade800, fontWeight: FontWeight.bold)),
+        )).toList(),
+      ));
+    }
+
+    return widgets;
   }
 
   Color _statColor(int val) {

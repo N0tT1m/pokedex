@@ -209,16 +209,16 @@ class PokeApiService {
     }
 
     try {
-      final response = await Requests.get(
-        '$baseUrl/location-area/${identifier.toLowerCase()}',
+      final regions = await Requests.get(
+        '$baseUrl/location/regions',
       );
 
-      if (response.statusCode == 200) {
-        final data = response.json();
+      if (regions.statusCode == 200) {
+        final data = regions.json();
         _cache[cacheKey] = data;
         return data;
       } else {
-        throw Exception('Failed to load location: ${response.statusCode}');
+        throw Exception('Failed to load location: ${regions.statusCode}');
       }
     } catch (e) {
       throw Exception('Error fetching location: $e');
@@ -252,8 +252,133 @@ class PokeApiService {
     }
   }
 
+  /// Fetches the move learnset for a specific Pokemon
+  /// Returns a list of moves with learn_method, type, category, power, accuracy
+  static Future<List<Map<String, dynamic>>> getPokemonMoves(String identifier) async {
+    final cacheKey = 'moves_$identifier';
+
+    if (_cache.containsKey(cacheKey)) {
+      return List<Map<String, dynamic>>.from(_cache[cacheKey]);
+    }
+
+    try {
+      final response = await Requests.get(
+        '$baseUrl/pokemon/${identifier.toLowerCase()}/moves',
+      );
+
+      if (response.statusCode == 200) {
+        final data = List<Map<String, dynamic>>.from(response.json());
+        _cache[cacheKey] = data;
+        return data;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Fetches type defense matchups for a specific Pokemon
+  /// Returns a list of {type_name, multiplier} entries
+  static Future<List<Map<String, dynamic>>> getPokemonTypeDefenses(String identifier) async {
+    final cacheKey = 'typedefenses_$identifier';
+
+    if (_cache.containsKey(cacheKey)) {
+      return List<Map<String, dynamic>>.from(_cache[cacheKey]);
+    }
+
+    try {
+      final response = await Requests.get(
+        '$baseUrl/pokemon/${identifier.toLowerCase()}/type-defenses',
+      );
+
+      if (response.statusCode == 200) {
+        final data = List<Map<String, dynamic>>.from(response.json());
+        _cache[cacheKey] = data;
+        return data;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Fetches all natures with stat modifiers
+  static Future<List<Map<String, dynamic>>> getNatures() async {
+    const cacheKey = 'natures';
+
+    if (_cache.containsKey(cacheKey)) {
+      return List<Map<String, dynamic>>.from(_cache[cacheKey]);
+    }
+
+    try {
+      final response = await Requests.get('$baseUrl/nature');
+
+      if (response.statusCode == 200) {
+        final data = response.json();
+        final results = List<Map<String, dynamic>>.from(data['results']);
+        _cache[cacheKey] = results;
+        return results;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Fetches list of all available game names
+  static Future<List<String>> getGames() async {
+    const cacheKey = 'games';
+
+    if (_cache.containsKey(cacheKey)) {
+      return List<String>.from(_cache[cacheKey]);
+    }
+
+    try {
+      final response = await Requests.get('$baseUrl/games');
+
+      if (response.statusCode == 200) {
+        final data = response.json();
+        final games = List<String>.from(data['games']);
+        _cache[cacheKey] = games;
+        return games;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Fetches game-specific pokedex (regional + national)
+  static Future<Map<String, dynamic>> getGamePokedex(String game) async {
+    final cacheKey = 'game_pokedex_$game';
+
+    if (_cache.containsKey(cacheKey)) {
+      return Map<String, dynamic>.from(_cache[cacheKey]);
+    }
+
+    try {
+      final response = await Requests.get(
+        '$baseUrl/pokedex/game/${Uri.encodeComponent(game)}',
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.json();
+        _cache[cacheKey] = data;
+        return data;
+      } else {
+        return {};
+      }
+    } catch (e) {
+      return {};
+    }
+  }
+
   /// Helper method to extract Pokemon ID from species URL
-  /// Example: "https://pokeapi.co/api/v2/pokemon-species/25/" -> 25
+  /// Example: "https://pokeapi.co/api/v2/pokedex/game/-species/25/" -> 25
   static int? extractIdFromUrl(String url) {
     final regex = RegExp(r'/(\d+)/?$');
     final match = regex.firstMatch(url);

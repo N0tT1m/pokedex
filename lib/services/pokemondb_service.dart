@@ -1,13 +1,11 @@
-import 'dart:convert';
 import 'package:requests/requests.dart';
 
 class PokemonDBService {
-  // Use the local Go API for encounter data (falls back to empty if unavailable)
   static const String _apiBaseUrl = 'https://poke-api.duocore.dev:158/api/v2';
   static final Map<String, Map<String, List<String>>> _cache = {};
 
-  /// Fetch encounter locations for a Pokemon from the local API
-  /// Returns a map of game names to list of locations
+  /// Fetch encounter locations for a Pokemon from the location API
+  /// Returns a map of "Region - Route" to list of detail strings
   static Future<Map<String, List<String>>> getEncounterLocations(
       String pokemonName) async {
     final cacheKey = pokemonName.toLowerCase();
@@ -17,27 +15,38 @@ class PokemonDBService {
     }
 
     try {
-      final url = '$_apiBaseUrl/pokemon/${pokemonName.toLowerCase()}/encounters';
+      final url = '$_apiBaseUrl/location/pokemon/${pokemonName.toLowerCase()}';
       final response = await Requests.get(url);
 
       if (response.statusCode != 200) {
         return {};
       }
 
-      final List<dynamic> data = response.json();
-      final Map<String, List<String>> encounters = {};
+      final data = response.json();
+      final List<dynamic> encounters = data['encounters'] ?? [];
+      final Map<String, List<String>> result = {};
 
-      for (var entry in data) {
+      for (var entry in encounters) {
+        final region = entry['region'] ?? '';
+        final route = entry['route_name'] ?? '';
         final games = List<String>.from(entry['games'] ?? []);
-        final locations = List<String>.from(entry['locations'] ?? []);
-        if (games.isNotEmpty && locations.isNotEmpty) {
-          final gameKey = games.join('/');
-          encounters[gameKey] = locations;
-        }
+        final method = entry['encounter_method'] ?? '';
+        final rarity = entry['rarity'] ?? '';
+        final levelRange = entry['level_range'] ?? '';
+
+        final key = '$region - $route';
+        final details = <String>[];
+        if (games.isNotEmpty) details.add(games.join(', '));
+        if (method.isNotEmpty) details.add(method);
+        if (levelRange.isNotEmpty) details.add('Lv.$levelRange');
+        if (rarity.isNotEmpty) details.add(rarity);
+
+        result.putIfAbsent(key, () => []);
+        result[key]!.add(details.join(' | '));
       }
 
-      _cache[cacheKey] = encounters;
-      return encounters;
+      _cache[cacheKey] = result;
+      return result;
     } catch (e) {
       return {};
     }

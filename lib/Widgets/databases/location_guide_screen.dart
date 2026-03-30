@@ -28,11 +28,12 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
 
   Future<void> _loadRegions() async {
     try {
-      final response = await Requests.get('${PokeApiService.baseUrl}/region?limit=20');
+      final response = await Requests.get('${PokeApiService.baseUrl}/location/regions');
       if (response.statusCode == 200) {
         final data = response.json();
+        final List<dynamic> regionNames = data['regions'] ?? [];
         setState(() {
-          _regions = List<Map<String, dynamic>>.from(data['results']);
+          _regions = regionNames.map((name) => {'name': name.toString()}).toList();
           _isLoading = false;
         });
       }
@@ -41,19 +42,25 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
     }
   }
 
-  Future<void> _loadRegionLocations(String url, String name) async {
+  Future<void> _loadRegionLocations(String regionName) async {
     setState(() {
       _isLoadingLocations = true;
-      _selectedRegionName = _formatName(name);
+      _selectedRegionName = regionName;
       _selectedArea = null;
     });
 
     try {
-      final response = await Requests.get(url);
+      final response = await Requests.get(
+        '${PokeApiService.baseUrl}/location/region/$regionName/routes',
+      );
       if (response.statusCode == 200) {
         final data = response.json();
+        final List<dynamic> routeNames = data['routes'] ?? [];
         setState(() {
-          _locations = List<Map<String, dynamic>>.from(data['locations'] ?? []);
+          _locations = routeNames.map((name) => {
+            'name': name.toString(),
+            'region': regionName,
+          }).toList();
           _isLoadingLocations = false;
         });
       }
@@ -62,29 +69,20 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
     }
   }
 
-  Future<void> _loadLocationAreas(String url) async {
+  Future<void> _loadRouteEncounters(String region, String route) async {
     setState(() => _isLoadingArea = true);
 
     try {
-      final response = await Requests.get(url);
+      final response = await Requests.get(
+        '${PokeApiService.baseUrl}/location/region/$region/route/${Uri.encodeComponent(route)}',
+      );
       if (response.statusCode == 200) {
         final data = response.json();
-        final areas = data['areas'] as List? ?? [];
-
-        // Load encounter data for first area
-        if (areas.isNotEmpty) {
-          final areaResponse = await Requests.get(areas[0]['url']);
-          if (areaResponse.statusCode == 200) {
-            setState(() {
-              _selectedArea = areaResponse.json();
-              _isLoadingArea = false;
-            });
-            return;
-          }
-        }
-
         setState(() {
-          _selectedArea = {'name': data['name'], 'pokemon_encounters': []};
+          _selectedArea = {
+            'name': route,
+            'encounters': data['encounters'] ?? [],
+          };
           _isLoadingArea = false;
         });
       }
@@ -152,7 +150,7 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
             leading: const Icon(Icons.map, color: Colors.green),
             title: Text(_formatName(region['name']), style: const TextStyle(fontWeight: FontWeight.bold)),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => _loadRegionLocations(region['url'], region['name']),
+            onTap: () => _loadRegionLocations(region['name']),
           ),
         );
       },
@@ -176,7 +174,7 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
             leading: const Icon(Icons.location_on, color: Colors.blue),
             title: Text(_formatName(location['name']), style: const TextStyle(fontWeight: FontWeight.bold)),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => _loadLocationAreas(location['url']),
+            onTap: () => _loadRouteEncounters(location['region'], location['name']),
           ),
         );
       },
@@ -186,7 +184,7 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
   Widget _buildAreaDetail() {
     if (_isLoadingArea) return const Center(child: CircularProgressIndicator());
 
-    final encounters = _selectedArea!['pokemon_encounters'] as List? ?? [];
+    final encounters = _selectedArea!['encounters'] as List? ?? [];
 
     if (encounters.isEmpty) {
       return const Center(child: Text('No encounter data available'));
@@ -197,8 +195,12 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
       itemCount: encounters.length,
       itemBuilder: (context, index) {
         final encounter = encounters[index];
-        final pokemonName = _formatName(encounter['pokemon']['name'] ?? '');
-        final versionDetails = encounter['version_details'] as List? ?? [];
+        final pokemonName = encounter['pokemon_name'] ?? '';
+        final games = List<String>.from(encounter['games'] ?? []);
+        final method = encounter['encounter_method'] ?? '';
+        final rarity = encounter['rarity'] ?? '';
+        final levelRange = encounter['level_range'] ?? '';
+        final timeOfDay = encounter['time_of_day'] ?? '';
 
         return Card(
           child: Padding(
@@ -207,7 +209,7 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 InkWell(
-                  onTap: () => showPokemonDetailSheet(context, encounter['pokemon']['name'] ?? ''),
+                  onTap: () => showPokemonDetailSheet(context, pokemonName.toLowerCase()),
                   child: Row(
                     children: [
                       Expanded(child: Text(pokemonName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue))),
@@ -216,28 +218,16 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                ...versionDetails.take(5).map((vd) {
-                  final version = _formatName(vd['version']['name'] ?? '');
-                  final encounterDetails = vd['encounter_details'] as List? ?? [];
-                  final maxChance = vd['max_chance'] ?? 0;
-
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('$version (${maxChance}% chance)', style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                        ...encounterDetails.take(3).map((ed) {
-                          final method = _formatName(ed['method']['name'] ?? '');
-                          final minLevel = ed['min_level'] ?? '?';
-                          final maxLevel = ed['max_level'] ?? '?';
-                          final chance = ed['chance'] ?? 0;
-                          return Text('  $method: Lv.$minLevel-$maxLevel ($chance%)', style: const TextStyle(fontSize: 12));
-                        }),
-                      ],
-                    ),
-                  );
-                }),
+                if (games.isNotEmpty)
+                  Text('Games: ${games.join(', ')}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                if (method.isNotEmpty)
+                  Text('Method: $method', style: const TextStyle(fontSize: 12)),
+                if (levelRange.isNotEmpty)
+                  Text('Level: $levelRange', style: const TextStyle(fontSize: 12)),
+                if (rarity.isNotEmpty)
+                  Text('Rarity: $rarity', style: const TextStyle(fontSize: 12)),
+                if (timeOfDay.isNotEmpty)
+                  Text('Time: $timeOfDay', style: const TextStyle(fontSize: 12)),
               ],
             ),
           ),

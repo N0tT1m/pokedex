@@ -11,4 +11,4 @@ PRODUCT_NAME = pokedex
 PRODUCT_BUNDLE_IDENTIFIER = dev.duocore.pokedex
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2022 dev.duocore. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 dev.duocore. All rights reserved.

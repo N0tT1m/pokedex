@@ -50,10 +50,10 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
     }
   }
 
-  Future<void> _loadItemDetail(String url) async {
+  Future<void> _loadItemDetail(String name) async {
     setState(() => _isLoadingDetail = true);
     try {
-      final response = await Requests.get(url);
+      final response = await Requests.get('${PokeApiService.baseUrl}/item/$name');
       if (response.statusCode == 200) {
         setState(() {
           _selectedItem = response.json();
@@ -202,7 +202,7 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
                 child: ListTile(
                   title: Text(item['displayName']),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _loadItemDetail(item['url']),
+                  onTap: () => _loadItemDetail(item['name']),
                 ),
               );
             },

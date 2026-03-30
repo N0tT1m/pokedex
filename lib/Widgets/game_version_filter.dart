@@ -27,6 +27,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
   Map<String, dynamic>? _selectedPokemonData;
   bool _isLoadingDetail = false;
   List<String> _pokemonLocations = [];
+  List<Map<String, dynamic>> _typeDefenses = [];
+  List<Map<String, dynamic>> _moveLearnset = [];
 
   // Tab controller for pokedex switching
   TabController? _tabController;
@@ -240,6 +242,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
       _isLoadingDetail = true;
       _selectedPokemonData = null;
       _pokemonLocations = [];
+      _typeDefenses = [];
+      _moveLearnset = [];
     });
 
     try {
@@ -260,6 +264,18 @@ class _GameVersionFilterState extends State<GameVersionFilter>
         speciesData,
         evolutionData,
       );
+
+      // Fetch type defenses and moves
+      try {
+        _typeDefenses = await PokeApiService.getPokemonTypeDefenses(apiName);
+      } catch (e) {
+        _typeDefenses = [];
+      }
+      try {
+        _moveLearnset = await PokeApiService.getPokemonMoves(apiName);
+      } catch (e) {
+        _moveLearnset = [];
+      }
 
       // Fetch encounter locations
       try {
@@ -746,6 +762,14 @@ class _GameVersionFilterState extends State<GameVersionFilter>
           ],
         ),
 
+        // Type Defenses
+        if (_typeDefenses.isNotEmpty)
+          _buildTypeDefensesSection(),
+
+        // Moves
+        if (_moveLearnset.isNotEmpty)
+          _buildMovesSection(),
+
         // Evolution
         Container(
           padding: const EdgeInsets.all(5),
@@ -801,6 +825,119 @@ class _GameVersionFilterState extends State<GameVersionFilter>
             ),
           ),
       ],
+    );
+  }
+
+  Widget _buildTypeDefensesSection() {
+    final weaknesses = _typeDefenses.where((t) => (t['multiplier'] as num) > 1).toList();
+    final resistances = _typeDefenses.where((t) => (t['multiplier'] as num) < 1 && (t['multiplier'] as num) > 0).toList();
+    final immunities = _typeDefenses.where((t) => (t['multiplier'] as num) == 0).toList();
+
+    Widget buildRow(String label, List<Map<String, dynamic>> items, Color bgColor, Color textColor, {bool showMultiplier = true}) {
+      if (items.isEmpty) return const SizedBox.shrink();
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: textColor)),
+          const SizedBox(height: 4),
+          Wrap(
+            spacing: 6, runSpacing: 4,
+            children: items.map((t) => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(12)),
+              child: Text(
+                showMultiplier ? '${t['type_name']} ${t['multiplier']}x' : '${t['type_name']}',
+                style: TextStyle(fontSize: 12, color: textColor, fontWeight: FontWeight.bold),
+              ),
+            )).toList(),
+          ),
+          const SizedBox(height: 8),
+        ],
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(5),
+      width: double.infinity,
+      child: Card(
+        margin: const EdgeInsets.all(5),
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Type Defenses', style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              buildRow('Weak to:', weaknesses, Colors.red.shade100, Colors.red.shade800),
+              buildRow('Resists:', resistances, Colors.green.shade100, Colors.green.shade800),
+              buildRow('Immune to:', immunities, Colors.blue.shade100, Colors.blue.shade800, showMultiplier: false),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMovesSection() {
+    final levelUp = _moveLearnset.where((m) => m['learn_method'] == 'level-up').toList();
+    final tm = _moveLearnset.where((m) => m['learn_method'] == 'tm').toList();
+    final egg = _moveLearnset.where((m) => m['learn_method'] == 'egg').toList();
+
+    levelUp.sort((a, b) {
+      final aNum = int.tryParse(a['level_or_tm']?.toString() ?? '0') ?? 0;
+      final bNum = int.tryParse(b['level_or_tm']?.toString() ?? '0') ?? 0;
+      return aNum.compareTo(bNum);
+    });
+
+    Widget buildSection(String title, List<Map<String, dynamic>> moves, IconData icon, Color color) {
+      if (moves.isEmpty) return const SizedBox.shrink();
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Icon(icon, size: 16, color: color),
+            const SizedBox(width: 4),
+            Text('$title (${moves.length})', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: color)),
+          ]),
+          const SizedBox(height: 4),
+          ...moves.take(10).map((m) {
+            final level = m['level_or_tm']?.toString() ?? '';
+            final power = m['power'];
+            final prefix = level.isNotEmpty && level != '\u2014' && level != 'null' ? 'Lv.$level ' : '';
+            final suffix = power != null ? ' | Pow:$power' : '';
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 2),
+              child: Text('$prefix${m['name']} (${m['type']}, ${m['category']})$suffix', style: const TextStyle(fontSize: 12)),
+            );
+          }),
+          if (moves.length > 10)
+            Text('...and ${moves.length - 10} more', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+          const SizedBox(height: 8),
+        ],
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(5),
+      width: double.infinity,
+      child: Card(
+        margin: const EdgeInsets.all(5),
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Moves (${_moveLearnset.length})', style: const TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              buildSection('Level Up', levelUp, Icons.arrow_upward, Colors.blue.shade700),
+              buildSection('TM/HM', tm, Icons.album, Colors.purple.shade700),
+              buildSection('Egg Moves', egg, Icons.egg, Colors.orange.shade700),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

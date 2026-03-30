@@ -51,10 +51,10 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
     }
   }
 
-  Future<void> _loadMoveDetail(String url) async {
+  Future<void> _loadMoveDetail(String name) async {
     setState(() => _isLoadingDetail = true);
     try {
-      final response = await Requests.get(url);
+      final response = await Requests.get('${PokeApiService.baseUrl}/move/$name');
       if (response.statusCode == 200) {
         setState(() {
           _selectedMove = response.json();
@@ -150,7 +150,7 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
                 child: ListTile(
                   title: Text(move['displayName']),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _loadMoveDetail(move['url']),
+                  onTap: () => _loadMoveDetail(move['name']),
                 ),
               );
             },

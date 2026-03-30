@@ -26,6 +26,8 @@ class _SearchState extends State<Search> {
   List<Widget> listOfWidgets = [];
   List<Map<String, dynamic>> listOfEvolution = [];
   List<Map<String, dynamic>> evolutions = [];
+  List<Map<String, dynamic>> _typeDefenses = [];
+  List<Map<String, dynamic>> _moveLearnset = [];
   bool isLoading = false;
   String? errorMessage;
 
@@ -100,6 +102,18 @@ class _SearchState extends State<Search> {
         evolutionData,
       );
 
+      // Fetch type defenses and moves
+      try {
+        _typeDefenses = await PokeApiService.getPokemonTypeDefenses(apiName);
+      } catch (e) {
+        _typeDefenses = [];
+      }
+      try {
+        _moveLearnset = await PokeApiService.getPokemonMoves(apiName);
+      } catch (e) {
+        _moveLearnset = [];
+      }
+
       // Fetch encounter locations from PokemonDB
       try {
         print('Fetching encounter data for: $apiName');
@@ -149,18 +163,34 @@ class _SearchState extends State<Search> {
   }
 
   Widget getPokemonWidget() {
-    // Build a fresh list of location widgets
     final List<Widget> locationWidgets = [];
 
     for (var i = 0; i < pokemonLocations.length; i++) {
-      locationWidgets.add(
-        Text(
-          pokemonLocations[i],
-          style: const TextStyle(fontSize: 14),
-        ),
-      );
+      final parts = pokemonLocations[i].split(': ');
+      if (parts.length >= 2) {
+        locationWidgets.add(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                parts[0],
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                parts.sublist(1).join(': '),
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+              ),
+            ],
+          ),
+        );
+      } else {
+        locationWidgets.add(
+          Text(pokemonLocations[i], style: const TextStyle(fontSize: 14)),
+        );
+      }
       if (i < pokemonLocations.length - 1) {
-        locationWidgets.add(const SizedBox(height: 8));
+        locationWidgets.add(const Divider(height: 12));
       }
     }
 
@@ -419,6 +449,168 @@ class _SearchState extends State<Search> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTypeDefensesCard() {
+    if (_typeDefenses.isEmpty) return const SizedBox.shrink();
+
+    final weaknesses = _typeDefenses.where((t) => (t['multiplier'] as num) > 1).toList();
+    final resistances = _typeDefenses.where((t) => (t['multiplier'] as num) < 1 && (t['multiplier'] as num) > 0).toList();
+    final immunities = _typeDefenses.where((t) => (t['multiplier'] as num) == 0).toList();
+
+    return Container(
+      padding: const EdgeInsets.all(5),
+      width: double.infinity,
+      child: Card(
+        margin: const EdgeInsets.all(5),
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Type Defenses', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox(height: 8),
+              if (weaknesses.isNotEmpty) ...[
+                Text('Weak to:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.red.shade700)),
+                const SizedBox(height: 4),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  children: weaknesses.map((t) => Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade100,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${t['type_name']} ${t['multiplier']}x',
+                      style: TextStyle(fontSize: 12, color: Colors.red.shade800, fontWeight: FontWeight.bold),
+                    ),
+                  )).toList(),
+                ),
+                const SizedBox(height: 8),
+              ],
+              if (resistances.isNotEmpty) ...[
+                Text('Resists:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.green.shade700)),
+                const SizedBox(height: 4),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  children: resistances.map((t) => Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade100,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${t['type_name']} ${t['multiplier']}x',
+                      style: TextStyle(fontSize: 12, color: Colors.green.shade800, fontWeight: FontWeight.bold),
+                    ),
+                  )).toList(),
+                ),
+                const SizedBox(height: 8),
+              ],
+              if (immunities.isNotEmpty) ...[
+                Text('Immune to:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blue.shade700)),
+                const SizedBox(height: 4),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  children: immunities.map((t) => Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade100,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${t['type_name']}',
+                      style: TextStyle(fontSize: 12, color: Colors.blue.shade800, fontWeight: FontWeight.bold),
+                    ),
+                  )).toList(),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMovesCard() {
+    if (_moveLearnset.isEmpty) return const SizedBox.shrink();
+
+    final levelUp = _moveLearnset.where((m) => m['learn_method'] == 'level-up').toList();
+    final tm = _moveLearnset.where((m) => m['learn_method'] == 'tm').toList();
+    final egg = _moveLearnset.where((m) => m['learn_method'] == 'egg').toList();
+
+    // Sort level-up by level
+    levelUp.sort((a, b) {
+      final aLevel = a['level_or_tm']?.toString() ?? '0';
+      final bLevel = b['level_or_tm']?.toString() ?? '0';
+      final aNum = int.tryParse(aLevel) ?? 0;
+      final bNum = int.tryParse(bLevel) ?? 0;
+      return aNum.compareTo(bNum);
+    });
+
+    Widget buildMoveSection(String title, List<Map<String, dynamic>> moves, IconData icon, Color color) {
+      if (moves.isEmpty) return const SizedBox.shrink();
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 16, color: color),
+              const SizedBox(width: 4),
+              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: color)),
+              const SizedBox(width: 4),
+              Text('(${moves.length})', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+            ],
+          ),
+          const SizedBox(height: 4),
+          ...moves.take(15).map((m) {
+            final level = m['level_or_tm']?.toString() ?? '';
+            final power = m['power'];
+            final acc = m['accuracy'];
+            final prefix = level.isNotEmpty && level != '\u2014' && level != 'null' ? 'Lv.$level ' : '';
+            final suffix = power != null ? ' | Pow:$power' : '';
+            final accStr = acc != null ? ' | Acc:$acc' : '';
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 2),
+              child: Text(
+                '$prefix${m['name']} (${m['type']}, ${m['category']})$suffix$accStr',
+                style: const TextStyle(fontSize: 12),
+              ),
+            );
+          }),
+          if (moves.length > 15)
+            Text('...and ${moves.length - 15} more', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+          const SizedBox(height: 8),
+        ],
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(5),
+      width: double.infinity,
+      child: Card(
+        margin: const EdgeInsets.all(5),
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Moves (${_moveLearnset.length})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox(height: 8),
+              buildMoveSection('Level Up', levelUp, Icons.arrow_upward, Colors.blue.shade700),
+              buildMoveSection('TM/HM', tm, Icons.album, Colors.purple.shade700),
+              buildMoveSection('Egg Moves', egg, Icons.egg, Colors.orange.shade700),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -935,9 +1127,12 @@ class _SearchState extends State<Search> {
                         ),
                       ),
                     ),
+                    _buildTypeDefensesCard(),
                     _buildRecommendedNatureCard(),
+                    _buildMovesCard(),
                     _buildEvolutionCard(),
-                    if (pokemonLocations.isNotEmpty)
+                    if (pokemonLocations.isNotEmpty &&
+                        pokemonLocations[0] != 'No location data available')
                       Container(
                         padding: const EdgeInsets.all(5),
                         width: double.infinity,
@@ -945,15 +1140,14 @@ class _SearchState extends State<Search> {
                           margin: const EdgeInsets.all(5),
                           elevation: 10,
                           child: Padding(
-                            padding: const EdgeInsets.all(5),
+                            padding: const EdgeInsets.all(10),
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                if ((_getSafeList('titles') as List).length > 10)
-                                  Text(
-                                    '${(_getSafeList('titles') as List)[10]}\n',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
+                                const Text(
+                                  'Encounter Locations\n',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                                 getPokemonWidget(),
                               ],
                             ),
