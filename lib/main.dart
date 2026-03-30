@@ -11,6 +11,7 @@ import 'package:pokedex/Widgets/ev_training_finder.dart';
 import 'package:pokedex/Widgets/navigation/databases_hub.dart';
 import 'package:pokedex/Widgets/navigation/tools_hub.dart';
 import 'package:pokedex/Widgets/navigation/more_hub.dart';
+import 'package:pokedex/Widgets/regional_dex_screen.dart';
 import 'package:pokedex/models/saved_pokemon.dart';
 import 'package:pokedex/models/pokemon_team.dart';
 import 'package:pokedex/models/favorite_pokemon.dart';
@@ -153,7 +154,7 @@ class _PokedexTabState extends State<_PokedexTab> with SingleTickerProviderState
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -181,8 +182,10 @@ class _PokedexTabState extends State<_PokedexTab> with SingleTickerProviderState
                   indicatorColor: Colors.white,
                   labelColor: Colors.white,
                   unselectedLabelColor: Colors.white70,
+                  isScrollable: true,
                   tabs: const [
                     Tab(text: 'Search'),
+                    Tab(text: 'By Region'),
                     Tab(text: 'By Game'),
                     Tab(text: 'EV Train'),
                     Tab(text: 'Calc'),
@@ -196,7 +199,8 @@ class _PokedexTabState extends State<_PokedexTab> with SingleTickerProviderState
           child: TabBarView(
             controller: _tabController,
             children: [
-              Search(),
+              const Search(),
+              const RegionalDexScreen(),
               const GameVersionFilter(),
               const EVTrainingFinder(),
               const Calculators(),
