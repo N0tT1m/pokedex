@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:requests/requests.dart';
+import '../../services/pokeapi_service.dart';
 
 class BerryGuideScreen extends StatefulWidget {
   const BerryGuideScreen({Key? key}) : super(key: key);
@@ -8,11 +10,13 @@ class BerryGuideScreen extends StatefulWidget {
 }
 
 class _BerryGuideScreenState extends State<BerryGuideScreen> {
+  List<Map<String, dynamic>> _berries = [];
   List<Map<String, dynamic>> _filteredBerries = [];
   String _filter = 'all';
   String _searchQuery = '';
+  bool _isLoading = true;
 
-  // Curated berry data with competitive info
+  // Curated berry data with competitive info (fallback)
   static const List<Map<String, dynamic>> _berryData = [
     // Healing
     {'name': 'Sitrus Berry', 'effect': 'Restores 25% HP when below 50% HP', 'category': 'Healing', 'competitive': true},
@@ -85,12 +89,88 @@ class _BerryGuideScreenState extends State<BerryGuideScreen> {
   @override
   void initState() {
     super.initState();
-    _filteredBerries = _berryData;
+    _loadBerriesFromApi();
+  }
+
+  Future<void> _loadBerriesFromApi() async {
+    try {
+      final response = await Requests.get('${PokeApiService.baseUrl}/berry?limit=100');
+      if (response.statusCode == 200) {
+        final data = response.json();
+        final results = List<Map<String, dynamic>>.from(data['results']);
+        final List<Map<String, dynamic>> apiBerries = [];
+
+        for (final berry in results) {
+          try {
+            final detailUrl = '${PokeApiService.baseUrl}/berry/${berry['name']}';
+            final detailResponse = await Requests.get(detailUrl);
+            if (detailResponse.statusCode == 200) {
+              final detail = detailResponse.json();
+              final rawName = detail['name'] as String;
+              final displayName = rawName.split('-').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ');
+
+              final effect = detail['effect']?.toString() ?? '';
+              final naturalGiftType = detail['natural_gift_type']?.toString() ?? '';
+              final naturalGiftPower = detail['natural_gift_power'] ?? 0;
+              final firmness = detail['firmness'] is Map ? detail['firmness']['name']?.toString() ?? '' : '';
+              final growthTime = detail['growth_time'] ?? 0;
+
+              // Build a descriptive effect string
+              String effectText = effect.isNotEmpty
+                  ? effect
+                  : 'Natural Gift: $naturalGiftType (Power $naturalGiftPower)';
+              if (firmness.isNotEmpty) {
+                effectText += ' | Firmness: ${firmness[0].toUpperCase()}${firmness.substring(1)}';
+              }
+              if (growthTime > 0) {
+                effectText += ' | Growth: ${growthTime}h';
+              }
+
+              apiBerries.add({
+                'name': displayName,
+                'effect': effectText,
+                'category': 'Other',
+                'competitive': false,
+              });
+            }
+          } catch (_) {
+            // Skip individual berry failures
+          }
+        }
+
+        if (apiBerries.isNotEmpty && mounted) {
+          // Merge: keep hardcoded entries (they have curated categories/competitive tags),
+          // add any API berries not already in the hardcoded list
+          final hardcodedNames = _berryData.map((b) => (b['name'] as String).toLowerCase()).toSet();
+          final newBerries = apiBerries.where(
+            (b) => !hardcodedNames.contains((b['name'] as String).toLowerCase()),
+          ).toList();
+
+          setState(() {
+            _berries = [..._berryData, ...newBerries];
+            _filteredBerries = _berries;
+            _isLoading = false;
+          });
+          return;
+        }
+      }
+    } catch (_) {
+      // API failed; fall back to hardcoded data
+    }
+
+    // Fallback to hardcoded data
+    if (mounted) {
+      setState(() {
+        _berries = _berryData;
+        _filteredBerries = _berries;
+        _isLoading = false;
+      });
+    }
   }
 
   void _applyFilter() {
     setState(() {
-      _filteredBerries = _berryData.where((b) {
+      _filteredBerries = _berries.where((b) {
         bool matchesCategory = _filter == 'all' || b['category'] == _filter;
         bool matchesSearch = _searchQuery.isEmpty ||
           (b['name'] as String).toLowerCase().contains(_searchQuery.toLowerCase()) ||
@@ -104,7 +184,9 @@ class _BerryGuideScreenState extends State<BerryGuideScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Berry Guide'), backgroundColor: Colors.red),
-      body: Column(
+      body: _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(12),

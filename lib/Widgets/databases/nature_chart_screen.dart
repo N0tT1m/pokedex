@@ -1,8 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:requests/requests.dart';
 import '../../services/iv_calculator_service.dart';
+import '../../services/pokeapi_service.dart';
 
-class NatureChartScreen extends StatelessWidget {
+class NatureChartScreen extends StatefulWidget {
   const NatureChartScreen({Key? key}) : super(key: key);
+
+  @override
+  State<NatureChartScreen> createState() => _NatureChartScreenState();
+}
+
+class _NatureChartScreenState extends State<NatureChartScreen> {
+  // Enriched nature data from API, keyed by lowercase nature name
+  Map<String, Map<String, String>> _apiNatureData = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchNaturesFromApi();
+  }
+
+  Future<void> _fetchNaturesFromApi() async {
+    try {
+      final response = await Requests.get('${PokeApiService.baseUrl}/nature');
+      if (response.statusCode == 200) {
+        final data = response.json();
+        final results = List<Map<String, dynamic>>.from(data['results']);
+        final Map<String, Map<String, String>> apiData = {};
+        for (final nature in results) {
+          final name = (nature['name'] as String).toLowerCase();
+          apiData[name] = {
+            'increased_stat': nature['increased_stat']?.toString() ?? '',
+            'decreased_stat': nature['decreased_stat']?.toString() ?? '',
+          };
+        }
+        if (mounted) {
+          setState(() {
+            _apiNatureData = apiData;
+          });
+        }
+      }
+    } catch (_) {
+      // API enrichment failed; fall back to hardcoded data silently
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +74,20 @@ class NatureChartScreen extends StatelessWidget {
                 DataColumn(label: Text('-10%', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red))),
               ],
               rows: IVCalculatorService.allNatures.map((nature) {
-                final mods = IVCalculatorService.getNatureModifiers(nature);
                 String increased = '-';
                 String decreased = '-';
 
-                for (var entry in mods.entries) {
-                  if (entry.value > 1.0) increased = entry.key;
-                  if (entry.value < 1.0) decreased = entry.key;
+                // Try API data first, fall back to hardcoded modifiers
+                final apiEntry = _apiNatureData[nature.toLowerCase()];
+                if (apiEntry != null && apiEntry['increased_stat']!.isNotEmpty) {
+                  increased = apiEntry['increased_stat']!;
+                  decreased = apiEntry['decreased_stat']!;
+                } else {
+                  final mods = IVCalculatorService.getNatureModifiers(nature);
+                  for (var entry in mods.entries) {
+                    if (entry.value > 1.0) increased = entry.key;
+                    if (entry.value < 1.0) decreased = entry.key;
+                  }
                 }
 
                 final isNeutral = increased == '-';

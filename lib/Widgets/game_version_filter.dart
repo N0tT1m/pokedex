@@ -36,15 +36,15 @@ class _GameVersionFilterState extends State<GameVersionFilter>
     {
       'generation': 'Generation I',
       'games': [
-        {'key': 'red-blue', 'name': 'Red / Blue', 'color': Colors.red},
-        {'key': 'yellow', 'name': 'Yellow', 'color': Colors.amber},
+        {'key': 'red-blue', 'name': 'Red / Blue', 'color': Colors.red, 'nationalDexMax': 151},
+        {'key': 'yellow', 'name': 'Yellow', 'color': Colors.amber, 'nationalDexMax': 151},
       ],
     },
     {
       'generation': 'Generation II',
       'games': [
-        {'key': 'gold-silver', 'name': 'Gold / Silver', 'color': Colors.orange},
-        {'key': 'crystal', 'name': 'Crystal', 'color': Colors.cyan},
+        {'key': 'gold-silver', 'name': 'Gold / Silver', 'color': Colors.orange, 'nationalDexMax': 251},
+        {'key': 'crystal', 'name': 'Crystal', 'color': Colors.cyan, 'nationalDexMax': 251},
       ],
     },
     {
@@ -80,25 +80,25 @@ class _GameVersionFilterState extends State<GameVersionFilter>
     {
       'generation': 'Generation VII',
       'games': [
-        {'key': 'sun-moon', 'name': 'Sun / Moon', 'color': Colors.orange},
-        {'key': 'ultra-sun-ultra-moon', 'name': 'Ultra Sun / Ultra Moon', 'color': Colors.deepOrange},
-        {'key': 'lets-go-pikachu-lets-go-eevee', 'name': "Let's Go Pikachu / Eevee", 'color': Colors.yellow},
+        {'key': 'sun-moon', 'name': 'Sun / Moon', 'color': Colors.orange, 'nationalDexMax': 802},
+        {'key': 'ultra-sun-ultra-moon', 'name': 'Ultra Sun / Ultra Moon', 'color': Colors.deepOrange, 'nationalDexMax': 807},
+        {'key': 'lets-go-pikachu-lets-go-eevee', 'name': "Let's Go Pikachu / Eevee", 'color': Colors.yellow, 'nationalDexMax': 809},
       ],
     },
     {
       'generation': 'Generation VIII',
       'games': [
-        {'key': 'sword-shield', 'name': 'Sword / Shield', 'color': Colors.blue},
+        {'key': 'sword-shield', 'name': 'Sword / Shield', 'color': Colors.blue, 'nationalDexMax': 898},
         {'key': 'brilliant-diamond-shining-pearl', 'name': 'Brilliant Diamond / Shining Pearl', 'color': Colors.lightBlue, 'nationalDexMax': 493},
-        {'key': 'legends-arceus', 'name': 'Legends: Arceus', 'color': Colors.teal},
+        {'key': 'legends-arceus', 'name': 'Legends: Arceus', 'color': Colors.teal, 'nationalDexMax': 905},
       ],
     },
     {
       'generation': 'Generation IX',
       'games': [
-        {'key': 'scarlet-violet', 'name': 'Scarlet / Violet', 'color': Colors.deepPurple},
-        {'key': 'the-teal-mask', 'name': 'The Teal Mask (DLC)', 'color': Colors.teal},
-        {'key': 'the-indigo-disk', 'name': 'The Indigo Disk (DLC)', 'color': Colors.indigo},
+        {'key': 'scarlet-violet', 'name': 'Scarlet / Violet', 'color': Colors.deepPurple, 'nationalDexMax': 1025},
+        {'key': 'the-teal-mask', 'name': 'The Teal Mask (DLC)', 'color': Colors.teal, 'nationalDexMax': 1025},
+        {'key': 'the-indigo-disk', 'name': 'The Indigo Disk (DLC)', 'color': Colors.indigo, 'nationalDexMax': 1025},
       ],
     },
   ];
@@ -132,7 +132,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
         final pokedexId = PokeApiService.extractIdFromUrl(pokedexUrl);
 
         if (pokedexId != null) {
-          if (pokedexId == 1 || pokedexName == 'national') {
+          final isNational = pokedexId == 1 || pokedexName == 'national';
+          if (isNational) {
             hasNational = true;
           }
 
@@ -145,6 +146,10 @@ class _GameVersionFilterState extends State<GameVersionFilter>
           List<Map<String, dynamic>> entries = [];
           for (var entry in pokemonSpecies) {
             final entryNumber = entry['entry_number'];
+            // Filter national dex by generation limit if applicable
+            if (isNational && nationalDexMax != null && entryNumber is int && entryNumber > nationalDexMax) {
+              continue;
+            }
             final speciesName = entry['pokemon_species']['name'];
             final speciesUrl = entry['pokemon_species']['url'];
             final speciesId = PokeApiService.extractIdFromUrl(speciesUrl);
@@ -167,7 +172,7 @@ class _GameVersionFilterState extends State<GameVersionFilter>
         }
       }
 
-      // Add filtered national dex for games that had one
+      // Add filtered national dex if none was provided by the API
       if (!hasNational && nationalDexMax != null) {
         final nationalData = await PokeApiService.getPokedex(1);
         final List<dynamic> nationalSpecies = nationalData['pokemon_entries'] ?? [];
