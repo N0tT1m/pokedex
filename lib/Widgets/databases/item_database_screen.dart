@@ -239,6 +239,7 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
     final cost = item['cost'] ?? 0;
     final spriteUrl = item['sprites']?['default'];
     final heldBy = item['held_by_pokemon'] as List? ?? [];
+    final gameLocations = item['game_locations'] as List? ?? [];
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -282,6 +283,54 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(flavorText, style: const TextStyle(fontStyle: FontStyle.italic)),
+              ),
+            ),
+          if (gameLocations.isNotEmpty)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Game Locations', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const SizedBox(height: 8),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 400),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: (gameLocations).map<Widget>((loc) {
+                            final game = loc['game']?.toString() ?? '';
+                            final location = loc['location']?.toString() ?? '';
+                            final method = loc['method']?.toString() ?? '';
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 120,
+                                    child: Text(game, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red.shade700)),
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(location, style: const TextStyle(fontSize: 12)),
+                                        if (method.isNotEmpty)
+                                          Text(method, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           if (heldBy.isNotEmpty)
