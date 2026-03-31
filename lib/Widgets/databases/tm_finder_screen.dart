@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:requests/requests.dart';
 import '../../services/pokeapi_service.dart';
+import '../../theme/app_theme.dart';
 
 class TMFinderScreen extends StatefulWidget {
   const TMFinderScreen({Key? key}) : super(key: key);
@@ -10,177 +11,356 @@ class TMFinderScreen extends StatefulWidget {
 }
 
 class _TMFinderScreenState extends State<TMFinderScreen> {
-  String _selectedGame = 'scarlet-violet';
-  List<Map<String, dynamic>> _tmList = [];
-  List<Map<String, dynamic>> _filteredList = [];
-  bool _isLoading = false;
+  List<Map<String, dynamic>> _allMoves = [];
+  List<Map<String, dynamic>> _filteredMoves = [];
+  bool _isLoading = true;
+  String? _error;
   final _searchCtrl = TextEditingController();
-
-  static const Map<String, String> _games = {
-    'scarlet-violet': 'Scarlet / Violet',
-    'sword-shield': 'Sword / Shield',
-    'brilliant-diamond-and-shining-pearl': 'BDSP',
-    'sun-moon': 'Sun / Moon',
-    'x-y': 'X / Y',
-    'black-white': 'Black / White',
-    'diamond-pearl': 'Diamond / Pearl',
-    'red-blue': 'Red / Blue',
-  };
+  Map<String, dynamic>? _selectedMove;
+  bool _isLoadingDetail = false;
 
   @override
   void initState() {
     super.initState();
-    _loadTMs();
+    _loadMoves();
   }
 
-  Future<void> _loadTMs() async {
-    setState(() => _isLoading = true);
+  Future<void> _loadMoves() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
-      // Load machines list from PokeAPI
-      final response = await Requests.get('${PokeApiService.baseUrl}/machine?limit=2000');
+      final response = await Requests.get('${PokeApiService.baseUrl}/move?limit=1000');
       if (response.statusCode == 200) {
         final data = response.json();
-        final machines = data['results'] as List;
-
-        // Load details for machines (in batches)
-        final tmList = <Map<String, dynamic>>[];
-        for (var machine in machines.take(300)) {
-          try {
-            final detailResponse = await Requests.get(machine['url']);
-            if (detailResponse.statusCode == 200) {
-              final detail = detailResponse.json();
-              final versionGroup = detail['version_group']?['name'] ?? '';
-
-              if (versionGroup == _selectedGame || _selectedGame.isEmpty) {
-                final itemName = detail['item']?['name'] ?? '';
-                final moveName = detail['move']?['name'] ?? '';
-
-                tmList.add({
-                  'tm': _formatTMName(itemName),
-                  'move': _formatName(moveName),
-                  'moveApi': moveName,
-                  'game': versionGroup,
-                });
-              }
-            }
-          } catch (_) {}
-        }
-
-        // Sort by TM number
-        tmList.sort((a, b) => (a['tm'] as String).compareTo(b['tm'] as String));
-
+        final results = List<Map<String, dynamic>>.from(data['results']);
         setState(() {
-          _tmList = tmList;
-          _filteredList = tmList;
+          _allMoves = results.map((m) {
+            final name = m['name'] as String;
+            return {
+              'name': name,
+              'displayName': _formatName(name),
+              'url': m['url'],
+            };
+          }).toList();
+          _filteredMoves = _allMoves;
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _error = 'Server returned ${response.statusCode}';
           _isLoading = false;
         });
       }
     } catch (e) {
-      setState(() => _isLoading = false);
+      setState(() {
+        _error = 'Could not load moves';
+        _isLoading = false;
+      });
     }
   }
 
-  void _filterTMs(String query) {
+  Future<void> _loadMoveDetail(String name) async {
+    setState(() => _isLoadingDetail = true);
+    try {
+      final response = await Requests.get('${PokeApiService.baseUrl}/move/$name');
+      if (response.statusCode == 200) {
+        setState(() {
+          _selectedMove = response.json();
+          _isLoadingDetail = false;
+        });
+      } else {
+        setState(() => _isLoadingDetail = false);
+      }
+    } catch (e) {
+      setState(() => _isLoadingDetail = false);
+    }
+  }
+
+  void _filterMoves(String query) {
     setState(() {
       if (query.isEmpty) {
-        _filteredList = _tmList;
+        _filteredMoves = _allMoves;
       } else {
-        _filteredList = _tmList.where((tm) {
-          final tmName = (tm['tm'] as String).toLowerCase();
-          final moveName = (tm['move'] as String).toLowerCase();
-          return tmName.contains(query.toLowerCase()) || moveName.contains(query.toLowerCase());
+        _filteredMoves = _allMoves.where((m) {
+          final name = (m['displayName'] as String).toLowerCase();
+          return name.contains(query.toLowerCase());
         }).toList();
       }
     });
   }
 
   String _formatName(String name) {
-    return name.split('-').map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1)).join(' ');
-  }
-
-  String _formatTMName(String name) {
-    return name.toUpperCase().replaceAll('-', ' ');
+    return name.split('-').map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w).join(' ');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('TM / HM Finder'), backgroundColor: Colors.red),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: DropdownButtonFormField<String>(
-              initialValue: _selectedGame, isExpanded: true,
-              decoration: const InputDecoration(labelText: 'Game', border: OutlineInputBorder()),
-              items: _games.entries.map((e) =>
-                DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
-              onChanged: (v) {
-                setState(() { _selectedGame = v!; });
-                _loadTMs();
-              },
+      appBar: AppBar(
+        title: const Text('TM / HM Finder'),
+        backgroundColor: Colors.red,
+        actions: [
+          if (_selectedMove != null)
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => setState(() => _selectedMove = null),
             ),
+        ],
+      ),
+      body: _selectedMove != null ? _buildMoveDetail() : _buildMoveList(),
+    );
+  }
+
+  Widget _buildMoveList() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            const SizedBox(height: 16),
+            Text(_error!, style: const TextStyle(color: Colors.red)),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => _loadMoves(),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: TextField(
+            controller: _searchCtrl,
+            decoration: InputDecoration(
+              hintText: 'Search moves by name...',
+              prefixIcon: const Icon(Icons.search),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+            ),
+            onChanged: _filterMoves,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: TextField(
-              controller: _searchCtrl,
-              decoration: const InputDecoration(
-                hintText: 'Search by TM number or move name...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            '${_filteredMoves.length} moves found — tap a move to see details',
+            style: TextStyle(color: Colors.grey.shade600),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            itemCount: _filteredMoves.length,
+            itemBuilder: (context, index) {
+              final move = _filteredMoves[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 2),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.blue,
+                    child: Text(
+                      '${index + 1}',
+                      style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  title: Text(move['displayName'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                  trailing: const Icon(Icons.chevron_right),
+                  dense: true,
+                  onTap: () => _loadMoveDetail(move['name']),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMoveDetail() {
+    if (_isLoadingDetail) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final move = _selectedMove!;
+    final name = _formatName(move['name'] as String);
+    final type = move['type']?['name'] ?? 'unknown';
+    final typeCap = type[0].toUpperCase() + type.substring(1);
+    final category = move['damage_class']?['name'] ?? 'status';
+    final power = move['power'];
+    final accuracy = move['accuracy'];
+    final pp = move['pp'];
+    final effectEntries = move['effect_entries'] as List? ?? [];
+    String effect = '';
+    for (var entry in effectEntries) {
+      if (entry['language']['name'] == 'en') {
+        effect = entry['short_effect'] ?? entry['effect'] ?? '';
+        break;
+      }
+    }
+    final effectChance = move['effect_chance'];
+    if (effectChance != null) {
+      effect = effect.replaceAll('\$effect_chance', effectChance.toString());
+    }
+
+    final flavorEntries = move['flavor_text_entries'] as List? ?? [];
+    String flavorText = '';
+    for (var entry in flavorEntries.reversed) {
+      if (entry['language']['name'] == 'en') {
+        flavorText = (entry['flavor_text'] as String).replaceAll('\n', ' ');
+        break;
+      }
+    }
+
+    final learnedBy = move['learned_by_pokemon'] as List? ?? [];
+    final machines = move['machines'] as List? ?? [];
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Text(name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppTheme.typeColors[typeCap] ?? Colors.grey,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(typeCap, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: category == 'physical' ? Colors.orange : category == 'special' ? Colors.blue : Colors.grey,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          category[0].toUpperCase() + category.substring(1),
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _statColumn('Power', power?.toString() ?? '-'),
+                      _statColumn('Accuracy', accuracy != null ? '$accuracy%' : '-'),
+                      _statColumn('PP', pp?.toString() ?? '-'),
+                      _statColumn('Priority', move['priority']?.toString() ?? '0'),
+                    ],
+                  ),
+                ],
               ),
-              onChanged: _filterTMs,
             ),
           ),
           const SizedBox(height: 8),
-          if (_isLoading)
-            const Expanded(child: Center(child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 12),
-                Text('Loading TM data...', style: TextStyle(color: Colors.grey)),
-              ],
-            ))),
-          if (!_isLoading)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text('${_filteredList.length} TMs/HMs found',
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            ),
-          if (!_isLoading)
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(8),
-                itemCount: _filteredList.length,
-                itemBuilder: (context, index) {
-                  final tm = _filteredList[index];
-                  return Card(
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: (tm['tm'] as String).contains('HM') ? Colors.purple : Colors.blue,
-                        child: Text(
-                          _extractNumber(tm['tm']),
-                          style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      title: Text(tm['move'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text(tm['tm']),
-                      dense: true,
-                    ),
-                  );
-                },
+          // Effect
+          if (effect.isNotEmpty)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Effect', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const SizedBox(height: 8),
+                    Text(effect),
+                    if (flavorText.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(flavorText, style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
+                    ],
+                  ],
+                ),
               ),
             ),
+          // TM/HM info
+          if (machines.isNotEmpty)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('TM/HM', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const SizedBox(height: 8),
+                    ...machines.take(10).map((m) {
+                      final version = m['version_group']?['name'] ?? '';
+                      return Text(
+                        _formatName(version),
+                        style: const TextStyle(fontSize: 12),
+                      );
+                    }),
+                    if (machines.length > 10) Text('...and ${machines.length - 10} more'),
+                  ],
+                ),
+              ),
+            ),
+          // Learned by Pokemon
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Learned by ${learnedBy.length} Pokemon', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    children: learnedBy.take(50).map((p) {
+                      final pName = _formatName(p['name']);
+                      return Chip(
+                        label: Text(pName, style: const TextStyle(fontSize: 11)),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        padding: EdgeInsets.zero,
+                      );
+                    }).toList(),
+                  ),
+                  if (learnedBy.length > 50) Text('...and ${learnedBy.length - 50} more'),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  String _extractNumber(String tmName) {
-    final match = RegExp(r'\d+').firstMatch(tmName);
-    return match != null ? match.group(0)! : tmName;
+  Widget _statColumn(String label, String value) {
+    return Column(
+      children: [
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+        const SizedBox(height: 4),
+        Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+      ],
+    );
   }
 
   @override

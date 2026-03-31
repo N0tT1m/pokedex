@@ -68,7 +68,7 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
       }
       final moveData = moveResponse.json();
       final learnedBy = (moveData['learned_by_pokemon'] as List)
-          .map((p) => p['name'] as String).toList();
+          .map((p) => p['pokemon']['name'] as String).toList();
 
       // Find direct parents (Pokemon in same egg group that learn the move)
       final directParents = <Map<String, dynamic>>[];
@@ -84,24 +84,20 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
           final shared = eggGroups.where((g) => targetEggGroups.contains(g)).toList();
           if (shared.isNotEmpty) {
             // Check how this Pokemon learns the move
-            final pokemonData = await PokeApiService.getPokemon(pokeName);
-            final moves = pokemonData['moves'] as List;
+            final moves = await PokeApiService.getPokemonMoves(pokeName);
             String learnMethod = 'unknown';
             for (var move in moves) {
-              if (move['move']['name'] == _targetMove) {
-                final details = move['version_group_details'] as List;
-                for (var d in details) {
-                  final method = d['move_learn_method']['name'] as String;
-                  if (method == 'level-up' || method == 'machine' || method == 'tutor') {
-                    learnMethod = method;
-                    break;
-                  }
+              if (move['name'] == _targetMove) {
+                final method = (move['learn_method'] as String?) ?? '';
+                final methodLower = method.toLowerCase();
+                if (methodLower.contains('level') || methodLower.contains('tm') || methodLower.contains('machine') || methodLower.contains('tutor')) {
+                  learnMethod = method;
+                  break;
                 }
-                break;
               }
             }
 
-            if (learnMethod != 'unknown' && learnMethod != 'egg') {
+            if (learnMethod != 'unknown' && !learnMethod.toLowerCase().contains('egg')) {
               directParents.add({
                 'name': pokeName,
                 'learnMethod': learnMethod,

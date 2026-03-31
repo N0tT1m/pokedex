@@ -67,48 +67,25 @@ class BreedingService {
   }
 
   /// Get all Pokemon in an egg group
+  /// Note: No egg-group endpoint is available in the API, so this returns an empty list.
   static Future<List<Map<String, dynamic>>> getEggGroupMembers(String eggGroup) async {
-    try {
-      final cacheKey = eggGroup.toLowerCase();
-      if (_eggGroupCache.containsKey(cacheKey)) {
-        return _eggGroupCache[cacheKey]!.map((name) => {'name': name}).toList();
-      }
-
-      final response = await _fetchEggGroup(eggGroup);
-      final members = (response['pokemon_species'] as List)
-          .map((p) => p['name'] as String)
-          .toList();
-      _eggGroupCache[cacheKey] = members;
-
-      return members.map((name) => {'name': name}).toList();
-    } catch (e) {
-      return [];
-    }
-  }
-
-  static Future<Map<String, dynamic>> _fetchEggGroup(String eggGroup) async {
-    final response = await PokeApiService.getPokemonSpecies(eggGroup);
-    return response;
+    return [];
   }
 
   /// Get egg moves for a Pokemon
   static Future<List<Map<String, dynamic>>> getEggMoves(String pokemonName) async {
     try {
-      final data = await PokeApiService.getPokemon(pokemonName.toLowerCase());
-      final moves = data['moves'] as List;
+      final moves = await PokeApiService.getPokemonMoves(pokemonName.toLowerCase());
 
       final eggMoves = <Map<String, dynamic>>[];
       for (var move in moves) {
-        final versionDetails = move['version_group_details'] as List;
-        for (var detail in versionDetails) {
-          if (detail['move_learn_method']['name'] == 'egg') {
-            eggMoves.add({
-              'name': _formatMoveName(move['move']['name']),
-              'apiName': move['move']['name'],
-              'version': detail['version_group']['name'],
-            });
-            break;
-          }
+        final learnMethod = (move['learn_method'] as String?) ?? '';
+        if (learnMethod.toLowerCase().contains('egg')) {
+          final name = move['name'] as String;
+          eggMoves.add({
+            'name': _formatMoveName(name),
+            'apiName': name,
+          });
         }
       }
 

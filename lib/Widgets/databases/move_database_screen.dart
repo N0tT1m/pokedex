@@ -45,6 +45,8 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
           _filteredMoves = _allMoves;
           _isLoading = false;
         });
+      } else {
+        setState(() { _error = 'Server returned ${response.statusCode}'; _isLoading = false; });
       }
     } catch (e) {
       setState(() { _error = 'Could not load moves'; _isLoading = false; });
@@ -60,6 +62,8 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
           _selectedMove = response.json();
           _isLoadingDetail = false;
         });
+      } else {
+        setState(() => _isLoadingDetail = false);
       }
     } catch (e) {
       setState(() => _isLoadingDetail = false);

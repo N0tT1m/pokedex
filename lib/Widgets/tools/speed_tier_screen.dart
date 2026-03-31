@@ -27,33 +27,43 @@ class _SpeedTierScreenState extends State<SpeedTierScreen> {
     try {
       final pokemonList = await PokeApiService.getPokemonList(limit: 500);
       final List<Map<String, dynamic>> speeds = [];
+      final items = pokemonList.take(500).toList();
 
-      for (var p in pokemonList.take(500)) {
-        try {
-          final data = await PokeApiService.getPokemon(p['name']);
-          final stats = data['stats'] as List;
-          int baseSpeed = 0;
-          for (var s in stats) {
-            if (s['stat']['name'] == 'speed') {
-              baseSpeed = s['base_stat'];
-              break;
+      // Process in batches of 50 to avoid sequential API calls
+      for (var i = 0; i < items.length; i += 50) {
+        final batch = items.skip(i).take(50).toList();
+        final results = await Future.wait(
+          batch.map((p) async {
+            try {
+              final data = await PokeApiService.getPokemon(p['name']);
+              final stats = data['stats'] as List;
+              int baseSpeed = 0;
+              for (var s in stats) {
+                if (s['stat']['name'] == 'speed') {
+                  baseSpeed = s['base_stat'];
+                  break;
+                }
+              }
+              final types = (data['types'] as List).map((t) {
+                final n = t['type']['name'] as String;
+                return n[0].toUpperCase() + n.substring(1);
+              }).toList();
+
+              final id = data['id'];
+
+              return <String, dynamic>{
+                'name': _capitalize(p['name']),
+                'baseSpeed': baseSpeed,
+                'types': types,
+                'id': id,
+                'image': 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png',
+              };
+            } catch (_) {
+              return null;
             }
-          }
-          final types = (data['types'] as List).map((t) {
-            final n = t['type']['name'] as String;
-            return n[0].toUpperCase() + n.substring(1);
-          }).toList();
-
-          final id = data['id'];
-
-          speeds.add({
-            'name': _capitalize(p['name']),
-            'baseSpeed': baseSpeed,
-            'types': types,
-            'id': id,
-            'image': 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png',
-          });
-        } catch (_) {}
+          }),
+        );
+        speeds.addAll(results.whereType<Map<String, dynamic>>());
       }
 
       speeds.sort((a, b) => (b['baseSpeed'] as int).compareTo(a['baseSpeed'] as int));
@@ -106,7 +116,7 @@ class _SpeedTierScreenState extends State<SpeedTierScreen> {
                     children: [
                       Expanded(
                         child: DropdownButtonFormField<int>(
-                          initialValue: _showLevel,
+                          value: _showLevel,
                           decoration: const InputDecoration(
                             labelText: 'Level', border: OutlineInputBorder(), isDense: true),
                           items: [1, 5, 10, 25, 50, 100].map((l) =>
@@ -117,7 +127,7 @@ class _SpeedTierScreenState extends State<SpeedTierScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: DropdownButtonFormField<String?>(
-                          initialValue: _filterType,
+                          value: _filterType,
                           decoration: const InputDecoration(
                             labelText: 'Type', border: OutlineInputBorder(), isDense: true),
                           items: [

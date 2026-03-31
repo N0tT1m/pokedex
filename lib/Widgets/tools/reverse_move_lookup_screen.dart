@@ -52,9 +52,10 @@ class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
         // Get learn methods for each Pokemon
         final pokemonList = <Map<String, dynamic>>[];
         for (var pokemon in learnedBy) {
+          final pokemonData = pokemon['pokemon'] ?? pokemon;
           pokemonList.add({
-            'name': pokemon['name'] as String,
-            'url': pokemon['url'] as String,
+            'name': (pokemonData['name'] ?? '') as String,
+            'url': (pokemonData['url'] ?? '') as String,
           });
         }
 
@@ -105,7 +106,8 @@ class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
                   child: Autocomplete<String>(
                     optionsBuilder: (v) {
                       if (v.text.isEmpty) return const Iterable.empty();
-                      return _moveNames.where((n) => n.contains(v.text.toLowerCase())).take(15);
+                      final query = v.text.toLowerCase().replaceAll(' ', '-');
+                      return _moveNames.where((n) => n.contains(query)).take(15);
                     },
                     onSelected: _loadMoveDetails,
                     displayStringForOption: _formatName,

@@ -44,6 +44,8 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
           _filtered = _allItems;
           _isLoading = false;
         });
+      } else {
+        setState(() { _error = 'Server returned ${response.statusCode}'; _isLoading = false; });
       }
     } catch (e) {
       setState(() { _error = 'Could not load items'; _isLoading = false; });
@@ -59,6 +61,8 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
           _selectedItem = response.json();
           _isLoadingDetail = false;
         });
+      } else {
+        setState(() => _isLoadingDetail = false);
       }
     } catch (e) {
       setState(() => _isLoadingDetail = false);

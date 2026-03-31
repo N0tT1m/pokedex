@@ -47,15 +47,17 @@ class _AbilityDatabaseScreenState extends State<AbilityDatabaseScreen> {
     }
   }
 
-  Future<void> _loadAbilityDetail(String url) async {
+  Future<void> _loadAbilityDetail(String name) async {
     setState(() => _isLoadingDetail = true);
     try {
-      final response = await Requests.get(url);
+      final response = await Requests.get('${PokeApiService.baseUrl}/ability/$name');
       if (response.statusCode == 200) {
         setState(() {
           _selectedAbility = response.json();
           _isLoadingDetail = false;
         });
+      } else {
+        setState(() => _isLoadingDetail = false);
       }
     } catch (e) {
       setState(() => _isLoadingDetail = false);
@@ -130,7 +132,7 @@ class _AbilityDatabaseScreenState extends State<AbilityDatabaseScreen> {
                 child: ListTile(
                   title: Text(ability['displayName']),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _loadAbilityDetail(ability['url']),
+                  onTap: () => _loadAbilityDetail(ability['name']),
                 ),
               );
             },
