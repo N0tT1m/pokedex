@@ -115,6 +115,7 @@ class _SearchState extends State<Search> {
       }
 
       // Fetch encounter locations from PokemonDB
+      // Fetch encounter locations from PokemonDB
       try {
         print('Fetching encounter data for: $apiName');
         final encounterData = await PokemonDBService.getEncounterLocations(apiName);
@@ -125,17 +126,10 @@ class _SearchState extends State<Search> {
         for (var entry in encounterData.entries) {
           final game = entry.key;
           final locations = entry.value;
-          print('Game: $game, Locations: ${locations.length}');
+          print('Game: $game, Locations: ${locations}');
           if (locations.isNotEmpty) {
             pokemonLocations.add('$game: ${locations.join(', ')}');
           }
-        }
-
-        print('Total location strings created: ${pokemonLocations.length}');
-
-        // If no data from PokemonDB, add a message
-        if (pokemonLocations.isEmpty) {
-          pokemonLocations.add('No location data available');
         }
       } catch (e) {
         print('Could not fetch encounter locations from PokemonDB: $e');
@@ -570,7 +564,7 @@ class _SearchState extends State<Search> {
             ],
           ),
           const SizedBox(height: 4),
-          ...moves.take(15).map((m) {
+          ...moves.map((m) {
             final level = m['level_or_tm']?.toString() ?? '';
             final power = m['power'];
             final acc = m['accuracy'];
@@ -585,8 +579,6 @@ class _SearchState extends State<Search> {
               ),
             );
           }),
-          if (moves.length > 15)
-            Text('...and ${moves.length - 15} more', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
           const SizedBox(height: 8),
         ],
       );
@@ -605,9 +597,19 @@ class _SearchState extends State<Search> {
             children: [
               Text('Moves (${_moveLearnset.length})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               const SizedBox(height: 8),
-              buildMoveSection('Level Up', levelUp, Icons.arrow_upward, Colors.blue.shade700),
-              buildMoveSection('TM/HM', tm, Icons.album, Colors.purple.shade700),
-              buildMoveSection('Egg Moves', egg, Icons.egg, Colors.orange.shade700),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 400),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildMoveSection('Level Up', levelUp, Icons.arrow_upward, Colors.blue.shade700),
+                      buildMoveSection('TM/HM', tm, Icons.album, Colors.purple.shade700),
+                      buildMoveSection('Egg Moves', egg, Icons.egg, Colors.orange.shade700),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),

@@ -1,5 +1,80 @@
 import 'package:requests/requests.dart';
 
+/// Region-aware game abbreviation map.
+/// Ambiguous abbreviations (S, B, Y, G) are resolved by region.
+const Map<String, Map<String, String>> _regionGameAbbreviations = {
+  'Kanto': {
+    'R': 'Red',
+    'B': 'Blue',
+    'Y': 'Yellow',
+    'FR': 'FireRed',
+    'LG': 'LeafGreen',
+    'LGP': "Let's Go Pikachu",
+    'LGE': "Let's Go Eevee",
+  },
+  'Johto': {
+    'G': 'Gold',
+    'S': 'Silver',
+    'C': 'Crystal',
+    'HG': 'HeartGold',
+    'SS': 'SoulSilver',
+  },
+  'Hoenn': {
+    'Ru': 'Ruby',
+    'Sa': 'Sapphire',
+    'E': 'Emerald',
+    'OR': 'Omega Ruby',
+    'AS': 'Alpha Sapphire',
+  },
+  'Sinnoh': {
+    'D': 'Diamond',
+    'P': 'Pearl',
+    'Pt': 'Platinum',
+    'BD': 'Brilliant Diamond',
+    'SP': 'Shining Pearl',
+  },
+  'Unova': {
+    'B': 'Black',
+    'W': 'White',
+    'B2': 'Black 2',
+    'W2': 'White 2',
+  },
+  'Kalos': {
+    'X': 'X',
+    'Y': 'Y',
+  },
+  'Alola': {
+    'S': 'Sun',
+    'M': 'Moon',
+    'US': 'Ultra Sun',
+    'UM': 'Ultra Moon',
+  },
+  'Galar': {
+    'Sw': 'Sword',
+    'Sh': 'Shield',
+  },
+  'Hisui': {
+    'LA': 'Legends: Arceus',
+  },
+  'Paldea': {
+    'S': 'Scarlet',
+    'V': 'Violet',
+  },
+};
+
+/// Expand a game abbreviation using the region for disambiguation.
+String _expandGame(String abbr, String region) {
+  final regionMap = _regionGameAbbreviations[region];
+  if (regionMap != null && regionMap.containsKey(abbr)) {
+    return regionMap[abbr]!;
+  }
+  // Fallback: search all regions (for any region not yet listed)
+  for (var map in _regionGameAbbreviations.values) {
+    if (map.containsKey(abbr)) return map[abbr]!;
+  }
+  return abbr;
+}
+
 class PokemonDBService {
   static const String _apiBaseUrl = 'https://poke-api.duocore.dev:158/api/v2';
   static final Map<String, Map<String, List<String>>> _cache = {};
@@ -36,7 +111,12 @@ class PokemonDBService {
 
         final key = '$region - $route';
         final details = <String>[];
-        if (games.isNotEmpty) details.add(games.join(', '));
+        if (games.isNotEmpty) {
+          final expandedGames = games
+              .map((g) => _expandGame(g, region))
+              .toList();
+          details.add(expandedGames.join(', '));
+        }
         if (method.isNotEmpty) details.add(method);
         if (levelRange.isNotEmpty) details.add('Lv.$levelRange');
         if (rarity.isNotEmpty) details.add(rarity);
