@@ -28,6 +28,9 @@ class _SearchState extends State<Search> {
   List<Map<String, dynamic>> evolutions = [];
   List<Map<String, dynamic>> _typeDefenses = [];
   List<Map<String, dynamic>> _moveLearnset = [];
+  List<Map<String, dynamic>> _flavorTextEntries = [];
+  List<Map<String, dynamic>> _pokemonNames = [];
+  List<Map<String, dynamic>> _allSprites = [];
   bool isLoading = false;
   String? errorMessage;
 
@@ -77,6 +80,9 @@ class _SearchState extends State<Search> {
       pokemonLocations.clear();
       listOfEvolution.clear();
       evolutions.clear();
+      _flavorTextEntries = [];
+      _pokemonNames = [];
+      _allSprites = [];
 
       // Convert display name to API format (e.g., "Mr Mime" -> "mr-mime")
       final apiName = PokemonDataFormatter.toApiFormat(pokemon);
@@ -102,7 +108,7 @@ class _SearchState extends State<Search> {
         evolutionData,
       );
 
-      // Fetch type defenses and moves
+      // Fetch type defenses, moves, flavor text, names, and sprites
       try {
         _typeDefenses = await PokeApiService.getPokemonTypeDefenses(apiName);
       } catch (e) {
@@ -112,6 +118,21 @@ class _SearchState extends State<Search> {
         _moveLearnset = await PokeApiService.getPokemonMoves(apiName);
       } catch (e) {
         _moveLearnset = [];
+      }
+      try {
+        _flavorTextEntries = await PokeApiService.getPokemonFlavorText(apiName);
+      } catch (e) {
+        _flavorTextEntries = [];
+      }
+      try {
+        _pokemonNames = await PokeApiService.getPokemonNames(apiName);
+      } catch (e) {
+        _pokemonNames = [];
+      }
+      try {
+        _allSprites = await PokeApiService.getPokemonAllSprites(apiName);
+      } catch (e) {
+        _allSprites = [];
       }
 
       // Fetch encounter locations from PokemonDB
@@ -536,9 +557,14 @@ class _SearchState extends State<Search> {
   Widget _buildMovesCard() {
     if (_moveLearnset.isEmpty) return const SizedBox.shrink();
 
-    final levelUp = _moveLearnset.where((m) => m['learn_method'] == 'level-up').toList();
-    final tm = _moveLearnset.where((m) => m['learn_method'] == 'tm').toList();
-    final egg = _moveLearnset.where((m) => m['learn_method'] == 'egg').toList();
+    List<Map<String, dynamic>> dedup(List<Map<String, dynamic>> moves) {
+      final seen = <String>{};
+      return moves.where((m) => seen.add(m['name']?.toString() ?? '')).toList();
+    }
+
+    final levelUp = dedup(_moveLearnset.where((m) => m['learn_method'] == 'level-up').toList());
+    final tm = dedup(_moveLearnset.where((m) => m['learn_method'] == 'tm').toList());
+    final egg = dedup(_moveLearnset.where((m) => m['learn_method'] == 'egg').toList());
 
     // Sort level-up by level
     levelUp.sort((a, b) {
@@ -607,6 +633,169 @@ class _SearchState extends State<Search> {
                       buildMoveSection('TM/HM', tm, Icons.album, Colors.purple.shade700),
                       buildMoveSection('Egg Moves', egg, Icons.egg, Colors.orange.shade700),
                     ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFlavorTextCard() {
+    if (_flavorTextEntries.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(5),
+      width: double.infinity,
+      child: Card(
+        margin: const EdgeInsets.all(5),
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Pokédex Entries', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox(height: 8),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 300),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _flavorTextEntries.map((entry) {
+                      final version = entry['version']?['name']?.toString() ?? '';
+                      final text = entry['flavor_text']?.toString() ?? '';
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: 80,
+                              child: Text(
+                                version,
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red.shade700),
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(text, style: const TextStyle(fontSize: 12)),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPokemonNamesCard() {
+    if (_pokemonNames.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(5),
+      width: double.infinity,
+      child: Card(
+        margin: const EdgeInsets.all(5),
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Names in Other Languages', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox(height: 8),
+              ..._pokemonNames.map((entry) {
+                final language = entry['language']?.toString() ?? '';
+                final name = entry['localized_name']?.toString() ?? '';
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 100,
+                        child: Text(language, style: TextStyle(fontSize: 12, color: Colors.grey.shade700)),
+                      ),
+                      Expanded(
+                        child: Text(name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSpritesCard() {
+    if (_allSprites.isEmpty) return const SizedBox.shrink();
+
+    // Group sprites by generation
+    final Map<String, List<Map<String, dynamic>>> byGen = {};
+    for (var sprite in _allSprites) {
+      final gen = sprite['generation']?.toString() ?? 'Other';
+      byGen.putIfAbsent(gen, () => []);
+      byGen[gen]!.add(sprite);
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(5),
+      width: double.infinity,
+      child: Card(
+        margin: const EdgeInsets.all(5),
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Sprite Gallery', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox(height: 8),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 400),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: byGen.entries.map((genEntry) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(genEntry.key, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.red.shade700)),
+                          const SizedBox(height: 4),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: genEntry.value.map((sprite) {
+                              final url = sprite['url']?.toString() ?? '';
+                              final type = sprite['sprite_type']?.toString() ?? '';
+                              if (url.isEmpty) return const SizedBox.shrink();
+                              return Column(
+                                children: [
+                                  Image.network(
+                                    url,
+                                    width: 64,
+                                    height: 64,
+                                    errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 32),
+                                  ),
+                                  Text(type, style: const TextStyle(fontSize: 9)),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+                      );
+                    }).toList(),
                   ),
                 ),
               ),
@@ -1129,10 +1318,13 @@ class _SearchState extends State<Search> {
                         ),
                       ),
                     ),
+                    _buildFlavorTextCard(),
                     _buildTypeDefensesCard(),
                     _buildRecommendedNatureCard(),
                     _buildMovesCard(),
                     _buildEvolutionCard(),
+                    _buildPokemonNamesCard(),
+                    _buildSpritesCard(),
                     if (pokemonLocations.isNotEmpty &&
                         pokemonLocations[0] != 'No location data available')
                       Container(

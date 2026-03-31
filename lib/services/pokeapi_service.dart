@@ -474,4 +474,79 @@ class PokeApiService {
       throw Exception('Error fetching pokedex: $e');
     }
   }
+
+  /// Fetches flavor text / Pokedex entries for a Pokemon across game versions
+  static Future<List<Map<String, dynamic>>> getPokemonFlavorText(String identifier) async {
+    final cacheKey = 'flavor_text_$identifier';
+
+    if (_cache.containsKey(cacheKey)) {
+      return List<Map<String, dynamic>>.from(_cache[cacheKey]);
+    }
+
+    try {
+      final response = await Requests.get(
+        '$baseUrl/pokemon/${identifier.toLowerCase()}/flavor-text',
+      );
+
+      if (response.statusCode == 200) {
+        final data = List<Map<String, dynamic>>.from(response.json());
+        _cache[cacheKey] = data;
+        return data;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Fetches localized names for a Pokemon (multi-language)
+  static Future<List<Map<String, dynamic>>> getPokemonNames(String identifier) async {
+    final cacheKey = 'names_$identifier';
+
+    if (_cache.containsKey(cacheKey)) {
+      return List<Map<String, dynamic>>.from(_cache[cacheKey]);
+    }
+
+    try {
+      final response = await Requests.get(
+        '$baseUrl/pokemon/${identifier.toLowerCase()}/names',
+      );
+
+      if (response.statusCode == 200) {
+        final data = List<Map<String, dynamic>>.from(response.json());
+        _cache[cacheKey] = data;
+        return data;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Fetches all sprites for a Pokemon across generations
+  static Future<List<Map<String, dynamic>>> getPokemonAllSprites(String identifier) async {
+    final cacheKey = 'sprites_all_$identifier';
+
+    if (_cache.containsKey(cacheKey)) {
+      return List<Map<String, dynamic>>.from(_cache[cacheKey]);
+    }
+
+    try {
+      final response = await Requests.get(
+        '$baseUrl/pokemon/${identifier.toLowerCase()}/sprites-all',
+      );
+
+      if (response.statusCode == 200) {
+        final data = List<Map<String, dynamic>>.from(response.json());
+        _cache[cacheKey] = data;
+        return data;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      return [];
+    }
+  }
 }

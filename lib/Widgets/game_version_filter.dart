@@ -880,9 +880,14 @@ class _GameVersionFilterState extends State<GameVersionFilter>
   }
 
   Widget _buildMovesSection() {
-    final levelUp = _moveLearnset.where((m) => m['learn_method'] == 'level-up').toList();
-    final tm = _moveLearnset.where((m) => m['learn_method'] == 'tm').toList();
-    final egg = _moveLearnset.where((m) => m['learn_method'] == 'egg').toList();
+    List<Map<String, dynamic>> dedup(List<Map<String, dynamic>> moves) {
+      final seen = <String>{};
+      return moves.where((m) => seen.add(m['name']?.toString() ?? '')).toList();
+    }
+
+    final levelUp = dedup(_moveLearnset.where((m) => m['learn_method'] == 'level-up').toList());
+    final tm = dedup(_moveLearnset.where((m) => m['learn_method'] == 'tm').toList());
+    final egg = dedup(_moveLearnset.where((m) => m['learn_method'] == 'egg').toList());
 
     levelUp.sort((a, b) {
       final aNum = int.tryParse(a['level_or_tm']?.toString() ?? '0') ?? 0;
@@ -901,7 +906,7 @@ class _GameVersionFilterState extends State<GameVersionFilter>
             Text('$title (${moves.length})', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: color)),
           ]),
           const SizedBox(height: 4),
-          ...moves.take(10).map((m) {
+          ...moves.map((m) {
             final level = m['level_or_tm']?.toString() ?? '';
             final power = m['power'];
             final prefix = level.isNotEmpty && level != '\u2014' && level != 'null' ? 'Lv.$level ' : '';
@@ -911,8 +916,6 @@ class _GameVersionFilterState extends State<GameVersionFilter>
               child: Text('$prefix${m['name']} (${m['type']}, ${m['category']})$suffix', style: const TextStyle(fontSize: 12)),
             );
           }),
-          if (moves.length > 10)
-            Text('...and ${moves.length - 10} more', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
           const SizedBox(height: 8),
         ],
       );
@@ -931,9 +934,19 @@ class _GameVersionFilterState extends State<GameVersionFilter>
             children: [
               Text('Moves (${_moveLearnset.length})', style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              buildSection('Level Up', levelUp, Icons.arrow_upward, Colors.blue.shade700),
-              buildSection('TM/HM', tm, Icons.album, Colors.purple.shade700),
-              buildSection('Egg Moves', egg, Icons.egg, Colors.orange.shade700),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 400),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildSection('Level Up', levelUp, Icons.arrow_upward, Colors.blue.shade700),
+                      buildSection('TM/HM', tm, Icons.album, Colors.purple.shade700),
+                      buildSection('Egg Moves', egg, Icons.egg, Colors.orange.shade700),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
