@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:requests/requests.dart';
 import '../../services/pokeapi_service.dart';
 import '../../theme/app_theme.dart';
 
@@ -71,6 +72,9 @@ class _PokemonDetailSheetContent extends StatefulWidget {
 class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> {
   Map<String, dynamic>? _data;
   List<Map<String, dynamic>> _typeDefenses = [];
+  String _biology = '';
+  List<Map<String, dynamic>> _heldItems = [];
+  List<Map<String, dynamic>> _gameLocations = [];
   bool _isLoading = true;
   String? _error;
 
@@ -84,20 +88,68 @@ class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> 
     try {
       final data = await PokeApiService.getPokemon(widget.apiName);
       List<Map<String, dynamic>> defenses = [];
+      String biology = '';
+      List<Map<String, dynamic>> heldItems = [];
       try {
         defenses = await PokeApiService.getPokemonTypeDefenses(widget.apiName);
       } catch (_) {}
-      if (mounted) setState(() { _data = data; _typeDefenses = defenses; _isLoading = false; });
+      try {
+        final bioRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/${widget.apiName}/biology');
+        if (bioRes.statusCode == 200) biology = bioRes.json()['biology'] as String? ?? '';
+      } catch (_) {}
+      try {
+        final heldRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/${widget.apiName}/held-items');
+        if (heldRes.statusCode == 200) {
+          heldItems = List<Map<String, dynamic>>.from(heldRes.json()['held_items'] ?? []);
+        }
+      } catch (_) {}
+      List<Map<String, dynamic>> gameLocations = [];
+      try {
+        final locRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/${widget.apiName}/game-locations');
+        if (locRes.statusCode == 200) {
+          gameLocations = List<Map<String, dynamic>>.from(locRes.json()['locations'] ?? []);
+        }
+      } catch (_) {}
+      if (mounted) setState(() {
+        _data = data; _typeDefenses = defenses;
+        _biology = biology; _heldItems = heldItems;
+        _gameLocations = gameLocations;
+        _isLoading = false;
+      });
     } catch (e) {
       final baseName = widget.apiName.split('-').first;
       if (baseName != widget.apiName) {
         try {
           final data = await PokeApiService.getPokemon(baseName);
           List<Map<String, dynamic>> defenses = [];
+          String biology = '';
+          List<Map<String, dynamic>> heldItems = [];
           try {
             defenses = await PokeApiService.getPokemonTypeDefenses(baseName);
           } catch (_) {}
-          if (mounted) setState(() { _data = data; _typeDefenses = defenses; _isLoading = false; });
+          try {
+            final bioRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/$baseName/biology');
+            if (bioRes.statusCode == 200) biology = bioRes.json()['biology'] as String? ?? '';
+          } catch (_) {}
+          try {
+            final heldRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/$baseName/held-items');
+            if (heldRes.statusCode == 200) {
+              heldItems = List<Map<String, dynamic>>.from(heldRes.json()['held_items'] ?? []);
+            }
+          } catch (_) {}
+          List<Map<String, dynamic>> gameLocations = [];
+          try {
+            final locRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/$baseName/game-locations');
+            if (locRes.statusCode == 200) {
+              gameLocations = List<Map<String, dynamic>>.from(locRes.json()['locations'] ?? []);
+            }
+          } catch (_) {}
+          if (mounted) setState(() {
+            _data = data; _typeDefenses = defenses;
+            _biology = biology; _heldItems = heldItems;
+            _gameLocations = gameLocations;
+            _isLoading = false;
+          });
           return;
         } catch (_) {}
       }
@@ -242,6 +294,109 @@ class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> 
                 ),
               ),
             ],
+            if (_gameLocations.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('How to Obtain', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      const SizedBox(height: 8),
+                      ..._gameLocations.map((loc) {
+                        final game = loc['game']?.toString() ?? '';
+                        final location = loc['location']?.toString() ?? '';
+                        final method = loc['method']?.toString() ?? '';
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(top: 2, right: 8),
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: _methodColor(method).withOpacity(0.15),
+                                  border: Border.all(color: _methodColor(method), width: 1),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  method.isEmpty ? 'Wild' : method,
+                                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: _methodColor(method)),
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(game, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.red.shade700)),
+                                    Text(location, style: const TextStyle(fontSize: 12)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+            if (_biology.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Biology', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      const SizedBox(height: 8),
+                      Text(_biology, style: const TextStyle(fontSize: 13)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+            if (_heldItems.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Wild Held Items', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      const SizedBox(height: 8),
+                      ..._heldItems.map((h) {
+                        final itemName = (h['item']?['name'] as String? ?? '').split('-').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ');
+                        final game = h['game']?.toString() ?? '';
+                        final rarity = h['rarity']?.toString() ?? '';
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.backpack, size: 16, color: Colors.grey),
+                              const SizedBox(width: 8),
+                              Expanded(child: Text(itemName, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500))),
+                              if (rarity.isNotEmpty)
+                                Text(rarity, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                              if (game.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 6),
+                                  child: Text(game, style: TextStyle(fontSize: 11, color: Colors.red.shade400)),
+                                ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ],
         );
       },
@@ -297,6 +452,20 @@ class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> 
     }
 
     return widgets;
+  }
+
+  Color _methodColor(String method) {
+    switch (method) {
+      case 'Special':  return Colors.purple;
+      case 'Roaming':  return Colors.deepPurple;
+      case 'Event':    return Colors.orange;
+      case 'Gift':     return Colors.green;
+      case 'Fossil':   return Colors.brown;
+      case 'Trade':    return Colors.blue;
+      case 'Hatch':    return Colors.pink;
+      case 'Wild':     return Colors.grey.shade600;
+      default:         return Colors.grey.shade600;
+    }
   }
 
   Color _statColor(int val) {

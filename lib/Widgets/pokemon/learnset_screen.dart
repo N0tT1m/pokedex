@@ -41,11 +41,12 @@ class _LearnsetScreenState extends State<LearnsetScreen> with SingleTickerProvid
     }
   }
 
+  // Maps API learn_method values (both DB-stored lowercase and display-capitalized) to tab keys
   static const _methodKeyMap = {
-    'Level Up': 'level-up',
-    'TM': 'machine',
-    'Egg': 'egg',
-    'Tutor': 'tutor',
+    'Level Up': 'level-up', 'level-up': 'level-up',
+    'TM': 'machine',        'tm': 'machine',
+    'Egg': 'egg',           'egg': 'egg',
+    'Tutor': 'tutor',       'tutor': 'tutor',
   };
 
   Future<void> _loadMoves(String name) async {

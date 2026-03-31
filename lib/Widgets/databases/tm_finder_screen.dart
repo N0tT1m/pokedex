@@ -3,6 +3,18 @@ import 'package:requests/requests.dart';
 import '../../services/pokeapi_service.dart';
 import '../../theme/app_theme.dart';
 
+const _kGames = [
+  'scarlet-violet',
+  'sword-shield',
+  'sun-moon',
+  'x-y',
+  'black-white',
+  'diamond-pearl',
+  'ruby-sapphire',
+  'fire-red-leaf-green',
+  'heart-gold-soul-silver',
+];
+
 class TMFinderScreen extends StatefulWidget {
   const TMFinderScreen({Key? key}) : super(key: key);
 
@@ -11,40 +23,95 @@ class TMFinderScreen extends StatefulWidget {
 }
 
 class _TMFinderScreenState extends State<TMFinderScreen> {
-  List<Map<String, dynamic>> _allMoves = [];
-  List<Map<String, dynamic>> _filteredMoves = [];
+  // TM list (loaded from /tm endpoint or fallback /move endpoint)
+  List<Map<String, dynamic>> _allItems = [];
+  List<Map<String, dynamic>> _filteredItems = [];
   bool _isLoading = true;
   String? _error;
+  bool _usingFallback = false;
+
+  // Game selector
+  String _selectedGame = _kGames.first;
+
+  // Search
   final _searchCtrl = TextEditingController();
+
+  // Move detail view
   Map<String, dynamic>? _selectedMove;
   bool _isLoadingDetail = false;
 
   @override
   void initState() {
     super.initState();
-    _loadMoves();
+    _loadTMs();
   }
 
-  Future<void> _loadMoves() async {
+  // ── Data loading ────────────────────────────────────────────────────────────
+
+  Future<void> _loadTMs() async {
     setState(() {
       _isLoading = true;
       _error = null;
+      _usingFallback = false;
+      _searchCtrl.clear();
     });
+
+    // Try the new /tm endpoint first.
+    try {
+      final url = '${PokeApiService.baseUrl}/tm?game=$_selectedGame';
+      final response = await Requests.get(url);
+      if (response.statusCode == 200) {
+        final data = response.json();
+        if (data is List && data.isNotEmpty) {
+          final items = List<Map<String, dynamic>>.from(data).map((m) {
+            final moveName = (m['move_name'] as String? ?? '').toLowerCase().replaceAll(' ', '-');
+            return {
+              'tmNumber': m['tm_number'],
+              'moveName': moveName,
+              'displayName': _formatName(moveName),
+              'game': m['game'] ?? _selectedGame,
+              'location': m['location'] ?? '',
+              // url for detail lookup
+              'url': '${PokeApiService.baseUrl}/move/$moveName',
+            };
+          }).toList();
+          setState(() {
+            _allItems = items;
+            _filteredItems = items;
+            _isLoading = false;
+          });
+          return;
+        }
+      }
+    } catch (_) {
+      // fall through to fallback
+    }
+
+    // Fallback: load all moves from /move endpoint.
+    await _loadMoveFallback();
+  }
+
+  Future<void> _loadMoveFallback() async {
     try {
       final response = await Requests.get('${PokeApiService.baseUrl}/move?limit=1000');
       if (response.statusCode == 200) {
         final data = response.json();
         final results = List<Map<String, dynamic>>.from(data['results']);
+        final items = results.map((m) {
+          final name = m['name'] as String;
+          return {
+            'tmNumber': null,
+            'moveName': name,
+            'displayName': _formatName(name),
+            'game': null,
+            'location': null,
+            'url': m['url'],
+          };
+        }).toList();
         setState(() {
-          _allMoves = results.map((m) {
-            final name = m['name'] as String;
-            return {
-              'name': name,
-              'displayName': _formatName(name),
-              'url': m['url'],
-            };
-          }).toList();
-          _filteredMoves = _allMoves;
+          _allItems = items;
+          _filteredItems = items;
+          _usingFallback = true;
           _isLoading = false;
         });
       } else {
@@ -78,22 +145,33 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
     }
   }
 
-  void _filterMoves(String query) {
+  // ── Search ───────────────────────────────────────────────────────────────────
+
+  void _filterItems(String query) {
     setState(() {
       if (query.isEmpty) {
-        _filteredMoves = _allMoves;
+        _filteredItems = _allItems;
       } else {
-        _filteredMoves = _allMoves.where((m) {
+        final q = query.toLowerCase();
+        _filteredItems = _allItems.where((m) {
           final name = (m['displayName'] as String).toLowerCase();
-          return name.contains(query.toLowerCase());
+          final location = ((m['location'] ?? '') as String).toLowerCase();
+          return name.contains(q) || location.contains(q);
         }).toList();
       }
     });
   }
 
+  // ── Helpers ──────────────────────────────────────────────────────────────────
+
   String _formatName(String name) {
-    return name.split('-').map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w).join(' ');
+    return name
+        .split('-')
+        .map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w)
+        .join(' ');
   }
+
+  // ── Build ────────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -109,11 +187,86 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
             ),
         ],
       ),
-      body: _selectedMove != null ? _buildMoveDetail() : _buildMoveList(),
+      body: _selectedMove != null ? _buildMoveDetail() : _buildTMList(),
     );
   }
 
-  Widget _buildMoveList() {
+  Widget _buildTMList() {
+    return Column(
+      children: [
+        // Game dropdown (only shown when not in fallback mode)
+        _buildGameDropdown(),
+
+        // Search bar
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
+          child: TextField(
+            controller: _searchCtrl,
+            decoration: InputDecoration(
+              hintText: 'Search by move name or location...',
+              prefixIcon: const Icon(Icons.search),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+            ),
+            onChanged: _filterItems,
+          ),
+        ),
+
+        // Status bar
+        if (!_isLoading && _error == null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+            child: Row(
+              children: [
+                Text(
+                  '${_filteredItems.length} ${_usingFallback ? "moves" : "TMs"} found',
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                ),
+                if (_usingFallback) ...[
+                  const SizedBox(width: 6),
+                  Tooltip(
+                    message: 'TM data unavailable for this game — showing all moves',
+                    child: Icon(Icons.info_outline, size: 14, color: Colors.grey.shade500),
+                  ),
+                ],
+              ],
+            ),
+          ),
+
+        // List / loading / error
+        Expanded(child: _buildListBody()),
+      ],
+    );
+  }
+
+  Widget _buildGameDropdown() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+      child: DropdownButtonFormField<String>(
+        initialValue: _selectedGame,
+        decoration: InputDecoration(
+          labelText: 'Game',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+        items: _kGames
+            .map((g) => DropdownMenuItem(value: g, child: Text(_formatName(g))))
+            .toList(),
+        onChanged: (value) {
+          if (value != null && value != _selectedGame) {
+            setState(() => _selectedGame = value);
+            _loadTMs();
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildListBody() {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -128,7 +281,7 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
             Text(_error!, style: const TextStyle(color: Colors.red)),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () => _loadMoves(),
+              onPressed: _loadTMs,
               child: const Text('Retry'),
             ),
           ],
@@ -136,59 +289,69 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
       );
     }
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: TextField(
-            controller: _searchCtrl,
-            decoration: InputDecoration(
-              hintText: 'Search moves by name...',
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
-              filled: true,
-              fillColor: Colors.white,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+    if (_filteredItems.isEmpty) {
+      return const Center(child: Text('No results found'));
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      itemCount: _filteredItems.length,
+      itemBuilder: (context, index) {
+        final item = _filteredItems[index];
+        final tmNumber = item['tmNumber'];
+        final location = (item['location'] as String? ?? '').trim();
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 2),
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: tmNumber != null ? Colors.red : Colors.blue,
+              child: Text(
+                tmNumber != null ? 'TM' : '${index + 1}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
-            onChanged: _filterMoves,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            '${_filteredMoves.length} moves found — tap a move to see details',
-            style: TextStyle(color: Colors.grey.shade600),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            itemCount: _filteredMoves.length,
-            itemBuilder: (context, index) {
-              final move = _filteredMoves[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 2),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.blue,
-                    child: Text(
-                      '${index + 1}',
-                      style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+            title: Row(
+              children: [
+                if (tmNumber != null) ...[
+                  Text(
+                    'TM${tmNumber.toString().padLeft(3, '0')} ',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                      fontSize: 12,
                     ),
                   ),
-                  title: Text(move['displayName'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                  trailing: const Icon(Icons.chevron_right),
-                  dense: true,
-                  onTap: () => _loadMoveDetail(move['name']),
+                ],
+                Expanded(
+                  child: Text(
+                    item['displayName'] as String,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-              );
-            },
+              ],
+            ),
+            subtitle: location.isNotEmpty
+                ? Text(
+                    location,
+                    style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  )
+                : null,
+            trailing: const Icon(Icons.chevron_right),
+            dense: true,
+            onTap: () => _loadMoveDetail(item['moveName'] as String),
           ),
-        ),
-      ],
+        );
+      },
     );
   }
+
+  // ── Move detail ───────────────────────────────────────────────────────────────
 
   Widget _buildMoveDetail() {
     if (_isLoadingDetail) {
@@ -250,13 +413,18 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
                           color: AppTheme.typeColors[typeCap] ?? Colors.grey,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(typeCap, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        child: Text(typeCap,
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                       ),
                       const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
-                          color: category == 'physical' ? Colors.orange : category == 'special' ? Colors.blue : Colors.grey,
+                          color: category == 'physical'
+                              ? Colors.orange
+                              : category == 'special'
+                                  ? Colors.blue
+                                  : Colors.grey,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -289,12 +457,15 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Effect', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const Text('Effect',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     const SizedBox(height: 8),
                     Text(effect),
                     if (flavorText.isNotEmpty) ...[
                       const SizedBox(height: 8),
-                      Text(flavorText, style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
+                      Text(flavorText,
+                          style: const TextStyle(
+                              fontStyle: FontStyle.italic, color: Colors.grey)),
                     ],
                   ],
                 ),
@@ -308,7 +479,8 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('TM/HM', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const Text('TM/HM',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     const SizedBox(height: 8),
                     ...machines.take(10).map((m) {
                       final version = m['version_group']?['name'] ?? '';
@@ -329,7 +501,8 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Learned by ${learnedBy.length} Pokemon', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text('Learned by ${learnedBy.length} Pokemon',
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 6,

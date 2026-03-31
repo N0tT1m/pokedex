@@ -12,6 +12,7 @@ class BreedingChainScreen extends StatefulWidget {
 
 class _BreedingChainScreenState extends State<BreedingChainScreen> {
   List<String> _pokemonNames = [];
+  List<Map<String, dynamic>> _allMoves = []; // {apiName, name, method}
   List<String> _moveNames = [];
   bool _isLoading = true;
   bool _searching = false;
@@ -40,14 +41,58 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
 
   Future<void> _loadMoves(String pokemonName) async {
     try {
-      final eggMoves = await BreedingService.getEggMoves(pokemonName);
+      final moves = await PokeApiService.getPokemonMoves(pokemonName.toLowerCase());
+      final methodOrder = ['egg', 'level-up', 'tm', 'tutor'];
+      // Normalize DB lowercase values and skip unknown methods
+      final normalized = moves.map((m) {
+        final raw = (m['learn_method'] as String? ?? '').toLowerCase();
+        final apiName = m['name'] as String? ?? '';
+        final displayName = apiName.split('-')
+            .map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w)
+            .join(' ');
+        final method = raw == 'level-up' ? 'level-up'
+            : raw == 'tm' ? 'tm'
+            : raw == 'egg' ? 'egg'
+            : raw == 'tutor' ? 'tutor'
+            : null;
+        return method != null ? {'apiName': apiName, 'name': displayName, 'method': method} : null;
+      }).whereType<Map<String, dynamic>>().toList();
+
+      // Deduplicate by apiName, prefer egg method if multiple
+      final seen = <String, Map<String, dynamic>>{};
+      for (final m in normalized) {
+        final key = m['apiName'] as String;
+        if (!seen.containsKey(key) || m['method'] == 'egg') {
+          seen[key] = m;
+        }
+      }
+      final sorted = seen.values.toList()
+        ..sort((a, b) {
+          final ai = methodOrder.indexOf(a['method']);
+          final bi = methodOrder.indexOf(b['method']);
+          final c = ai.compareTo(bi);
+          return c != 0 ? c : (a['name'] as String).compareTo(b['name'] as String);
+        });
+
       setState(() {
-        _moveNames = eggMoves.map((m) => m['apiName'] as String).toList();
+        _allMoves = sorted;
+        _moveNames = sorted.map((m) => m['apiName'] as String).toList();
         _targetPokemon = pokemonName;
         _targetMove = null;
         _chainResults = [];
       });
     } catch (_) {}
+  }
+
+  String _moveMethodLabel(String apiName) {
+    final m = _allMoves.firstWhere((m) => m['apiName'] == apiName, orElse: () => {});
+    switch (m['method']) {
+      case 'egg': return 'Egg';
+      case 'tm': return 'TM';
+      case 'tutor': return 'Tutor';
+      case 'level-up': return 'Lv';
+      default: return '';
+    }
   }
 
   Future<void> _findChain() async {
@@ -233,17 +278,25 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Egg Moves for ${_formatName(_targetPokemon!)}',
+                            Text('Moves for ${_formatName(_targetPokemon!)}',
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            const SizedBox(height: 4),
+                            const Text('Egg = can only be learned via breeding  ·  TM/Lv/Tutor = parent must know it',
+                              style: TextStyle(fontSize: 11, color: Colors.grey)),
                             const SizedBox(height: 8),
                             Wrap(
                               spacing: 6, runSpacing: 6,
-                              children: _moveNames.map((m) =>
-                                ChoiceChip(
-                                  label: Text(_formatName(m)),
+                              children: _moveNames.map((m) {
+                                final label = _moveMethodLabel(m);
+                                return ChoiceChip(
+                                  label: Text(
+                                    label.isNotEmpty ? '[$label] ${_formatName(m)}' : _formatName(m),
+                                    style: const TextStyle(fontSize: 11),
+                                  ),
                                   selected: _targetMove == m,
                                   onSelected: (v) => setState(() => _targetMove = v ? m : null),
-                                )).toList(),
+                                );
+                              }).toList(),
                             ),
                           ],
                         ),
@@ -254,7 +307,7 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
                     const Card(
                       child: Padding(
                         padding: EdgeInsets.all(16),
-                        child: Text('This Pokemon has no egg moves.', style: TextStyle(color: Colors.grey)),
+                        child: Text('No moves found for this Pokemon.', style: TextStyle(color: Colors.grey)),
                       ),
                     ),
                   const SizedBox(height: 16),
