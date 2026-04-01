@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/pokeapi_service.dart';
 import '../../services/evolution_service.dart';
+import '../pokemon/pokemon_detail_sheet.dart';
 
 class EvolutionMethodsScreen extends StatefulWidget {
   const EvolutionMethodsScreen({Key? key}) : super(key: key);
@@ -90,7 +91,9 @@ class _EvolutionMethodsScreenState extends State<EvolutionMethodsScreen> {
                       final fromId = PokeApiService.extractIdFromUrl(
                         '${PokeApiService.baseUrl}/pokemon-species/${evo['fromApi']}/');
 
-                      return Card(
+                      return GestureDetector(
+                        onTap: () => showPokemonDetailSheet(context, evo['toApi'] ?? evo['to']),
+                        child: Card(
                         margin: const EdgeInsets.only(bottom: 8),
                         child: Padding(
                           padding: const EdgeInsets.all(12),
@@ -117,6 +120,7 @@ class _EvolutionMethodsScreenState extends State<EvolutionMethodsScreen> {
                             ],
                           ),
                         ),
+                      ),
                       );
                     },
                   ),

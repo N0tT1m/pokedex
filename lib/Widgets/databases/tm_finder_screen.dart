@@ -3,7 +3,7 @@ import 'package:requests/requests.dart';
 import '../../services/pokeapi_service.dart';
 import '../../theme/app_theme.dart';
 
-const _kGames = [
+const _kFallbackGames = [
   'scarlet-violet',
   'sword-shield',
   'sun-moon',
@@ -30,8 +30,9 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
   String? _error;
   bool _usingFallback = false;
 
-  // Game selector
-  String _selectedGame = _kGames.first;
+  // Game selector - loaded from API
+  List<String> _games = _kFallbackGames;
+  String _selectedGame = _kFallbackGames.first;
 
   // Search
   final _searchCtrl = TextEditingController();
@@ -43,7 +44,28 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
   @override
   void initState() {
     super.initState();
+    _loadGames();
     _loadTMs();
+  }
+
+  Future<void> _loadGames() async {
+    try {
+      final response = await Requests.get('${PokeApiService.baseUrl}/tm/games');
+      if (response.statusCode == 200) {
+        final data = response.json();
+        final games = List<String>.from(data['games'] ?? []);
+        if (games.isNotEmpty && mounted) {
+          setState(() {
+            _games = games;
+            if (!games.contains(_selectedGame)) {
+              _selectedGame = games.first;
+            }
+          });
+        }
+      }
+    } catch (_) {
+      // Keep fallback games list
+    }
   }
 
   // ── Data loading ────────────────────────────────────────────────────────────
@@ -253,7 +275,7 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
           filled: true,
           fillColor: Colors.white,
         ),
-        items: _kGames
+        items: _games
             .map((g) => DropdownMenuItem(value: g, child: Text(_formatName(g))))
             .toList(),
         onChanged: (value) {

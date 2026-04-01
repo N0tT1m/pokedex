@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/pokeapi_service.dart';
 import '../../theme/app_theme.dart';
+import '../pokemon/pokemon_detail_sheet.dart';
 
 class ComparePokemonScreen extends StatefulWidget {
   const ComparePokemonScreen({Key? key}) : super(key: key);
@@ -184,7 +185,10 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
         ),
         if (data != null) ...[
           const SizedBox(height: 8),
-          Text(_capitalize(data['name']), style: const TextStyle(fontWeight: FontWeight.bold)),
+          GestureDetector(
+            onTap: () => showPokemonDetailSheet(context, data['name']),
+            child: Text('#${data['id']} ${_capitalize(data['name'])}', style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline)),
+          ),
           const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

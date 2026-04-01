@@ -208,7 +208,7 @@ class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> 
                 child: Image.network(sprite, height: 120, errorBuilder: (_, __, ___) => const Icon(Icons.catching_pokemon, size: 80)),
               ),
             const SizedBox(height: 8),
-            Center(child: Text(name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold))),
+            Center(child: Text('#${data['id']} $name', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold))),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

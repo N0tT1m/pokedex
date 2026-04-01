@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../services/pokeapi_service.dart';
 import '../../services/iv_calculator_service.dart';
 import '../../theme/app_theme.dart';
+import '../pokemon/pokemon_detail_sheet.dart';
 
 class SpeedTierScreen extends StatefulWidget {
   const SpeedTierScreen({Key? key}) : super(key: key);
@@ -163,13 +164,14 @@ class _SpeedTierScreenState extends State<SpeedTierScreen> {
                           baseStat: baseSpeed, iv: 31, ev: 252, level: _showLevel, natureModifier: 1.1, isHP: false);
 
                       return ListTile(
+                        onTap: () => showPokemonDetailSheet(context, p['name']),
                         leading: CircleAvatar(
                           backgroundImage: NetworkImage(p['image']),
                           backgroundColor: Colors.grey.shade200,
                         ),
                         title: Row(
                           children: [
-                            Text(p['name'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                            Text('#${p['id']} ${p['name']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                             const SizedBox(width: 4),
                             ...types.map((t) => Container(
                               margin: const EdgeInsets.only(left: 2),

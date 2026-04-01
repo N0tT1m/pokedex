@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:requests/requests.dart';
 import '../services/pokeapi_service.dart';
 import '../services/pokemon_data_formatter.dart';
 import '../services/pokemondb_service.dart';
@@ -31,6 +32,9 @@ class _SearchState extends State<Search> {
   List<Map<String, dynamic>> _flavorTextEntries = [];
   List<Map<String, dynamic>> _pokemonNames = [];
   List<Map<String, dynamic>> _allSprites = [];
+  String _biology = '';
+  List<Map<String, dynamic>> _heldItems = [];
+  List<Map<String, dynamic>> _gameLocations = [];
   bool isLoading = false;
   String? errorMessage;
 
@@ -83,6 +87,9 @@ class _SearchState extends State<Search> {
       _flavorTextEntries = [];
       _pokemonNames = [];
       _allSprites = [];
+      _biology = '';
+      _heldItems = [];
+      _gameLocations = [];
 
       // Convert display name to API format (e.g., "Mr Mime" -> "mr-mime")
       final apiName = PokemonDataFormatter.toApiFormat(pokemon);
@@ -135,7 +142,24 @@ class _SearchState extends State<Search> {
         _allSprites = [];
       }
 
-      // Fetch encounter locations from PokemonDB
+      // Fetch Bulbapedia data (biology, held items, game locations)
+      try {
+        final bioRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/$apiName/biology');
+        if (bioRes.statusCode == 200) _biology = bioRes.json()['biology'] as String? ?? '';
+      } catch (_) {}
+      try {
+        final heldRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/$apiName/held-items');
+        if (heldRes.statusCode == 200) {
+          _heldItems = List<Map<String, dynamic>>.from(heldRes.json()['held_items'] ?? []);
+        }
+      } catch (_) {}
+      try {
+        final locRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/$apiName/game-locations');
+        if (locRes.statusCode == 200) {
+          _gameLocations = List<Map<String, dynamic>>.from(locRes.json()['locations'] ?? []);
+        }
+      } catch (_) {}
+
       // Fetch encounter locations from PokemonDB
       try {
         print('Fetching encounter data for: $apiName');
@@ -806,6 +830,152 @@ class _SearchState extends State<Search> {
     );
   }
 
+  Widget _buildBiologyCard() {
+    if (_biology.isEmpty) return const SizedBox.shrink();
+    return Container(
+      padding: const EdgeInsets.all(5),
+      width: double.infinity,
+      child: Card(
+        margin: const EdgeInsets.all(5),
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Biology', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox(height: 8),
+              Text(_biology, style: const TextStyle(fontSize: 13)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeldItemsCard() {
+    if (_heldItems.isEmpty) return const SizedBox.shrink();
+    return Container(
+      padding: const EdgeInsets.all(5),
+      width: double.infinity,
+      child: Card(
+        margin: const EdgeInsets.all(5),
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Wild Held Items', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox(height: 8),
+              ..._heldItems.map((h) {
+                final itemName = (h['item']?['name'] as String? ?? '').split('-').map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w).join(' ');
+                final game = h['game']?.toString() ?? '';
+                final rarity = h['rarity']?.toString() ?? '';
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.backpack, size: 16, color: Colors.grey),
+                      const SizedBox(width: 8),
+                      Expanded(child: Text(itemName, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500))),
+                      if (rarity.isNotEmpty) Text(rarity, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                      if (game.isNotEmpty) Padding(
+                        padding: const EdgeInsets.only(left: 6),
+                        child: Text(game, style: TextStyle(fontSize: 11, color: Colors.red.shade400)),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGameLocationsCard() {
+    if (_gameLocations.isEmpty) return const SizedBox.shrink();
+
+    Color methodColor(String method) {
+      switch (method) {
+        case 'Special':  return Colors.purple;
+        case 'Roaming':  return Colors.deepPurple;
+        case 'Event':    return Colors.orange;
+        case 'Gift':     return Colors.green;
+        case 'Fossil':   return Colors.brown;
+        case 'Trade':    return Colors.blue;
+        case 'Hatch':    return Colors.pink;
+        case 'Wild':     return Colors.grey.shade600;
+        default:         return Colors.grey.shade600;
+      }
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(5),
+      width: double.infinity,
+      child: Card(
+        margin: const EdgeInsets.all(5),
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('How to Obtain', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox(height: 8),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 400),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _gameLocations.map((loc) {
+                      final game = loc['game']?.toString() ?? '';
+                      final location = loc['location']?.toString() ?? '';
+                      final method = loc['method']?.toString() ?? '';
+                      final color = methodColor(method);
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.only(top: 2, right: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: color.withValues(alpha: 0.15),
+                                border: Border.all(color: color, width: 1),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                method.isEmpty ? 'Wild' : method,
+                                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: color),
+                              ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(game, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.red.shade700)),
+                                  Text(location, style: const TextStyle(fontSize: 12)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildEvolutionNode(Map<String, dynamic> node, {bool showInfo = false}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -1324,6 +1494,9 @@ class _SearchState extends State<Search> {
                     _buildMovesCard(),
                     _buildEvolutionCard(),
                     _buildPokemonNamesCard(),
+                    _buildBiologyCard(),
+                    _buildHeldItemsCard(),
+                    _buildGameLocationsCard(),
                     _buildSpritesCard(),
                     if (pokemonLocations.isNotEmpty &&
                         pokemonLocations[0] != 'No location data available')

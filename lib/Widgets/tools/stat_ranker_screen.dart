@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/pokeapi_service.dart';
 import '../../theme/app_theme.dart';
+import '../pokemon/pokemon_detail_sheet.dart';
 
 class StatRankerScreen extends StatefulWidget {
   const StatRankerScreen({Key? key}) : super(key: key);
@@ -231,6 +232,7 @@ class _StatRankerScreenState extends State<StatRankerScreen> {
                 final displayStat = statKey == 'bst' ? p['bst'] : stats[statKey] ?? 0;
 
                 return ListTile(
+                  onTap: () => showPokemonDetailSheet(context, p['name']),
                   leading: SizedBox(
                     width: 40,
                     child: Column(
@@ -245,7 +247,7 @@ class _StatRankerScreenState extends State<StatRankerScreen> {
                       ],
                     ),
                   ),
-                  title: Text(_formatName(p['name']), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  title: Text('#${p['id']} ${_formatName(p['name'])}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                   subtitle: Row(
                     children: [
                       ...types.map((t) => Container(

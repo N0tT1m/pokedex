@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:requests/requests.dart';
 import '../../services/pokeapi_service.dart';
+import '../pokemon/pokemon_detail_sheet.dart';
 
 class ReverseAbilityLookupScreen extends StatefulWidget {
   const ReverseAbilityLookupScreen({Key? key}) : super(key: key);
@@ -155,6 +156,7 @@ class _ReverseAbilityLookupScreenState extends State<ReverseAbilityLookupScreen>
                       final isHidden = pokemon['isHidden'] as bool;
 
                       return ListTile(
+                        onTap: () => showPokemonDetailSheet(context, pokemon['name']),
                         leading: id != null ? Image.network(
                           'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png',
                           width: 40, height: 40,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:requests/requests.dart';
 import '../../services/pokeapi_service.dart';
 import '../../services/breeding_service.dart';
+import '../pokemon/pokemon_detail_sheet.dart';
 
 class BreedingChainScreen extends StatefulWidget {
   const BreedingChainScreen({Key? key}) : super(key: key);
@@ -106,7 +107,8 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
           .map((g) => g['name'] as String).toList();
 
       // Get all Pokemon that learn this move by level-up or TM (potential parents)
-      final moveResponse = await Requests.get('${PokeApiService.baseUrl}/move/${_targetMove!.toLowerCase()}');
+      final moveApiName = _targetMove!.toLowerCase().replaceAll(' ', '-');
+      final moveResponse = await Requests.get('${PokeApiService.baseUrl}/move/$moveApiName');
       if (moveResponse.statusCode != 200) {
         setState(() { _errorMessage = 'Could not load move data'; _searching = false; });
         return;
@@ -119,7 +121,7 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
       final directParents = <Map<String, dynamic>>[];
 
       // Check a sample of Pokemon for egg group compatibility
-      for (var pokeName in learnedBy.take(100)) {
+      for (var pokeName in learnedBy) {
         try {
           final species = await PokeApiService.getPokemonSpecies(pokeName);
           final eggGroups = (species['egg_groups'] as List)
@@ -143,10 +145,17 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
             }
 
             if (learnMethod != 'unknown' && !learnMethod.toLowerCase().contains('egg')) {
+              // Get the Pokemon ID for display
+              int? pokeId;
+              try {
+                final pokeData = await PokeApiService.getPokemon(pokeName);
+                pokeId = pokeData['id'] as int?;
+              } catch (_) {}
               directParents.add({
                 'name': pokeName,
                 'learnMethod': learnMethod,
                 'sharedGroups': shared,
+                'id': pokeId,
               });
             }
           }
@@ -332,19 +341,33 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
                     Text('These Pokemon can pass ${_formatName(_targetMove!)} to ${_formatName(_targetPokemon!)} as an egg move.',
                       style: const TextStyle(color: Colors.grey, fontSize: 13)),
                     const SizedBox(height: 8),
-                    ..._chainResults.map((parent) => Card(
-                      child: ListTile(
-                        title: Text(_formatName(parent['name']), style: const TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text(
-                          'Learns via ${_formatName(parent['learnMethod'])}\n'
-                          'Shared egg group: ${(parent['sharedGroups'] as List).map((g) => _formatName(g as String)).join(", ")}'),
-                        isThreeLine: true,
-                        leading: const CircleAvatar(
-                          backgroundColor: Colors.pink,
-                          child: Icon(Icons.egg, color: Colors.white),
+                    ..._chainResults.map((parent) {
+                      final parentId = parent['id'] as int?;
+                      return Card(
+                        child: ListTile(
+                          onTap: () => showPokemonDetailSheet(context, parent['name']),
+                          title: Text(
+                            parentId != null
+                                ? '#$parentId ${_formatName(parent['name'])}'
+                                : _formatName(parent['name']),
+                            style: const TextStyle(fontWeight: FontWeight.bold)),
+                          subtitle: Text(
+                            'Learns via ${_formatName(parent['learnMethod'])}\n'
+                            'Shared egg group: ${(parent['sharedGroups'] as List).map((g) => _formatName(g as String)).join(", ")}'),
+                          isThreeLine: true,
+                          leading: parentId != null
+                              ? CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$parentId.png'),
+                                  backgroundColor: Colors.pink.shade100,
+                                )
+                              : const CircleAvatar(
+                                  backgroundColor: Colors.pink,
+                                  child: Icon(Icons.egg, color: Colors.white),
+                                ),
                         ),
-                      ),
-                    )),
+                      );
+                    }),
                   ],
                 ],
               ),

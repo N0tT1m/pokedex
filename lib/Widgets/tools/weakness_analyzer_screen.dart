@@ -3,6 +3,7 @@ import '../../services/pokeapi_service.dart';
 import '../../services/type_effectiveness_service.dart';
 import '../../services/coverage_analyzer_service.dart';
 import '../../theme/app_theme.dart';
+import '../pokemon/pokemon_detail_sheet.dart';
 
 class WeaknessAnalyzerScreen extends StatefulWidget {
   const WeaknessAnalyzerScreen({Key? key}) : super(key: key);
@@ -88,7 +89,9 @@ class _WeaknessAnalyzerScreenState extends State<WeaknessAnalyzerScreen> {
                     children: _team.asMap().entries.map((entry) {
                       final idx = entry.key;
                       final mon = entry.value;
-                      return Chip(
+                      return GestureDetector(
+                        onTap: () => showPokemonDetailSheet(context, mon['name']),
+                        child: Chip(
                         label: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -105,6 +108,7 @@ class _WeaknessAnalyzerScreenState extends State<WeaknessAnalyzerScreen> {
                         ),
                         deleteIcon: const Icon(Icons.close, size: 16),
                         onDeleted: () => setState(() => _team.removeAt(idx)),
+                      ),
                       );
                     }).toList(),
                   ),

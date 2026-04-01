@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:requests/requests.dart';
 import '../../services/pokeapi_service.dart';
 import '../../theme/app_theme.dart';
+import '../pokemon/pokemon_detail_sheet.dart';
 
 class ReverseMoveLookupScreen extends StatefulWidget {
   const ReverseMoveLookupScreen({Key? key}) : super(key: key);
@@ -139,6 +140,7 @@ class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
                         final pokemon = _pokemonList[index];
                         final id = PokeApiService.extractIdFromUrl(pokemon['url']);
                         return ListTile(
+                          onTap: () => showPokemonDetailSheet(context, pokemon['name']),
                           leading: id != null ? Image.network(
                             'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png',
                             width: 40, height: 40,
