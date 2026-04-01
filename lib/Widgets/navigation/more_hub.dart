@@ -4,6 +4,7 @@ import '../nuzlocke/nuzlocke_tracker_screen.dart';
 import '../favorites_screen.dart';
 import '../News.dart';
 import '../databases/walkthrough_screen.dart';
+import '../../services/pokemondb_service.dart';
 
 class MoreHub extends StatelessWidget {
   const MoreHub({Key? key}) : super(key: key);
@@ -72,7 +73,8 @@ class MoreHub extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(ctx);
-              // Clear the PokeAPI in-memory cache
+              PokemonDBService.clearCache();
+              PokemonDBService.clearRaidCache();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Cache cleared')),
               );

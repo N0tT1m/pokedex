@@ -180,4 +180,63 @@ class PokemonDBService {
   static void clearCache() {
     _cache.clear();
   }
+
+  // ---------------------------------------------------------------------------
+  // Raid events
+  // ---------------------------------------------------------------------------
+
+  static List<Map<String, dynamic>>? _raidCache;
+  static List<Map<String, dynamic>>? _activeRaidCache;
+
+  /// Fetch all raid events, active ones first.
+  static Future<List<Map<String, dynamic>>> getRaidEvents() async {
+    if (_raidCache != null) return _raidCache!;
+    try {
+      final response = await Requests.get('$_apiBaseUrl/news/raids');
+      if (response.statusCode != 200) return [];
+      final data = response.json();
+      _raidCache = List<Map<String, dynamic>>.from(data['results'] ?? []);
+      return _raidCache!;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Fetch only currently active raid events.
+  static Future<List<Map<String, dynamic>>> getActiveRaids() async {
+    if (_activeRaidCache != null) return _activeRaidCache!;
+    try {
+      final response = await Requests.get('$_apiBaseUrl/news/raids/active');
+      if (response.statusCode != 200) return [];
+      final data = response.json();
+      _activeRaidCache = List<Map<String, dynamic>>.from(data['results'] ?? []);
+      return _activeRaidCache!;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Fetch counters for a specific raid Pokemon.
+  /// Pass [teraType] to filter to a specific tera type when applicable.
+  static Future<List<Map<String, dynamic>>> getRaidCounters(
+      String pokemonName, {String? teraType}) async {
+    try {
+      var url = '$_apiBaseUrl/news/raids/${pokemonName.toLowerCase()}';
+      if (teraType != null && teraType.isNotEmpty) {
+        url += '?tera_type=${Uri.encodeComponent(teraType)}';
+      }
+      final response = await Requests.get(url);
+      if (response.statusCode != 200) return [];
+      final data = response.json();
+      return List<Map<String, dynamic>>.from(data['counters'] ?? []);
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Clear raid caches (call after re-running the spider).
+  static void clearRaidCache() {
+    _raidCache = null;
+    _activeRaidCache = null;
+  }
 }
