@@ -96,7 +96,9 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
             ),
         ],
       ),
-      body: _selectedMove != null ? _buildMoveDetail() : _buildMoveList(),
+      body: _isLoadingDetail
+          ? const Center(child: CircularProgressIndicator())
+          : _selectedMove != null ? _buildMoveDetail() : _buildMoveList(),
     );
   }
 
@@ -165,10 +167,6 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
   }
 
   Widget _buildMoveDetail() {
-    if (_isLoadingDetail) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
     final move = _selectedMove!;
     final name = (move['name'] as String).split('-').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ');
     final type = move['type']?['name'] ?? 'unknown';
@@ -180,7 +178,7 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
     final effectEntries = move['effect_entries'] as List? ?? [];
     String effect = '';
     for (var entry in effectEntries) {
-      if (entry['language']['name'] == 'en') {
+      if (entry['language']?['name'] == 'en') {
         effect = entry['short_effect'] ?? entry['effect'] ?? '';
         break;
       }
@@ -194,8 +192,8 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
     final flavorEntries = move['flavor_text_entries'] as List? ?? [];
     String flavorText = '';
     for (var entry in flavorEntries.reversed) {
-      if (entry['language']['name'] == 'en') {
-        flavorText = (entry['flavor_text'] as String).replaceAll('\n', ' ');
+      if (entry['language']?['name'] == 'en') {
+        flavorText = ((entry['flavor_text'] as String?) ?? '').replaceAll('\n', ' ');
         break;
       }
     }
@@ -313,7 +311,8 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
                     spacing: 6,
                     runSpacing: 4,
                     children: learnedBy.take(50).map((p) {
-                      final pName = _formatName(p['name']);
+                      final rawName = (p['name'] as String?) ?? (p['pokemon']?['name'] as String?) ?? '';
+                      final pName = _formatName(rawName);
                       return Chip(
                         label: Text(pName, style: const TextStyle(fontSize: 11)),
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,

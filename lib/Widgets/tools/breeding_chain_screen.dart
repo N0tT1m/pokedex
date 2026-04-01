@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:requests/requests.dart';
 import '../../services/pokeapi_service.dart';
-import '../../services/breeding_service.dart';
 import '../pokemon/pokemon_detail_sheet.dart';
 
 class BreedingChainScreen extends StatefulWidget {
@@ -13,7 +12,6 @@ class BreedingChainScreen extends StatefulWidget {
 
 class _BreedingChainScreenState extends State<BreedingChainScreen> {
   List<String> _pokemonNames = [];
-  List<Map<String, dynamic>> _allMoves = []; // {apiName, name, method}
   List<String> _moveNames = [];
   bool _isLoading = true;
   bool _searching = false;
@@ -75,9 +73,10 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
           return c != 0 ? c : (a['name'] as String).compareTo(b['name'] as String);
         });
 
+      final eggOnly = sorted.where((m) => m['method'] == 'egg').toList();
+
       setState(() {
-        _allMoves = sorted;
-        _moveNames = sorted.map((m) => m['apiName'] as String).toList();
+        _moveNames = eggOnly.map((m) => m['apiName'] as String).toList();
         _targetPokemon = pokemonName;
         _targetMove = null;
         _chainResults = [];
@@ -85,16 +84,6 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
     } catch (_) {}
   }
 
-  String _moveMethodLabel(String apiName) {
-    final m = _allMoves.firstWhere((m) => m['apiName'] == apiName, orElse: () => {});
-    switch (m['method']) {
-      case 'egg': return 'Egg';
-      case 'tm': return 'TM';
-      case 'tutor': return 'Tutor';
-      case 'level-up': return 'Lv';
-      default: return '';
-    }
-  }
 
   Future<void> _findChain() async {
     if (_targetPokemon == null || _targetMove == null) return;
@@ -290,16 +279,15 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
                             Text('Moves for ${_formatName(_targetPokemon!)}',
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                             const SizedBox(height: 4),
-                            const Text('Egg = can only be learned via breeding  ·  TM/Lv/Tutor = parent must know it',
+                            const Text('Only egg moves are shown — select one to find a parent that can pass it down.',
                               style: TextStyle(fontSize: 11, color: Colors.grey)),
                             const SizedBox(height: 8),
                             Wrap(
                               spacing: 6, runSpacing: 6,
                               children: _moveNames.map((m) {
-                                final label = _moveMethodLabel(m);
                                 return ChoiceChip(
                                   label: Text(
-                                    label.isNotEmpty ? '[$label] ${_formatName(m)}' : _formatName(m),
+                                    _formatName(m),
                                     style: const TextStyle(fontSize: 11),
                                   ),
                                   selected: _targetMove == m,

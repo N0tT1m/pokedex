@@ -74,7 +74,9 @@ class _AbilityDatabaseScreenState extends State<AbilityDatabaseScreen> {
             ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => setState(() => _selectedAbility = null))
             : null,
       ),
-      body: _selectedAbility != null ? _buildDetail() : _buildList(),
+      body: _isLoadingDetail
+          ? const Center(child: CircularProgressIndicator())
+          : _selectedAbility != null ? _buildDetail() : _buildList(),
     );
   }
 
@@ -143,14 +145,12 @@ class _AbilityDatabaseScreenState extends State<AbilityDatabaseScreen> {
   }
 
   Widget _buildDetail() {
-    if (_isLoadingDetail) return const Center(child: CircularProgressIndicator());
-
     final ability = _selectedAbility!;
     final effectEntries = ability['effect_entries'] as List? ?? [];
     String effect = '';
     String shortEffect = '';
     for (var entry in effectEntries) {
-      if (entry['language']['name'] == 'en') {
+      if (entry['language']?['name'] == 'en') {
         effect = entry['effect'] ?? '';
         shortEffect = entry['short_effect'] ?? '';
       }
@@ -159,8 +159,8 @@ class _AbilityDatabaseScreenState extends State<AbilityDatabaseScreen> {
     final flavorEntries = ability['flavor_text_entries'] as List? ?? [];
     String flavorText = '';
     for (var entry in flavorEntries.reversed) {
-      if (entry['language']['name'] == 'en') {
-        flavorText = (entry['flavor_text'] as String).replaceAll('\n', ' ');
+      if (entry['language']?['name'] == 'en') {
+        flavorText = ((entry['flavor_text'] as String?) ?? '').replaceAll('\n', ' ');
         break;
       }
     }

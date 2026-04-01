@@ -127,7 +127,9 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
             ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => setState(() => _selectedItem = null))
             : null,
       ),
-      body: _selectedItem != null ? _buildDetail() : _buildList(),
+      body: _isLoadingDetail
+          ? const Center(child: CircularProgressIndicator())
+          : _selectedItem != null ? _buildDetail() : _buildList(),
     );
   }
 
@@ -217,14 +219,12 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
   }
 
   Widget _buildDetail() {
-    if (_isLoadingDetail) return const Center(child: CircularProgressIndicator());
-
     final item = _selectedItem!;
     final effectEntries = item['effect_entries'] as List? ?? [];
     String effect = '';
     String shortEffect = '';
     for (var entry in effectEntries) {
-      if (entry['language']['name'] == 'en') {
+      if (entry['language']?['name'] == 'en') {
         effect = entry['effect'] ?? '';
         shortEffect = entry['short_effect'] ?? '';
       }
@@ -233,8 +233,8 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
     final flavorEntries = item['flavor_text_entries'] as List? ?? [];
     String flavorText = '';
     for (var entry in flavorEntries.reversed) {
-      if (entry['language']['name'] == 'en') {
-        flavorText = (entry['flavor_text'] as String).replaceAll('\n', ' ');
+      if (entry['language']?['name'] == 'en') {
+        flavorText = ((entry['flavor_text'] as String?) ?? '').replaceAll('\n', ' ');
         break;
       }
     }
@@ -346,7 +346,7 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
                   children: [
                     const Text('Held by', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     const SizedBox(height: 8),
-                    ...heldBy.map((p) => Text(_formatName(p['pokemon']['name']))),
+                    ...heldBy.map((p) => Text(_formatName((p['pokemon']?['name'] as String?) ?? (p['name'] as String? ?? '')))),
                   ],
                 ),
               ),

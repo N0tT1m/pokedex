@@ -16,6 +16,9 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen> {
   Map<String, dynamic>? _result;
   List<Map<String, dynamic>> _eggMoves1 = [];
   List<Map<String, dynamic>> _eggMoves2 = [];
+  // egg moves each Pokemon can receive from the other parent
+  List<Map<String, dynamic>> _passableTo1 = [];
+  List<Map<String, dynamic>> _passableTo2 = [];
   bool _isLoading = true;
   bool _isChecking = false;
 
@@ -45,11 +48,39 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen> {
       final result = await BreedingService.checkCompatibility(_pokemon1!, _pokemon2!);
       final moves1 = await BreedingService.getEggMoves(_pokemon1!);
       final moves2 = await BreedingService.getEggMoves(_pokemon2!);
+      // All moves each parent can learn natively (level-up, TM, tutor) to check if they can pass egg moves
+      final allMoves1 = await PokeApiService.getPokemonMoves(_pokemon1!.toLowerCase());
+      final allMoves2 = await PokeApiService.getPokemonMoves(_pokemon2!.toLowerCase());
+
+      // API names that Pokemon 2 knows natively (non-egg)
+      final nativeMoves2 = allMoves2
+          .where((m) {
+            final method = (m['learn_method'] as String? ?? '').toLowerCase();
+            return method == 'level-up' || method == 'tm' || method == 'tutor';
+          })
+          .map((m) => m['name'] as String)
+          .toSet();
+
+      // API names that Pokemon 1 knows natively (non-egg)
+      final nativeMoves1 = allMoves1
+          .where((m) {
+            final method = (m['learn_method'] as String? ?? '').toLowerCase();
+            return method == 'level-up' || method == 'tm' || method == 'tutor';
+          })
+          .map((m) => m['name'] as String)
+          .toSet();
+
+      // Egg moves Pokemon 1 can receive: moves in Pokemon 1's egg pool that Pokemon 2 knows natively
+      final passableTo1 = moves1.where((m) => nativeMoves2.contains(m['apiName'])).toList();
+      // Egg moves Pokemon 2 can receive: moves in Pokemon 2's egg pool that Pokemon 1 knows natively
+      final passableTo2 = moves2.where((m) => nativeMoves1.contains(m['apiName'])).toList();
 
       setState(() {
         _result = result;
         _eggMoves1 = moves1;
         _eggMoves2 = moves2;
+        _passableTo1 = passableTo1;
+        _passableTo2 = passableTo2;
         _isChecking = false;
       });
     } catch (e) {
@@ -158,12 +189,26 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen> {
                       ),
                     ),
                   ],
-                  if (_eggMoves1.isNotEmpty || _eggMoves2.isNotEmpty) ...[
+                  if (_result != null && (_eggMoves1.isNotEmpty || _eggMoves2.isNotEmpty)) ...[
                     const SizedBox(height: 16),
-                    if (_eggMoves1.isNotEmpty)
-                      _buildEggMovesCard(_capitalize(_pokemon1!), _eggMoves1),
-                    if (_eggMoves2.isNotEmpty)
-                      _buildEggMovesCard(_capitalize(_pokemon2!), _eggMoves2),
+                    // Show passable egg moves (what each Pokemon can inherit from the other parent)
+                    if (_passableTo1.isNotEmpty)
+                      _buildPassableMovesCard(
+                        '${_capitalize(_pokemon1!)} can inherit from ${_capitalize(_pokemon2!)}',
+                        _passableTo1,
+                        Colors.green.shade50,
+                      )
+                    else if (_eggMoves1.isNotEmpty)
+                      _buildNoPassableCard(_capitalize(_pokemon1!), _capitalize(_pokemon2!)),
+                    const SizedBox(height: 8),
+                    if (_passableTo2.isNotEmpty)
+                      _buildPassableMovesCard(
+                        '${_capitalize(_pokemon2!)} can inherit from ${_capitalize(_pokemon1!)}',
+                        _passableTo2,
+                        Colors.blue.shade50,
+                      )
+                    else if (_eggMoves2.isNotEmpty)
+                      _buildNoPassableCard(_capitalize(_pokemon2!), _capitalize(_pokemon1!)),
                   ],
                 ],
               ),
@@ -171,14 +216,18 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen> {
     );
   }
 
-  Widget _buildEggMovesCard(String name, List<Map<String, dynamic>> moves) {
+  Widget _buildPassableMovesCard(String title, List<Map<String, dynamic>> moves, Color bgColor) {
     return Card(
+      color: bgColor,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Egg Moves for $name', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            const SizedBox(height: 4),
+            const Text('These egg moves can be passed via breeding with this pair.',
+              style: TextStyle(fontSize: 11, color: Colors.grey)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 6,
@@ -189,6 +238,19 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen> {
               )).toList(),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoPassableCard(String baby, String parent) {
+    return Card(
+      color: Colors.grey.shade100,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Text(
+          '$parent cannot pass any of $baby\'s egg moves directly.',
+          style: const TextStyle(fontSize: 13, color: Colors.grey),
         ),
       ),
     );
