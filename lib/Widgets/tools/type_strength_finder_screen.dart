@@ -43,7 +43,7 @@ class _TypeStrengthFinderScreenState extends State<TypeStrengthFinderScreen>
     setState(() {
       if (_selectedTypes.contains(type)) {
         _selectedTypes.remove(type);
-      } else if (_selectedTypes.length < 2) {
+      } else if (_selectedTypes.length < 5) {
         _selectedTypes.add(type);
       }
     });
@@ -233,7 +233,7 @@ class _TypeStrengthFinderScreenState extends State<TypeStrengthFinderScreen>
         children: [
           Text(
             _selectedTypes.isEmpty
-                ? 'Select 1-2 types to analyze'
+                ? 'Select 1-5 types to analyze'
                 : 'Selected: ${_selectedTypes.join(" / ")}',
             style: const TextStyle(
               fontWeight: FontWeight.bold,
