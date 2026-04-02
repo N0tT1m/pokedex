@@ -185,20 +185,16 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
           ],
           if (_result != null && (_eggMoves1.isNotEmpty || _eggMoves2.isNotEmpty)) ...[
             const SizedBox(height: 12),
-            if (_passableTo1.isNotEmpty)
-              _buildPassableMovesCard(
-                '${_cap(_pokemon1!)} can inherit from ${_cap(_pokemon2!)}',
-                _passableTo1, Colors.green.shade50),
-            if (_passableTo2.isNotEmpty) ...[
+            if (_eggMoves1.isNotEmpty)
+              _buildFullEggMovesCard(
+                _cap(_pokemon1!), _cap(_pokemon2!),
+                _eggMoves1, _passableTo1, Colors.green),
+            if (_eggMoves2.isNotEmpty) ...[
               const SizedBox(height: 8),
-              _buildPassableMovesCard(
-                '${_cap(_pokemon2!)} can inherit from ${_cap(_pokemon1!)}',
-                _passableTo2, Colors.blue.shade50),
+              _buildFullEggMovesCard(
+                _cap(_pokemon2!), _cap(_pokemon1!),
+                _eggMoves2, _passableTo2, Colors.blue),
             ],
-            if (_passableTo1.isEmpty && _eggMoves1.isNotEmpty)
-              _noPassCard(_cap(_pokemon1!), _cap(_pokemon2!)),
-            if (_passableTo2.isEmpty && _eggMoves2.isNotEmpty)
-              _noPassCard(_cap(_pokemon2!), _cap(_pokemon1!)),
           ],
         ],
       ),
@@ -443,15 +439,15 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
               ),
             ),
             const SizedBox(height: 8),
-            if (_svPassableTo1.isNotEmpty)
-              _buildPassableMovesCard(
-                '${_cap(_svPokemon1!)} can inherit from ${_cap(_svPokemon2!)}',
-                _svPassableTo1, Colors.purple.shade50),
-            if (_svPassableTo2.isNotEmpty) ...[
+            if (_svEggMoves1.isNotEmpty)
+              _buildFullEggMovesCard(
+                _cap(_svPokemon1!), _cap(_svPokemon2!),
+                _svEggMoves1, _svPassableTo1, Colors.purple),
+            if (_svEggMoves2.isNotEmpty) ...[
               const SizedBox(height: 8),
-              _buildPassableMovesCard(
-                '${_cap(_svPokemon2!)} can inherit from ${_cap(_svPokemon1!)}',
-                _svPassableTo2, Colors.indigo.shade50),
+              _buildFullEggMovesCard(
+                _cap(_svPokemon2!), _cap(_svPokemon1!),
+                _svEggMoves2, _svPassableTo2, Colors.indigo),
             ],
             // Mirror Herb hint for same species
             if (_svPokemon1 != null &&
@@ -855,36 +851,72 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
     );
   }
 
-  Widget _buildPassableMovesCard(String title, List<Map<String, dynamic>> moves, Color bg) {
-    return Card(
-      color: bg,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-          const SizedBox(height: 4),
-          const Text('These egg moves can be passed via breeding with this pair.',
-              style: TextStyle(fontSize: 11, color: Colors.grey)),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 6, runSpacing: 4,
-            children: moves.map((m) => Chip(
-              label: Text(m['name'], style: const TextStyle(fontSize: 11)),
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            )).toList(),
-          ),
-        ]),
-      ),
-    );
-  }
+  Widget _buildFullEggMovesCard(
+    String baby, String partner,
+    List<Map<String, dynamic>> allEggMoves,
+    List<Map<String, dynamic>> passableMoves,
+    Color color,
+  ) {
+    final passableNames = passableMoves.map((m) => m['apiName'] as String).toSet();
+    final canPass = allEggMoves.where((m) => passableNames.contains(m['apiName'])).toList();
+    final cantPass = allEggMoves.where((m) => !passableNames.contains(m['apiName'])).toList();
 
-  Widget _noPassCard(String baby, String parent) {
     return Card(
-      color: Colors.grey.shade100,
       child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Text('$parent cannot pass any of $baby\'s egg moves directly.',
-            style: const TextStyle(fontSize: 13, color: Colors.grey)),
+        padding: const EdgeInsets.all(14),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text('$baby\'s Egg Moves (${allEggMoves.length})',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: color)),
+          const SizedBox(height: 4),
+          Text('All moves $baby can learn through breeding.',
+              style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+          if (canPass.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Row(children: [
+              Icon(Icons.check_circle, size: 14, color: Colors.green.shade600),
+              const SizedBox(width: 4),
+              Text('$partner can pass directly (${canPass.length})',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.green.shade700)),
+            ]),
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 6, runSpacing: 4,
+              children: canPass.map((m) => Chip(
+                label: Text(m['name'], style: const TextStyle(fontSize: 11)),
+                backgroundColor: Colors.green.shade50,
+                side: BorderSide(color: Colors.green.shade200),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              )).toList(),
+            ),
+          ],
+          if (cantPass.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Row(children: [
+              Icon(Icons.link, size: 14, color: Colors.orange.shade700),
+              const SizedBox(width: 4),
+              Text('Needs a different parent or chain (${cantPass.length})',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.orange.shade700)),
+            ]),
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 6, runSpacing: 4,
+              children: cantPass.map((m) => Chip(
+                label: Text(m['name'], style: TextStyle(fontSize: 11, color: Colors.grey.shade700)),
+                backgroundColor: Colors.orange.shade50,
+                side: BorderSide(color: Colors.orange.shade200),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              )).toList(),
+            ),
+            const SizedBox(height: 6),
+            Text('Use the Breeding Chains tool to find parents for these moves.',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade600, fontStyle: FontStyle.italic)),
+          ],
+          if (canPass.isEmpty) ...[
+            const SizedBox(height: 8),
+            Text('$partner can\'t pass any of these directly — use the Breeding Chains tool to find a parent.',
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+          ],
+        ]),
       ),
     );
   }

@@ -325,6 +325,46 @@ class _BreedingChainScreenState extends State<BreedingChainScreen>
                 ]),
               ),
             ),
+
+            // IV, Nature, Ability guidance
+            const SizedBox(height: 12),
+            Card(
+              color: Colors.blue.shade50,
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Row(children: [
+                    Icon(Icons.bar_chart, size: 16, color: Colors.blue.shade800),
+                    const SizedBox(width: 6),
+                    Text('Passing IVs, Nature & Ability', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.blue.shade900)),
+                  ]),
+                  const SizedBox(height: 8),
+                  _execStep('IVs', 'Give one parent a Destiny Knot (Gen 6+) to pass 5 of the 12 combined IVs. '
+                      'Without it, only 3 random IVs are inherited. '
+                      'Start with high-IV parents (e.g., a 6 IV Ditto from Raid Dens) and swap in '
+                      'better offspring each generation. Usually takes 3–5 generations for a 5 IV spread.'),
+                  _execStep('Power Items', 'Power Bracer (Atk), Belt (Def), Lens (SpA), Band (SpD), Anklet (Spe), Weight (HP) — '
+                      'force that specific IV to be inherited. Useful when you need to guarantee one stat '
+                      '(e.g., 0 Speed for Trick Room). Cannot stack with Destiny Knot on the same parent, '
+                      'but the other parent can hold the Knot.'),
+                  _execStep('Nature', 'Give the parent with the desired Nature an Everstone — the baby '
+                      'is guaranteed to inherit that Nature. If using Mints (Gen 8+), note that '
+                      'Everstone passes the original Nature, NOT the mint-modified stat spread.'),
+                  _execStep('Ability', 'Females pass Hidden Ability at 60% chance. Males/genderless '
+                      'can only pass HA when breeding with Ditto (also 60%). If the parent has a '
+                      'regular ability, the baby gets a regular ability. '
+                      'Gen 8+: Ability Patch (from hard raids) forces HA without breeding.'),
+                  _execStep('Ball', 'Offspring inherits the mother\'s Poké Ball (or the non-Ditto parent\'s). '
+                      'Same-species pairs: 50/50 which parent\'s ball is used. Master Ball and Cherish Ball cannot be inherited.'),
+                  const Divider(height: 16),
+                  Text('Optimal Setup: Destiny Knot on the high-IV parent, '
+                      'Everstone on the parent with the right Nature. '
+                      'Get the egg move first, THEN focus on IVs — it\'s easier to breed '
+                      'IVs onto a Pokémon that already has the move.',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.blue.shade800, height: 1.4)),
+                ]),
+              ),
+            ),
           ],
         ],
       ),
@@ -421,14 +461,38 @@ class _BreedingChainScreenState extends State<BreedingChainScreen>
                   Text('Egg Power Sandwiches', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.green.shade700)),
                 ]),
                 const SizedBox(height: 10),
-                _infoBlock('What It Does',
-                    'Egg Power increases the rate at which eggs appear in the Picnic basket. '
-                    'At Lv.3, eggs appear every ~10 seconds instead of every ~30.'),
-                _infoBlock('Easy Recipes',
-                    '• Jam Sandwich (Lv.1): Jam only — basic boost.\n'
-                    '• Great PB Sandwich (Lv.2): Banana + Peanut Butter + Butter.\n'
-                    '• Herba Mystica combos (Lv.3): Sweet Herba + any fruit — rare but strongest.\n\n'
-                    'Herba Mystica drop from 5–6 star Tera Raids.'),
+                _infoBlock('What Egg Power Does',
+                    'Egg Power boosts the rate eggs appear in your Picnic basket. Without it, '
+                    'an egg appears roughly every 30 seconds. Each level speeds this up:\n\n'
+                    '• Lv.1 — Moderate boost (~20 s per egg)\n'
+                    '• Lv.2 — Large boost (~15 s per egg)\n'
+                    '• Lv.3 — Maximum rate (~10 s per egg)\n\n'
+                    'Egg Power does NOT affect hatching speed — only egg appearance. '
+                    'For faster hatching, keep a Flame Body / Magma Armor Pokémon in your party (halves hatch steps). '
+                    'Both effects stack: Egg Power for more eggs + Flame Body to hatch them faster.'),
+                const Divider(height: 20),
+                _infoBlock('Lv.1 Recipes (Common Ingredients)',
+                    '• Jam Sandwich: Strawberry + Jam\n'
+                    '• Egg Sandwich: Egg filling (the ingredient) + Mayonnaise\n\n'
+                    'Good for early game when ingredients are limited.'),
+                _infoBlock('Lv.2 Recipes (Mid-Game)',
+                    '• Great Peanut Butter Sandwich: Banana + Peanut Butter + Butter\n'
+                    '• Fruit + Whipped Cream + Yogurt combo\n\n'
+                    'Recommended for most breeding sessions — easy to buy ingredients '
+                    'from shops in Mesagoza and other towns.'),
+                _infoBlock('Lv.3 Recipes (Herba Mystica Required)',
+                    '• Sweet Herba Mystica + any one fruit (e.g., Apple, Banana)\n'
+                    '• Two Herba Mystica of the same type + any filler\n\n'
+                    'Herba Mystica are rare drops from 5–6 star Tera Raids only. '
+                    'Types: Sweet, Salty, Sour, Bitter, Spicy. Sweet Herba is '
+                    'the most reliable for Egg Power Lv.3.\n\n'
+                    'Lv.3 is overkill for small breeds — save Herba Mystica for '
+                    'long shiny hunts (Masuda Method) where you need hundreds of eggs.'),
+                const Divider(height: 20),
+                _infoBlock('Tip: Duration & Stacking',
+                    'Sandwich powers last 30 minutes. You can\'t stack multiple sandwiches '
+                    '— eating a new one replaces the old buff. Plan your breed session '
+                    'to fit within 30 min, or make a second sandwich when time runs out.'),
               ]),
             ),
           ),
@@ -493,11 +557,56 @@ class _BreedingChainScreenState extends State<BreedingChainScreen>
               '• In Gen 8+, same-species transfer at the Nursery/Picnic means you only need ONE Pokémon with the move to spread it to others of the same species.\n'
               '• TM compatibility changes per generation — a parent that can\'t learn a move in Gen 5 might learn it in Gen 8 via a new TM.'),
 
+          _infoCard('IV Inheritance', Colors.blue, Icons.bar_chart,
+              'IVs (Individual Values) are hidden 0–31 stats that determine how strong each stat is. '
+              'When breeding, some IVs are passed from parent to baby:\n\n'
+              '• Gen 2: Defense DV from father, Special from opposite-gender parent, rest random.\n'
+              '• Gen 3–5: 3 random IVs inherited from parents. Power items (Gen 4+) force one specific IV.\n'
+              '• Gen 6+: Destiny Knot makes 5 of 12 combined IVs pass to baby (huge upgrade). '
+              'The remaining 1 IV is random (0–31).\n\n'
+              'Strategy: Start with high-IV parents (Raid Ditto is best). Give one parent a Destiny Knot, '
+              'the other an Everstone. Swap in better offspring each generation. In 3–5 batches you\'ll '
+              'have a 5 IV baby. Fix the last stat with a Bottle Cap (Gen 7+) at Lv.50+.'),
+
+          _infoCard('Nature Inheritance', Colors.green, Icons.tune,
+              'Natures boost one stat by 10% and reduce another (or are neutral). '
+              'Getting the right Nature is critical for competitive Pokémon.\n\n'
+              '• Gen 3: Mother holding Everstone has 50% chance to pass Nature.\n'
+              '• Gen 4: Either parent with Everstone has 50% chance.\n'
+              '• Gen 5+: Everstone guarantees Nature is passed (100%).\n'
+              '• If both parents hold Everstones, it\'s a 50/50 which Nature the baby gets.\n\n'
+              'Gen 8+ Mints: Change a Pokémon\'s stat modifiers without changing the actual Nature value. '
+              'WARNING: Everstone passes the original Nature, not the mint-modified one. '
+              'Breed for the correct Nature rather than relying on mints if you\'ll breed further.'),
+
+          _infoCard('Hidden Ability Inheritance', Colors.purple, Icons.visibility,
+              'Some Pokémon have a Hidden Ability (HA) only obtainable through special methods '
+              '(raids, SOS chains, Ability Patch).\n\n'
+              '• Female with HA: 60% chance to pass HA to offspring.\n'
+              '• Male/genderless with HA: can only pass HA when breeding with Ditto (60%).\n'
+              '• If the HA doesn\'t pass, the baby gets a regular ability. Keep hatching.\n'
+              '• Ditto\'s ability doesn\'t matter — only the non-Ditto parent\'s ability is considered.\n\n'
+              'Gen 8+ shortcut: Ability Patch (from hard raids) instantly switches any Pokémon to its HA. '
+              'Ability Capsule (Gen 6+) switches between regular abilities 1 and 2 (not HA).'),
+
+          _infoCard('Poké Ball & Gender', Colors.orange, Icons.catching_pokemon,
+              'Ball inheritance:\n'
+              '• Gen 5: Offspring always inherits the mother\'s ball.\n'
+              '• Gen 6+: Same-species pairs — 50/50 which parent\'s ball. Different species — mother\'s ball. '
+              'Ditto pairs — non-Ditto parent\'s ball.\n'
+              '• Master Ball and Cherish Ball cannot be inherited.\n\n'
+              'Gender:\n'
+              '• Baby\'s gender is based on the species\' gender ratio, determined at hatch.\n'
+              '• You cannot control gender through breeding items.\n'
+              '• For gender-locked evolutions (e.g., Salazzle needs female Salandit), '
+              'expect to hatch multiples.'),
+
           _infoCard('Generation Differences Summary', Colors.grey, Icons.history,
-              '• Gen 2–5: Father passes egg moves. 3 IVs inherited. No Destiny Knot for IVs.\n'
-              '• Gen 6–7: Father passes egg moves. Destiny Knot → 5 IVs. Males pass HA with Ditto.\n'
-              '• Gen 8: Same as Gen 6–7 + same-species transfer at Nursery (one empty slot needed).\n'
-              '• Gen 9: Either parent. Mirror Herb same-species copy. Picnic breeding.'),
+              '• Gen 2–3: Father passes egg moves. 3 IVs random. Everstone 50% Nature (mother only in Gen 3).\n'
+              '• Gen 4–5: Power items force 1 IV. Masuda Method. HA introduced (Gen 5). Everstone 100% (Gen 5).\n'
+              '• Gen 6–7: Destiny Knot → 5 IVs. Males pass HA with Ditto. Hyper Training (Gen 7).\n'
+              '• Gen 8: Same-species egg move transfer at Nursery. Ability Patch. Nature Mints.\n'
+              '• Gen 9: Either parent passes egg moves. Mirror Herb. Picnic breeding. Egg Power sandwiches.'),
         ],
       ),
     );
