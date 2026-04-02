@@ -35,6 +35,7 @@ class _SearchState extends State<Search> {
   String _biology = '';
   List<Map<String, dynamic>> _heldItems = [];
   List<Map<String, dynamic>> _gameLocations = [];
+  List<Map<String, dynamic>> _abilityDetails = [];
   bool isLoading = false;
   String? errorMessage;
 
@@ -90,6 +91,7 @@ class _SearchState extends State<Search> {
       _biology = '';
       _heldItems = [];
       _gameLocations = [];
+      _abilityDetails = [];
 
       // Convert display name to API format (e.g., "Mr Mime" -> "mr-mime")
       final apiName = PokemonDataFormatter.toApiFormat(pokemon);
@@ -158,6 +160,33 @@ class _SearchState extends State<Search> {
         if (locRes.statusCode == 200) {
           _gameLocations = List<Map<String, dynamic>>.from(locRes.json()['locations'] ?? []);
         }
+      } catch (_) {}
+
+      // Fetch ability descriptions for this Pokemon's abilities
+      try {
+        final rawAbilities = List<Map<String, dynamic>>.from(pokemonData['abilities'] ?? []);
+        final fetched = <Map<String, dynamic>>[];
+        for (final a in rawAbilities) {
+          final abilityName = a['ability']?['name'] as String? ?? '';
+          if (abilityName.isEmpty) continue;
+          try {
+            final res = await Requests.get('${PokeApiService.baseUrl}/ability/$abilityName');
+            if (res.statusCode == 200) {
+              final d = res.json();
+              final effect = (d['effect_entries'] as List?)?.firstWhere(
+                (e) => e['language']?['name'] == 'en',
+                orElse: () => null,
+              )?['short_effect'] as String? ?? '';
+              fetched.add({
+                'name': abilityName,
+                'is_hidden': a['is_hidden'] ?? false,
+                'slot': a['slot'] ?? 0,
+                'effect': effect,
+              });
+            }
+          } catch (_) {}
+        }
+        _abilityDetails = fetched;
       } catch (_) {}
 
       // Fetch encounter locations from PokemonDB
@@ -895,8 +924,107 @@ class _SearchState extends State<Search> {
     );
   }
 
+  Widget _buildAbilitiesCard() {
+    if (_abilityDetails.isEmpty) return const SizedBox.shrink();
+
+    String formatName(String name) =>
+        name.split('-').map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1)).join(' ');
+
+    return Container(
+      padding: const EdgeInsets.all(5),
+      width: double.infinity,
+      child: Card(
+        margin: const EdgeInsets.all(5),
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Abilities', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox(height: 8),
+              ..._abilityDetails.map((a) {
+                final name = formatName(a['name'] as String);
+                final isHidden = a['is_hidden'] == true;
+                final effect = a['effect'] as String? ?? '';
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (isHidden)
+                        Container(
+                          margin: const EdgeInsets.only(top: 2, right: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.purple.withValues(alpha: 0.12),
+                            border: Border.all(color: Colors.purple, width: 1),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Text('HA',
+                              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.purple)),
+                        )
+                      else
+                        const SizedBox(width: 0),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(name,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                    color: isHidden ? Colors.purple : null)),
+                            if (effect.isNotEmpty) ...[
+                              const SizedBox(height: 2),
+                              Text(effect,
+                                  style: TextStyle(fontSize: 12, color: Colors.grey.shade700, height: 1.4)),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildGameLocationsCard() {
     if (_gameLocations.isEmpty) return const SizedBox.shrink();
+
+    // Infer the true obtain method when the stored method is "Wild" or empty
+    // but the location text reveals a gift, trade, or event
+    String inferMethod(String method, String location) {
+      if (method.isNotEmpty && method != 'Wild') return method;
+      final loc = location.toLowerCase();
+      if (loc == 'trade' || loc.contains('in-game trade') || loc.contains('npc trade')) return 'Trade';
+      if (loc == 'gift' || loc.contains('received from') || loc.contains('first partner') ||
+          loc.contains('first pok') || loc.contains('starter') ||
+          loc.startsWith('gift from')) {
+        return 'Gift';
+      }
+      if (loc == 'event' || loc.contains('mystery gift') || loc.contains('limited-time')) return 'Event';
+      if (loc == 'fossil' || loc.contains('revive') || loc.contains('fossil')) return 'Fossil';
+      if (loc == 'hatch' || loc.contains('hatch from')) return 'Hatch';
+      return method.isEmpty ? 'Wild' : method;
+    }
+
+    // When the location IS just the method keyword (no real detail), provide helpful context
+    String methodHint(String method, String rawLocation) {
+      final methodKeywords = {'gift', 'trade', 'event', 'wild', 'special', 'fossil', 'hatch', 'roaming'};
+      if (!methodKeywords.contains(rawLocation.toLowerCase().trim())) return '';
+      switch (method) {
+        case 'Gift':  return 'Received as a gift from an NPC — check story progress';
+        case 'Trade': return 'Obtained via an in-game trade — bring the requested Pokémon to the NPC';
+        case 'Event': return 'Obtained via a Mystery Gift or a past limited-time event';
+        default:      return '';
+      }
+    }
 
     Color methodColor(String method) {
       switch (method) {
@@ -932,9 +1060,18 @@ class _SearchState extends State<Search> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: _gameLocations.map((loc) {
                       final game = loc['game']?.toString() ?? '';
-                      final location = loc['location']?.toString() ?? '';
-                      final method = loc['method']?.toString() ?? '';
+                      final rawLocation = loc['location']?.toString() ?? '';
+                      final rawMethod = loc['method']?.toString() ?? '';
+                      final method = inferMethod(rawMethod, rawLocation);
                       final color = methodColor(method);
+
+                      // Hide location text when it's just a method keyword (it's redundant with the badge)
+                      final methodKeywords = {'gift', 'trade', 'event', 'wild', 'special', 'fossil', 'hatch', 'roaming'};
+                      final locationDisplay = methodKeywords.contains(rawLocation.toLowerCase().trim())
+                          ? ''
+                          : rawLocation;
+                      final hint = methodHint(method, rawLocation);
+
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: Row(
@@ -949,7 +1086,7 @@ class _SearchState extends State<Search> {
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
-                                method.isEmpty ? 'Wild' : method,
+                                method,
                                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: color),
                               ),
                             ),
@@ -958,7 +1095,10 @@ class _SearchState extends State<Search> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(game, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.red.shade700)),
-                                  Text(location, style: const TextStyle(fontSize: 12)),
+                                  if (locationDisplay.isNotEmpty)
+                                    Text(locationDisplay, style: const TextStyle(fontSize: 12)),
+                                  if (hint.isNotEmpty)
+                                    Text(hint, style: TextStyle(fontSize: 11, color: Colors.grey.shade600, fontStyle: FontStyle.italic)),
                                 ],
                               ),
                             ),
@@ -1496,6 +1636,7 @@ class _SearchState extends State<Search> {
                     _buildPokemonNamesCard(),
                     _buildBiologyCard(),
                     _buildHeldItemsCard(),
+                    _buildAbilitiesCard(),
                     _buildGameLocationsCard(),
                     _buildSpritesCard(),
                     if (pokemonLocations.isNotEmpty &&

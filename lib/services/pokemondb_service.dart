@@ -108,6 +108,7 @@ class PokemonDBService {
         final method = entry['encounter_method'] ?? '';
         final rarity = entry['rarity'] ?? '';
         final levelRange = entry['level_range'] ?? '';
+        final timeOfDay = entry['time_of_day'] ?? '';
 
         final key = '$region - $route';
         final details = <String>[];
@@ -118,8 +119,9 @@ class PokemonDBService {
           details.add(expandedGames.join(', '));
         }
         if (method.isNotEmpty) details.add(method);
-        if (levelRange.isNotEmpty) details.add('Lv.$levelRange');
+        if (levelRange.isNotEmpty && levelRange != '—') details.add('Lv.$levelRange');
         if (rarity.isNotEmpty) details.add(rarity);
+        if (timeOfDay.isNotEmpty && timeOfDay != 'Day, Night') details.add(timeOfDay);
 
         result.putIfAbsent(key, () => []);
         result[key]!.add(details.join(' | '));

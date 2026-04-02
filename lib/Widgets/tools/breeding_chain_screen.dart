@@ -10,7 +10,9 @@ class BreedingChainScreen extends StatefulWidget {
   State<BreedingChainScreen> createState() => _BreedingChainScreenState();
 }
 
-class _BreedingChainScreenState extends State<BreedingChainScreen> {
+class _BreedingChainScreenState extends State<BreedingChainScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   List<String> _pokemonNames = [];
   List<String> _moveNames = [];
   bool _isLoading = true;
@@ -23,7 +25,14 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -189,177 +198,318 @@ class _BreedingChainScreenState extends State<BreedingChainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Breeding Chains'), backgroundColor: Colors.red),
+      appBar: AppBar(
+        title: const Text('Breeding Chains'),
+        backgroundColor: Colors.red,
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.white,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          tabs: const [
+            Tab(text: 'Find Parents'),
+            Tab(text: 'Scarlet/Violet'),
+          ],
+        ),
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+          : TabBarView(
+              controller: _tabController,
+              children: [
+                _buildFindParentsTab(),
+                _buildSVTab(),
+              ],
+            ),
+    );
+  }
+
+  Widget _buildFindParentsTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Card(
+            color: Colors.pink.shade50,
+            child: Theme(
+              data: ThemeData(dividerColor: Colors.transparent),
+              child: ExpansionTile(
+                leading: Icon(Icons.egg_outlined, color: Colors.pink.shade700),
+                title: Text('How Egg Moves Work',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Colors.pink.shade700)),
+                subtitle: Text('Tap to learn about egg move inheritance',
+                    style: TextStyle(fontSize: 12, color: Colors.pink.shade400)),
                 children: [
-                  Card(
-                    color: Colors.pink.shade50,
-                    child: Theme(
-                      data: ThemeData(dividerColor: Colors.transparent),
-                      child: ExpansionTile(
-                        leading: Icon(Icons.egg_outlined, color: Colors.pink.shade700),
-                        title: Text('How Egg Moves Work', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.pink.shade700)),
-                        subtitle: Text('Tap to learn about egg move inheritance', style: TextStyle(fontSize: 12, color: Colors.pink.shade400)),
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _infoBlock('What are Egg Moves?',
-                                  'Egg moves are moves that a Pokemon can\'t learn by leveling up or TM, '
-                                  'but can inherit from a parent during breeding. For example, Charmander '
-                                  'can learn Dragon Dance as an egg move, but never by level-up.'),
-                                _infoBlock('How to Pass Egg Moves',
-                                  '1. Find a Pokemon that learns the move naturally (level-up, TM, or tutor).\n'
-                                  '2. That Pokemon must share an Egg Group with your target Pokemon.\n'
-                                  '3. Breed them together — the baby will know the egg move.\n\n'
-                                  'In Gen 8 and earlier, only the father can pass egg moves. '
-                                  'In Gen 9 (Scarlet/Violet), either parent can pass them.'),
-                                _infoBlock('Breeding Chains',
-                                  'Sometimes no Pokemon in the same egg group learns the move directly. '
-                                  'In that case, you need a chain: breed Move onto an intermediate Pokemon '
-                                  'first (as an egg move), then breed that intermediate with your target.\n\n'
-                                  'Example: Pokemon A learns Move X by level-up → breed with Pokemon B '
-                                  '(same egg group) → B now has Move X as egg move → breed B with '
-                                  'Pokemon C (B and C share an egg group) → C now has Move X.'),
-                                _infoBlock('Mirror Herb (Gen 9)',
-                                  'In Scarlet/Violet, you can skip breeding entirely for egg moves. '
-                                  'Have one Pokemon hold a Mirror Herb and place it in a picnic with '
-                                  'a Pokemon of the same species that knows the egg move. The Mirror Herb '
-                                  'Pokemon will copy the move. This also works on male and genderless Pokemon.'),
-                                _infoBlock('How to Use This Tool',
-                                  'Select your target Pokemon below, pick an egg move, and this tool '
-                                  'will find parents that can pass it down. It shows which egg group they '
-                                  'share and how the parent learns the move (level-up, TM, or tutor).'),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _infoBlock('What are Egg Moves?',
+                            'Egg moves are moves that a Pokémon can\'t learn by leveling up or TM, '
+                            'but can inherit from a parent during breeding. For example, Charmander '
+                            'can learn Dragon Dance as an egg move, but never by level-up.'),
+                        _infoBlock('How to Pass Egg Moves (Gen 1–8)',
+                            '1. Find a Pokémon that learns the move naturally (level-up, TM, or tutor).\n'
+                            '2. That Pokémon must share an Egg Group with your target Pokémon.\n'
+                            '3. Breed them together — the baby will know the egg move.\n\n'
+                            'In Gen 8 and earlier, only the father can pass egg moves.'),
+                        _infoBlock('Egg Moves in Gen 9 (Scarlet/Violet)',
+                            'In Scarlet/Violet, EITHER parent can pass egg moves — the gender restriction '
+                            'is removed. See the Scarlet/Violet tab for Mirror Herb transfers.'),
+                        _infoBlock('Breeding Chains',
+                            'Sometimes no Pokémon in the same egg group learns the move directly. '
+                            'In that case, you need a chain: breed the move onto an intermediate Pokémon '
+                            'first (as an egg move), then breed that intermediate with your target.\n\n'
+                            'Example: Pokémon A learns Move X by level-up → breed with Pokémon B '
+                            '(same egg group) → B now has Move X as egg move → breed B with '
+                            'Pokémon C (B and C share an egg group) → C now has Move X.'),
+                        _infoBlock('How to Use This Tool',
+                            'Select your target Pokémon below, pick an egg move, and this tool '
+                            'will find parents that can pass it down. It shows which egg group they '
+                            'share and how the parent learns the move (level-up, TM, or tutor).'),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Target Pokemon', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                          const SizedBox(height: 8),
-                          Autocomplete<String>(
-                            optionsBuilder: (v) {
-                              if (v.text.isEmpty) return const Iterable.empty();
-                              return _pokemonNames.where((n) => n.contains(v.text.toLowerCase())).take(10);
-                            },
-                            onSelected: _loadMoves,
-                            fieldViewBuilder: (ctx, ctrl, focus, submit) => TextField(
-                              controller: ctrl, focusNode: focus,
-                              decoration: const InputDecoration(hintText: 'Search Pokemon...', border: OutlineInputBorder()),
-                            ),
-                          ),
-                        ],
-                      ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Target Pokémon',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 8),
+                  Autocomplete<String>(
+                    optionsBuilder: (v) {
+                      if (v.text.isEmpty) return const Iterable.empty();
+                      return _pokemonNames
+                          .where((n) => n.contains(v.text.toLowerCase()))
+                          .take(10);
+                    },
+                    onSelected: _loadMoves,
+                    fieldViewBuilder: (ctx, ctrl, focus, submit) => TextField(
+                      controller: ctrl,
+                      focusNode: focus,
+                      decoration: const InputDecoration(
+                          hintText: 'Search Pokémon...', border: OutlineInputBorder()),
                     ),
                   ),
-                  if (_targetPokemon != null && _moveNames.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
+                ],
+              ),
+            ),
+          ),
+          if (_targetPokemon != null && _moveNames.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Egg Moves for ${_formatName(_targetPokemon!)}',
+                        style:
+                            const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const SizedBox(height: 4),
+                    const Text(
+                        'Select one to find a parent that can pass it down.',
+                        style: TextStyle(fontSize: 11, color: Colors.grey)),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: _moveNames.map((m) {
+                        return ChoiceChip(
+                          label: Text(_formatName(m),
+                              style: const TextStyle(fontSize: 11)),
+                          selected: _targetMove == m,
+                          onSelected: (v) =>
+                              setState(() => _targetMove = v ? m : null),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          if (_targetPokemon != null && _moveNames.isEmpty && !_isLoading)
+            const Card(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Text('No egg moves found for this Pokémon.',
+                    style: TextStyle(color: Colors.grey)),
+              ),
+            ),
+          const SizedBox(height: 16),
+          if (_targetMove != null)
+            ElevatedButton(
+              onPressed: _searching ? null : _findChain,
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.pink, padding: const EdgeInsets.all(16)),
+              child: _searching
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2))
+                  : Text('Find Parents for ${_formatName(_targetMove!)}',
+                      style: const TextStyle(fontSize: 16, color: Colors.white)),
+            ),
+          if (_errorMessage != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Text(_errorMessage!, style: const TextStyle(color: Colors.orange)),
+            ),
+          if (_chainResults.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            const Text('Breeding Parents',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            const SizedBox(height: 4),
+            Text(
+              'These Pokémon can pass ${_formatName(_targetMove!)} to ${_formatName(_targetPokemon!)} as an egg move.',
+              style: const TextStyle(color: Colors.grey, fontSize: 13),
+            ),
+            const SizedBox(height: 8),
+            ..._chainResults.map((parent) {
+              final parentId = parent['id'] as int?;
+              return Card(
+                child: ListTile(
+                  onTap: () => showPokemonDetailSheet(context, parent['name']),
+                  title: Text(
+                      parentId != null
+                          ? '#$parentId ${_formatName(parent['name'])}'
+                          : _formatName(parent['name']),
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(
+                      'Learns via ${_formatName(parent['learnMethod'])}\n'
+                      'Shared egg group: ${(parent['sharedGroups'] as List).map((g) => _formatName(g as String)).join(", ")}'),
+                  isThreeLine: true,
+                  leading: parentId != null
+                      ? CircleAvatar(
+                          backgroundImage: NetworkImage(
+                              'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$parentId.png'),
+                          backgroundColor: Colors.pink.shade100,
+                        )
+                      : const CircleAvatar(
+                          backgroundColor: Colors.pink,
+                          child: Icon(Icons.egg, color: Colors.white),
+                        ),
+                ),
+              );
+            }),
+            // SV Mirror Herb shortcut note
+            if (_targetPokemon != null) ...[
+              const SizedBox(height: 16),
+              Card(
+                color: Colors.purple.shade50,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.local_florist, color: Colors.purple.shade600, size: 18),
+                      const SizedBox(width: 8),
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Moves for ${_formatName(_targetPokemon!)}',
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            Text('Scarlet/Violet shortcut',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.purple.shade700)),
                             const SizedBox(height: 4),
-                            const Text('Only egg moves are shown — select one to find a parent that can pass it down.',
-                              style: TextStyle(fontSize: 11, color: Colors.grey)),
-                            const SizedBox(height: 8),
-                            Wrap(
-                              spacing: 6, runSpacing: 6,
-                              children: _moveNames.map((m) {
-                                return ChoiceChip(
-                                  label: Text(
-                                    _formatName(m),
-                                    style: const TextStyle(fontSize: 11),
-                                  ),
-                                  selected: _targetMove == m,
-                                  onSelected: (v) => setState(() => _targetMove = v ? m : null),
-                                );
-                              }).toList(),
+                            Text(
+                              'In SV you can skip breeding: have ${_formatName(_targetPokemon!)} hold a Mirror Herb '
+                              'at a Picnic with a same-species Pokémon that already knows '
+                              '${_targetMove != null ? _formatName(_targetMove!) : "the egg move"}. '
+                              'The Mirror Herb Pokémon copies the move instantly — works on males and genderless too.',
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.grey.shade800, height: 1.4),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
-                  if (_targetPokemon != null && _moveNames.isEmpty && !_isLoading)
-                    const Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Text('No moves found for this Pokemon.', style: TextStyle(color: Colors.grey)),
-                      ),
-                    ),
-                  const SizedBox(height: 16),
-                  if (_targetMove != null)
-                    ElevatedButton(
-                      onPressed: _searching ? null : _findChain,
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.pink, padding: const EdgeInsets.all(16)),
-                      child: _searching
-                        ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                        : Text('Find Parents for ${_formatName(_targetMove!)}',
-                            style: const TextStyle(fontSize: 16, color: Colors.white)),
-                    ),
-                  if (_errorMessage != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16),
-                      child: Text(_errorMessage!, style: const TextStyle(color: Colors.orange)),
-                    ),
-                  if (_chainResults.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    const Text('Breeding Parents', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                    const SizedBox(height: 4),
-                    Text('These Pokemon can pass ${_formatName(_targetMove!)} to ${_formatName(_targetPokemon!)} as an egg move.',
-                      style: const TextStyle(color: Colors.grey, fontSize: 13)),
-                    const SizedBox(height: 8),
-                    ..._chainResults.map((parent) {
-                      final parentId = parent['id'] as int?;
-                      return Card(
-                        child: ListTile(
-                          onTap: () => showPokemonDetailSheet(context, parent['name']),
-                          title: Text(
-                            parentId != null
-                                ? '#$parentId ${_formatName(parent['name'])}'
-                                : _formatName(parent['name']),
-                            style: const TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: Text(
-                            'Learns via ${_formatName(parent['learnMethod'])}\n'
-                            'Shared egg group: ${(parent['sharedGroups'] as List).map((g) => _formatName(g as String)).join(", ")}'),
-                          isThreeLine: true,
-                          leading: parentId != null
-                              ? CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$parentId.png'),
-                                  backgroundColor: Colors.pink.shade100,
-                                )
-                              : const CircleAvatar(
-                                  backgroundColor: Colors.pink,
-                                  child: Icon(Icons.egg, color: Colors.white),
-                                ),
-                        ),
-                      );
-                    }),
-                  ],
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSVTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Card(
+            color: Colors.purple.shade50,
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.egg_alt, color: Colors.purple.shade700, size: 20),
+                      const SizedBox(width: 8),
+                      Text('Egg Moves in Scarlet/Violet',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.purple.shade700)),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  _infoBlock('Either Parent Passes Egg Moves',
+                      'Unlike Gen 1–8 where only the father could pass egg moves, '
+                      'in Scarlet/Violet EITHER parent can pass them. Simply breed two compatible '
+                      'Pokémon at a Picnic and either one knowing the egg move will pass it.'),
+                  _infoBlock('Mirror Herb — Skip Breeding Entirely',
+                      'Buy a Mirror Herb from Delibird Presents (after unlocking 3+ gyms). '
+                      'Give it to a Pokémon, then place it in a Picnic alongside a same-species '
+                      'Pokémon that knows the egg move. The Mirror Herb Pokémon will copy every '
+                      'egg move the other Pokémon knows that it could normally learn via egg.\n\n'
+                      'This works on ANY gender (including male and genderless). '
+                      'The Mirror Herb is consumed after use.'),
+                  _infoBlock('Step-by-Step: Mirror Herb Transfer',
+                      '1. Have Pokémon A (knows the egg move) and Pokémon B (doesn\'t) of the same species.\n'
+                      '2. Give Pokémon B the Mirror Herb item.\n'
+                      '3. Set up a Picnic with both in your party.\n'
+                      '4. After a moment, check Pokémon B\'s moves — it will have copied the egg move.\n'
+                      '5. The Mirror Herb is used up; obtain another from Delibird Presents if needed.'),
+                  _infoBlock('Egg Power Sandwiches',
+                      'Eating an Egg Power sandwich at a Picnic increases the rate at which eggs appear '
+                      'and can influence egg hatching for Pokémon of a specific type:\n\n'
+                      '• Egg Power Lv.1 — More eggs appear.\n'
+                      '• Egg Power Lv.2 — More eggs + higher chance of same-type Pokémon in eggs.\n'
+                      '• Egg Power Lv.3 — Maximum egg rate + guaranteed Pokémon type in eggs.\n\n'
+                      'Recipes change by game version and unlocked sandwiches.'),
+                  _infoBlock('Breeding Chains in SV',
+                      'The chain mechanic still applies in SV: if no direct parent exists '
+                      'in the egg group, you breed through an intermediate Pokémon. '
+                      'However, you can also use Mirror Herb to jump steps if a same-species '
+                      'Pokémon already has the egg move from a previous chain.'),
                 ],
               ),
             ),
+          ),
+        ],
+      ),
     );
   }
 }
