@@ -16,6 +16,7 @@ import '../tools/usage_stats_screen.dart';
 import '../pokemon/learnset_screen.dart';
 import '../pokemon/regional_forms_screen.dart';
 import '../pokemon/competitive_sets_screen.dart';
+import '../tools/type_strength_finder_screen.dart';
 
 class ToolsHub extends StatelessWidget {
   const ToolsHub({Key? key}) : super(key: key);
@@ -38,6 +39,7 @@ class ToolsHub extends StatelessWidget {
     {'title': 'Learnsets', 'subtitle': 'Moves by Pokemon', 'icon': Icons.school, 'color': Colors.purple},
     {'title': 'Regional Forms', 'subtitle': 'Alolan, Galarian, etc.', 'icon': Icons.public, 'color': Colors.blueGrey},
     {'title': 'Competitive Sets', 'subtitle': 'Smogon-style builds', 'icon': Icons.emoji_events, 'color': Colors.deepOrange},
+    {'title': 'Type Strength Finder', 'subtitle': 'Find counters by type', 'icon': Icons.security, 'color': Colors.deepPurple},
   ];
 
   void _navigate(BuildContext context, int index) {
@@ -59,6 +61,7 @@ class ToolsHub extends StatelessWidget {
       const LearnsetScreen(),
       const RegionalFormsScreen(),
       const CompetitiveSetsScreen(),
+      const TypeStrengthFinderScreen(),
     ];
     Navigator.push(context, MaterialPageRoute(builder: (_) => screens[index]));
   }
