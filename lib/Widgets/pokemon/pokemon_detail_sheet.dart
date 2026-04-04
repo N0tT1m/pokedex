@@ -41,37 +41,60 @@ const _defaultForms = <String, String>{
   'zygarde': 'zygarde-50',
 };
 
-/// Shows a bottom sheet with Pokemon details loaded from PokeAPI.
-/// [pokemonName] should be the Pokemon's name in API format (lowercase, hyphenated).
-void showPokemonDetailSheet(BuildContext context, String pokemonName) {
+String _resolveApiName(String pokemonName) {
   var apiName = pokemonName.toLowerCase().replaceAll(' ', '-').replaceAll('.', '').replaceAll("'", '');
+  return _defaultForms[apiName] ?? apiName;
+}
 
-  // Use default form name if this Pokemon requires it
-  if (_defaultForms.containsKey(apiName)) {
-    apiName = _defaultForms[apiName]!;
-  }
-
+/// Shows a bottom sheet with Pokemon details.
+void showPokemonDetailSheet(BuildContext context, String pokemonName) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
-    builder: (ctx) => _PokemonDetailSheetContent(apiName: apiName),
+    builder: (ctx) => _PokemonDetailSheetContent(apiName: _resolveApiName(pokemonName)),
   );
 }
 
-class _PokemonDetailSheetContent extends StatefulWidget {
-  final String apiName;
-  const _PokemonDetailSheetContent({required this.apiName});
+/// Full-page Pokemon detail screen for use with Navigator.push.
+class PokemonDetailPage extends StatelessWidget {
+  final String pokemonName;
+  const PokemonDetailPage({Key? key, required this.pokemonName}) : super(key: key);
 
   @override
-  State<_PokemonDetailSheetContent> createState() => _PokemonDetailSheetContentState();
+  Widget build(BuildContext context) {
+    final apiName = _resolveApiName(pokemonName);
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.red,
+        title: Text(
+          apiName.split('-').map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w).join(' '),
+        ),
+      ),
+      body: _PokemonDetailBody(apiName: apiName),
+    );
+  }
 }
 
-class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> {
+// ── Shared detail body ─────────────────────────────────────────────────────────
+
+/// Loads and renders all Pokemon detail content as a scrollable ListView.
+/// Used by both the bottom sheet and the full-page detail view.
+class _PokemonDetailBody extends StatefulWidget {
+  final String apiName;
+  final ScrollController? scrollController;
+  const _PokemonDetailBody({required this.apiName, this.scrollController});
+
+  @override
+  State<_PokemonDetailBody> createState() => _PokemonDetailBodyState();
+}
+
+class _PokemonDetailBodyState extends State<_PokemonDetailBody> {
   Map<String, dynamic>? _data;
   List<Map<String, dynamic>> _typeDefenses = [];
+  List<Map<String, dynamic>> _abilityDetails = []; // {name, description, isHidden}
   String _biology = '';
   List<Map<String, dynamic>> _heldItems = [];
   List<Map<String, dynamic>> _gameLocations = [];
@@ -86,70 +109,12 @@ class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> 
 
   Future<void> _load() async {
     try {
-      final data = await PokeApiService.getPokemon(widget.apiName);
-      List<Map<String, dynamic>> defenses = [];
-      String biology = '';
-      List<Map<String, dynamic>> heldItems = [];
-      try {
-        defenses = await PokeApiService.getPokemonTypeDefenses(widget.apiName);
-      } catch (_) {}
-      try {
-        final bioRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/${widget.apiName}/biology');
-        if (bioRes.statusCode == 200) biology = bioRes.json()['biology'] as String? ?? '';
-      } catch (_) {}
-      try {
-        final heldRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/${widget.apiName}/held-items');
-        if (heldRes.statusCode == 200) {
-          heldItems = List<Map<String, dynamic>>.from(heldRes.json()['held_items'] ?? []);
-        }
-      } catch (_) {}
-      List<Map<String, dynamic>> gameLocations = [];
-      try {
-        final locRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/${widget.apiName}/game-locations');
-        if (locRes.statusCode == 200) {
-          gameLocations = List<Map<String, dynamic>>.from(locRes.json()['locations'] ?? []);
-        }
-      } catch (_) {}
-      if (mounted) setState(() {
-        _data = data; _typeDefenses = defenses;
-        _biology = biology; _heldItems = heldItems;
-        _gameLocations = gameLocations;
-        _isLoading = false;
-      });
-    } catch (e) {
+      await _loadForName(widget.apiName);
+    } catch (_) {
       final baseName = widget.apiName.split('-').first;
       if (baseName != widget.apiName) {
         try {
-          final data = await PokeApiService.getPokemon(baseName);
-          List<Map<String, dynamic>> defenses = [];
-          String biology = '';
-          List<Map<String, dynamic>> heldItems = [];
-          try {
-            defenses = await PokeApiService.getPokemonTypeDefenses(baseName);
-          } catch (_) {}
-          try {
-            final bioRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/$baseName/biology');
-            if (bioRes.statusCode == 200) biology = bioRes.json()['biology'] as String? ?? '';
-          } catch (_) {}
-          try {
-            final heldRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/$baseName/held-items');
-            if (heldRes.statusCode == 200) {
-              heldItems = List<Map<String, dynamic>>.from(heldRes.json()['held_items'] ?? []);
-            }
-          } catch (_) {}
-          List<Map<String, dynamic>> gameLocations = [];
-          try {
-            final locRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/$baseName/game-locations');
-            if (locRes.statusCode == 200) {
-              gameLocations = List<Map<String, dynamic>>.from(locRes.json()['locations'] ?? []);
-            }
-          } catch (_) {}
-          if (mounted) setState(() {
-            _data = data; _typeDefenses = defenses;
-            _biology = biology; _heldItems = heldItems;
-            _gameLocations = gameLocations;
-            _isLoading = false;
-          });
+          await _loadForName(baseName);
           return;
         } catch (_) {}
       }
@@ -157,23 +122,74 @@ class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> 
     }
   }
 
+  Future<void> _loadForName(String name) async {
+    final data = await PokeApiService.getPokemon(name);
+
+    // Fetch all secondary data in parallel
+    List<Map<String, dynamic>> defenses = [];
+    String biology = '';
+    List<Map<String, dynamic>> heldItems = [];
+    List<Map<String, dynamic>> gameLocations = [];
+
+    await Future.wait([
+      PokeApiService.getPokemonTypeDefenses(name)
+          .then((v) => defenses = v)
+          .catchError((_) => defenses),
+      Requests.get('${PokeApiService.baseUrl}/pokemon/$name/biology').then((r) {
+        if (r.statusCode == 200) biology = r.json()['biology'] as String? ?? '';
+      }).catchError((_) {}),
+      Requests.get('${PokeApiService.baseUrl}/pokemon/$name/held-items').then((r) {
+        if (r.statusCode == 200) heldItems = List<Map<String, dynamic>>.from(r.json()['held_items'] ?? []);
+      }).catchError((_) {}),
+      Requests.get('${PokeApiService.baseUrl}/pokemon/$name/game-locations').then((r) {
+        if (r.statusCode == 200) gameLocations = List<Map<String, dynamic>>.from(r.json()['locations'] ?? []);
+      }).catchError((_) {}),
+    ]);
+
+    // Fetch ability descriptions in parallel
+    final rawAbilities = data['abilities'] as List? ?? [];
+    final abilityDetails = await Future.wait(rawAbilities.map((a) async {
+      final apiName = a['ability']['name'] as String;
+      final isHidden = a['is_hidden'] == true;
+      String desc = '';
+      try {
+        final r = await Requests.get('${PokeApiService.baseUrl}/ability/$apiName');
+        if (r.statusCode == 200) {
+          final entries = r.json()['effect_entries'] as List? ?? [];
+          for (final e in entries) {
+            if (e['language']?['name'] == 'en') {
+              desc = e['short_effect'] as String? ?? '';
+              break;
+            }
+          }
+        }
+      } catch (_) {}
+      return {'name': _capitalize(apiName), 'description': desc, 'isHidden': isHidden};
+    }));
+
+    if (mounted) setState(() {
+      _data = data;
+      _typeDefenses = defenses;
+      _abilityDetails = List<Map<String, dynamic>>.from(abilityDetails);
+      _biology = biology;
+      _heldItems = heldItems;
+      _gameLocations = gameLocations;
+      _isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.6,
-      minChildSize: 0.3,
-      maxChildSize: 0.85,
-      expand: false,
-      builder: (ctx, scrollController) {
-        if (_isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (_error != null) {
-          return Center(child: Text(_error!, style: const TextStyle(color: Colors.red)));
-        }
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_error != null) {
+      return Center(child: Text(_error!, style: const TextStyle(color: Colors.red)));
+    }
 
-        final data = _data!;
-        final name = _capitalize(data['name'] as String);
+    {
+      final data = _data!;
+      final name = _capitalize(data['name'] as String);
         final types = (data['types'] as List).map((t) {
           final n = t['type']['name'] as String;
           return n[0].toUpperCase() + n.substring(1);
@@ -184,25 +200,14 @@ class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> 
           final mapped = _statNames[n];
           if (mapped != null) stats[mapped] = s['base_stat'] as int;
         }
-        final abilities = (data['abilities'] as List).map((a) {
-          final n = (a['ability']['name'] as String);
-          final hidden = a['is_hidden'] == true;
-          return '${_capitalize(n)}${hidden ? ' (Hidden)' : ''}';
-        }).toList();
         final sprite = data['sprites']?['other']?['official-artwork']?['front_default']
             ?? data['sprites']?['front_default'] ?? '';
         final bst = (data['stats'] as List).fold<int>(0, (sum, s) => sum + (s['base_stat'] as int));
 
-        return ListView(
-          controller: scrollController,
-          padding: const EdgeInsets.all(16),
-          children: [
-            Center(
-              child: Container(
-                width: 40, height: 4, margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(color: Colors.grey.shade400, borderRadius: BorderRadius.circular(2)),
-              ),
-            ),
+      return ListView(
+        controller: widget.scrollController,
+        padding: const EdgeInsets.all(16),
+        children: [
             if (sprite.isNotEmpty)
               Center(
                 child: Image.network(sprite, height: 120, errorBuilder: (_, __, ___) => const Icon(Icons.catching_pokemon, size: 80)),
@@ -223,7 +228,44 @@ class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> 
               )).toList(),
             ),
             const SizedBox(height: 16),
-            // Abilities
+            // Wild Held Items (shown first, like the Pokedex detail)
+            if (_heldItems.isNotEmpty)
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Wild Held Items', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      const SizedBox(height: 8),
+                      ..._heldItems.map((h) {
+                        final itemName = (h['item']?['name'] as String? ?? '').split('-').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ');
+                        final game = h['game']?.toString() ?? '';
+                        final rarity = h['rarity']?.toString() ?? '';
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.backpack, size: 16, color: Colors.grey),
+                              const SizedBox(width: 8),
+                              Expanded(child: Text(itemName, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500))),
+                              if (rarity.isNotEmpty)
+                                Text(rarity, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                              if (game.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 6),
+                                  child: Text(game, style: TextStyle(fontSize: 11, color: Colors.red.shade400)),
+                                ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              ),
+            const SizedBox(height: 8),
+            // Abilities with descriptions and HA badge
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(12),
@@ -231,8 +273,44 @@ class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> 
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text('Abilities', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                    const SizedBox(height: 4),
-                    ...abilities.map((a) => Text(a)),
+                    const SizedBox(height: 8),
+                    ..._abilityDetails.map((a) {
+                      final isHidden = a['isHidden'] == true;
+                      final abilityName = a['name'] as String;
+                      final desc = a['description'] as String? ?? '';
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (isHidden)
+                              Container(
+                                margin: const EdgeInsets.only(top: 1, right: 8),
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.purple.shade50,
+                                  border: Border.all(color: Colors.purple, width: 1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const Text('HA', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.purple)),
+                              ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(abilityName, style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: isHidden ? Colors.purple : null,
+                                  )),
+                                  if (desc.isNotEmpty)
+                                    Text(desc, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
                   ],
                 ),
               ),
@@ -359,48 +437,10 @@ class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> 
                   ),
                 ),
               ),
-            ],
-            if (_heldItems.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Wild Held Items', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                      const SizedBox(height: 8),
-                      ..._heldItems.map((h) {
-                        final itemName = (h['item']?['name'] as String? ?? '').split('-').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ');
-                        final game = h['game']?.toString() ?? '';
-                        final rarity = h['rarity']?.toString() ?? '';
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.backpack, size: 16, color: Colors.grey),
-                              const SizedBox(width: 8),
-                              Expanded(child: Text(itemName, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500))),
-                              if (rarity.isNotEmpty)
-                                Text(rarity, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-                              if (game.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 6),
-                                  child: Text(game, style: TextStyle(fontSize: 11, color: Colors.red.shade400)),
-                                ),
-                            ],
-                          ),
-                        );
-                      }),
-                    ],
-                  ),
-                ),
-              ),
-            ],
           ],
-        );
-      },
-    );
+        ],
+      );
+    }
   }
 
   List<Widget> _buildDefenseSections() {
@@ -482,4 +522,35 @@ class _PokemonDetailSheetContentState extends State<_PokemonDetailSheetContent> 
     'hp': 'HP', 'attack': 'Attack', 'defense': 'Defense',
     'special-attack': 'Sp. Atk', 'special-defense': 'Sp. Def', 'speed': 'Speed',
   };
+}
+
+// ── Sheet wrapper (bottom sheet with drag handle) ─────────────────────────────
+
+class _PokemonDetailSheetContent extends StatelessWidget {
+  final String apiName;
+  const _PokemonDetailSheetContent({required this.apiName});
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.9,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      expand: false,
+      builder: (ctx, scrollController) {
+        return Column(
+          children: [
+            const SizedBox(height: 8),
+            Center(
+              child: Container(
+                width: 40, height: 4,
+                decoration: BoxDecoration(color: Colors.grey.shade400, borderRadius: BorderRadius.circular(2)),
+              ),
+            ),
+            Expanded(child: _PokemonDetailBody(apiName: apiName, scrollController: scrollController)),
+          ],
+        );
+      },
+    );
+  }
 }
