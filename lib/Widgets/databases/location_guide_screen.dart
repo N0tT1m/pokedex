@@ -44,6 +44,10 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
           }).toList();
           _isLoadingGames = false;
         });
+      } else {
+        // Endpoint not deployed yet — skip game selection, go straight to regions
+        setState(() { _isLoadingGames = false; });
+        _loadRegions();
       }
     } catch (e) {
       setState(() { _error = 'Could not load games'; _isLoadingGames = false; });
