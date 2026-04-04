@@ -11,22 +11,47 @@ class LocationGuideScreen extends StatefulWidget {
 }
 
 class _LocationGuideScreenState extends State<LocationGuideScreen> {
+  List<Map<String, dynamic>> _games = [];
   List<Map<String, dynamic>> _regions = [];
   List<Map<String, dynamic>> _locations = [];
   Map<String, dynamic>? _selectedArea;
-  bool _isLoading = true;
-  String? _error;
+
+  bool _isLoadingGames = true;
+  bool _isLoadingRegions = false;
   bool _isLoadingLocations = false;
   bool _isLoadingArea = false;
+
+  String? _error;
+  Map<String, dynamic>? _selectedGame;
   String? _selectedRegionName;
 
   @override
   void initState() {
     super.initState();
-    _loadRegions();
+    _loadGames();
+  }
+
+  Future<void> _loadGames() async {
+    try {
+      final response = await Requests.get('${PokeApiService.baseUrl}/location/games');
+      if (response.statusCode == 200) {
+        final data = response.json();
+        final List<dynamic> gameList = data['games'] ?? [];
+        setState(() {
+          _games = gameList.map((g) => {
+            'abbreviation': g['abbreviation']?.toString() ?? '',
+            'name': g['name']?.toString() ?? '',
+          }).toList();
+          _isLoadingGames = false;
+        });
+      }
+    } catch (e) {
+      setState(() { _error = 'Could not load games'; _isLoadingGames = false; });
+    }
   }
 
   Future<void> _loadRegions() async {
+    setState(() { _isLoadingRegions = true; });
     try {
       final response = await Requests.get('${PokeApiService.baseUrl}/location/regions');
       if (response.statusCode == 200) {
@@ -34,11 +59,11 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
         final List<dynamic> regionNames = data['regions'] ?? [];
         setState(() {
           _regions = regionNames.map((name) => {'name': name.toString()}).toList();
-          _isLoading = false;
+          _isLoadingRegions = false;
         });
       }
     } catch (e) {
-      setState(() { _error = 'Could not load regions'; _isLoading = false; });
+      setState(() { _error = 'Could not load regions'; _isLoadingRegions = false; });
     }
   }
 
@@ -50,8 +75,10 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
     });
 
     try {
+      final abbr = _selectedGame?['abbreviation'] ?? '';
+      final gameParam = abbr.isNotEmpty ? '?game=${Uri.encodeComponent(abbr)}' : '';
       final response = await Requests.get(
-        '${PokeApiService.baseUrl}/location/region/$regionName/routes',
+        '${PokeApiService.baseUrl}/location/region/$regionName/routes$gameParam',
       );
       if (response.statusCode == 200) {
         final data = response.json();
@@ -73,8 +100,10 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
     setState(() => _isLoadingArea = true);
 
     try {
+      final abbr = _selectedGame?['abbreviation'] ?? '';
+      final gameParam = abbr.isNotEmpty ? '?game=${Uri.encodeComponent(abbr)}' : '';
       final response = await Requests.get(
-        '${PokeApiService.baseUrl}/location/region/$region/route/${Uri.encodeComponent(route)}',
+        '${PokeApiService.baseUrl}/location/region/$region/route/${Uri.encodeComponent(route)}$gameParam',
       );
       if (response.statusCode == 200) {
         final data = response.json();
@@ -91,39 +120,52 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
     }
   }
 
+  String _appBarTitle() {
+    if (_selectedArea != null) return _formatName(_selectedArea!['name'] ?? '');
+    if (_selectedRegionName != null) return _selectedRegionName!;
+    if (_selectedGame != null) return _selectedGame!['name'] ?? 'Select Region';
+    return 'Location Guide';
+  }
+
+  bool _canGoBack() => _selectedArea != null || _selectedRegionName != null || _selectedGame != null;
+
+  void _goBack() {
+    setState(() {
+      if (_selectedArea != null) {
+        _selectedArea = null;
+      } else if (_selectedRegionName != null) {
+        _selectedRegionName = null;
+        _locations = [];
+      } else if (_selectedGame != null) {
+        _selectedGame = null;
+        _regions = [];
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_selectedArea != null
-            ? _formatName(_selectedArea!['name'] ?? '')
-            : _selectedRegionName ?? 'Location Guide'),
+        title: Text(_appBarTitle()),
         backgroundColor: Colors.red,
-        leading: (_selectedArea != null || _selectedRegionName != null)
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  setState(() {
-                    if (_selectedArea != null) {
-                      _selectedArea = null;
-                    } else {
-                      _selectedRegionName = null;
-                      _locations = [];
-                    }
-                  });
-                })
+        leading: _canGoBack()
+            ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: _goBack)
             : null,
       ),
-      body: _selectedArea != null
-          ? _buildAreaDetail()
-          : _selectedRegionName != null
-              ? _buildLocationList()
-              : _buildRegionList(),
+      body: _buildBody(),
     );
   }
 
-  Widget _buildRegionList() {
-    if (_isLoading) return const Center(child: CircularProgressIndicator());
+  Widget _buildBody() {
+    if (_selectedArea != null) return _buildAreaDetail();
+    if (_selectedRegionName != null) return _buildLocationList();
+    if (_selectedGame != null) return _buildRegionList();
+    return _buildGameList();
+  }
+
+  Widget _buildGameList() {
+    if (_isLoadingGames) return const Center(child: CircularProgressIndicator());
 
     if (_error != null) {
       return Center(
@@ -134,7 +176,10 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
             const SizedBox(height: 16),
             Text(_error!, style: const TextStyle(color: Colors.red)),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: () { setState(() { _isLoading = true; _error = null; }); _loadRegions(); }, child: const Text('Retry')),
+            ElevatedButton(
+              onPressed: () { setState(() { _isLoadingGames = true; _error = null; }); _loadGames(); },
+              child: const Text('Retry'),
+            ),
           ],
         ),
       );
@@ -142,18 +187,53 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
 
     return ListView.builder(
       padding: const EdgeInsets.all(8),
-      itemCount: _regions.length,
+      itemCount: _games.length,
       itemBuilder: (context, index) {
-        final region = _regions[index];
+        final game = _games[index];
         return Card(
           child: ListTile(
-            leading: const Icon(Icons.map, color: Colors.green),
-            title: Text(_formatName(region['name']), style: const TextStyle(fontWeight: FontWeight.bold)),
+            leading: const Icon(Icons.videogame_asset, color: Colors.red),
+            title: Text(game['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text(game['abbreviation'], style: const TextStyle(fontSize: 12, color: Colors.grey)),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => _loadRegionLocations(region['name']),
+            onTap: () {
+              setState(() { _selectedGame = game; });
+              _loadRegions();
+            },
           ),
         );
       },
+    );
+  }
+
+  Widget _buildRegionList() {
+    if (_isLoadingRegions) return const Center(child: CircularProgressIndicator());
+
+    if (_regions.isEmpty) {
+      return const Center(child: Text('No regions found'));
+    }
+
+    return Column(
+      children: [
+        _buildGameBadge(),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.all(8),
+            itemCount: _regions.length,
+            itemBuilder: (context, index) {
+              final region = _regions[index];
+              return Card(
+                child: ListTile(
+                  leading: const Icon(Icons.map, color: Colors.green),
+                  title: Text(_formatName(region['name']), style: const TextStyle(fontWeight: FontWeight.bold)),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _loadRegionLocations(region['name']),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -161,23 +241,43 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
     if (_isLoadingLocations) return const Center(child: CircularProgressIndicator());
 
     if (_locations.isEmpty) {
-      return const Center(child: Text('No locations found'));
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.location_off, size: 48, color: Colors.grey),
+            const SizedBox(height: 12),
+            Text(
+              'No routes found in $_selectedRegionName\nfor ${_selectedGame?['name'] ?? 'this game'}',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.grey),
+            ),
+          ],
+        ),
+      );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(8),
-      itemCount: _locations.length,
-      itemBuilder: (context, index) {
-        final location = _locations[index];
-        return Card(
-          child: ListTile(
-            leading: const Icon(Icons.location_on, color: Colors.blue),
-            title: Text(_formatName(location['name']), style: const TextStyle(fontWeight: FontWeight.bold)),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => _loadRouteEncounters(location['region'], location['name']),
+    return Column(
+      children: [
+        _buildGameBadge(),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.all(8),
+            itemCount: _locations.length,
+            itemBuilder: (context, index) {
+              final location = _locations[index];
+              return Card(
+                child: ListTile(
+                  leading: const Icon(Icons.location_on, color: Colors.blue),
+                  title: Text(_formatName(location['name']), style: const TextStyle(fontWeight: FontWeight.bold)),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _loadRouteEncounters(location['region'], location['name']),
+                ),
+              );
+            },
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 
@@ -187,52 +287,91 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
     final encounters = _selectedArea!['encounters'] as List? ?? [];
 
     if (encounters.isEmpty) {
-      return const Center(child: Text('No encounter data available'));
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.catching_pokemon, size: 48, color: Colors.grey),
+            const SizedBox(height: 12),
+            Text(
+              'No encounters found\nfor ${_selectedGame?['name'] ?? 'this game'}',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.grey),
+            ),
+          ],
+        ),
+      );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(8),
-      itemCount: encounters.length,
-      itemBuilder: (context, index) {
-        final encounter = encounters[index];
-        final pokemonName = encounter['pokemon_name'] ?? '';
-        final games = List<String>.from(encounter['games'] ?? []);
-        final method = encounter['encounter_method'] ?? '';
-        final rarity = encounter['rarity'] ?? '';
-        final levelRange = encounter['level_range'] ?? '';
-        final timeOfDay = encounter['time_of_day'] ?? '';
+    return Column(
+      children: [
+        _buildGameBadge(),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.all(8),
+            itemCount: encounters.length,
+            itemBuilder: (context, index) {
+              final encounter = encounters[index];
+              final pokemonName = encounter['pokemon_name'] ?? '';
+              final games = List<String>.from(encounter['games'] ?? []);
+              final method = encounter['encounter_method'] ?? '';
+              final rarity = encounter['rarity'] ?? '';
+              final levelRange = encounter['level_range'] ?? '';
+              final timeOfDay = encounter['time_of_day'] ?? '';
 
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                InkWell(
-                  onTap: () => showPokemonDetailSheet(context, pokemonName.toLowerCase()),
-                  child: Row(
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(child: Text(pokemonName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue))),
-                      const Icon(Icons.open_in_new, size: 16, color: Colors.blue),
+                      InkWell(
+                        onTap: () => showPokemonDetailSheet(context, pokemonName.toLowerCase()),
+                        child: Row(
+                          children: [
+                            Expanded(child: Text(pokemonName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue))),
+                            const Icon(Icons.open_in_new, size: 16, color: Colors.blue),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      if (method.isNotEmpty)
+                        Text('Method: $method', style: const TextStyle(fontSize: 12)),
+                      if (levelRange.isNotEmpty)
+                        Text('Level: $levelRange', style: const TextStyle(fontSize: 12)),
+                      if (rarity.isNotEmpty)
+                        Text('Rarity: $rarity', style: const TextStyle(fontSize: 12)),
+                      if (timeOfDay.isNotEmpty)
+                        Text('Time: $timeOfDay', style: const TextStyle(fontSize: 12)),
+                      if (_selectedGame == null && games.isNotEmpty)
+                        Text('Games: ${games.join(', ')}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
                     ],
                   ),
                 ),
-                const SizedBox(height: 4),
-                if (games.isNotEmpty)
-                  Text('Games: ${games.join(', ')}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                if (method.isNotEmpty)
-                  Text('Method: $method', style: const TextStyle(fontSize: 12)),
-                if (levelRange.isNotEmpty)
-                  Text('Level: $levelRange', style: const TextStyle(fontSize: 12)),
-                if (rarity.isNotEmpty)
-                  Text('Rarity: $rarity', style: const TextStyle(fontSize: 12)),
-                if (timeOfDay.isNotEmpty)
-                  Text('Time: $timeOfDay', style: const TextStyle(fontSize: 12)),
-              ],
-            ),
+              );
+            },
           ),
-        );
-      },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGameBadge() {
+    if (_selectedGame == null) return const SizedBox.shrink();
+    return Container(
+      width: double.infinity,
+      color: Colors.red.shade50,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Row(
+        children: [
+          const Icon(Icons.videogame_asset, size: 14, color: Colors.red),
+          const SizedBox(width: 6),
+          Text(
+            _selectedGame!['name'],
+            style: const TextStyle(fontSize: 12, color: Colors.red, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
     );
   }
 

@@ -530,7 +530,8 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
                     spacing: 6,
                     runSpacing: 4,
                     children: learnedBy.take(50).map((p) {
-                      final pName = _formatName(p['name']);
+                      final rawName = (p['pokemon']?['name'] ?? p['name'] ?? '') as String;
+                      final pName = _formatName(rawName);
                       return Chip(
                         label: Text(pName, style: const TextStyle(fontSize: 11)),
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
