@@ -13,6 +13,14 @@ import '../databases/grand_underground_screen.dart';
 import '../databases/tm_finder_screen.dart';
 import '../databases/berry_guide_screen.dart';
 import '../databases/friendship_reference_screen.dart';
+import '../databases/z_move_screen.dart';
+import '../databases/in_game_trades_screen.dart';
+import '../databases/event_pokemon_screen.dart';
+import '../databases/mass_outbreaks_screen.dart';
+import '../databases/battle_facilities_screen.dart';
+import '../databases/move_tutor_screen.dart';
+import '../databases/version_exclusives_screen.dart';
+import '../databases/trainer_teams_screen.dart';
 
 class DatabasesHub extends StatelessWidget {
   const DatabasesHub({Key? key}) : super(key: key);
@@ -32,6 +40,14 @@ class DatabasesHub extends StatelessWidget {
     {'title': 'Friendship & Pokerus', 'icon': Icons.favorite, 'color': Colors.pink},
     {'title': 'Legendary Pokemon', 'icon': Icons.star, 'color': Colors.blueAccent},
     {'title': 'Grand Underground', 'icon': Icons.layers, 'color': Colors.blueGrey},
+    {'title': 'Z-Moves', 'icon': Icons.bolt, 'color': Colors.deepPurple},
+    {'title': 'In-Game Trades', 'icon': Icons.swap_horiz, 'color': Colors.amber},
+    {'title': 'Event Pokemon', 'icon': Icons.celebration, 'color': Colors.pinkAccent},
+    {'title': 'Mass Outbreaks', 'icon': Icons.groups, 'color': Colors.deepOrange},
+    {'title': 'Battle Facilities', 'icon': Icons.emoji_events, 'color': Colors.yellow},
+    {'title': 'Move Tutors', 'icon': Icons.school, 'color': Colors.teal},
+    {'title': 'Version Exclusives', 'icon': Icons.compare, 'color': Colors.indigo},
+    {'title': 'Trainer Teams', 'icon': Icons.people, 'color': Colors.brown},
   ];
 
   void _navigate(BuildContext context, int index) {
@@ -50,6 +66,14 @@ class DatabasesHub extends StatelessWidget {
       const FriendshipReferenceScreen(),
       const LegendaryPokemonScreen(),
       const GrandUndergroundScreen(),
+      const ZMoveScreen(),
+      const InGameTradesScreen(),
+      const EventPokemonScreen(),
+      const MassOutbreaksScreen(),
+      const BattleFacilitiesScreen(),
+      const MoveTutorScreen(),
+      const VersionExclusivesScreen(),
+      const TrainerTeamsScreen(),
     ];
     Navigator.push(context, MaterialPageRoute(builder: (_) => screens[index]));
   }

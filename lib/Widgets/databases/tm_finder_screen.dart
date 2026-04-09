@@ -44,11 +44,11 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
   @override
   void initState() {
     super.initState();
-    _loadGames();
-    _loadTMs();
+    _loadGamesAndTMs();
   }
 
-  Future<void> _loadGames() async {
+  Future<void> _loadGamesAndTMs() async {
+    // Load games first so we have correct DB game names before querying TMs
     try {
       final response = await Requests.get('${PokeApiService.baseUrl}/tm/games');
       if (response.statusCode == 200) {
@@ -66,6 +66,7 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
     } catch (_) {
       // Keep fallback games list
     }
+    _loadTMs();
   }
 
   // ── Data loading ────────────────────────────────────────────────────────────
@@ -267,8 +268,7 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
   Widget _buildGameDropdown() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
-      child: DropdownButtonFormField<String>(
-        initialValue: _selectedGame,
+      child: InputDecorator(
         decoration: InputDecoration(
           labelText: 'Game',
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -276,15 +276,22 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
           filled: true,
           fillColor: Colors.white,
         ),
-        items: _games
-            .map((g) => DropdownMenuItem(value: g, child: Text(_formatName(g))))
-            .toList(),
-        onChanged: (value) {
-          if (value != null && value != _selectedGame) {
-            setState(() => _selectedGame = value);
-            _loadTMs();
-          }
-        },
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            value: _selectedGame,
+            isDense: true,
+            isExpanded: true,
+            items: _games
+                .map((g) => DropdownMenuItem(value: g, child: Text(_formatName(g))))
+                .toList(),
+            onChanged: (value) {
+              if (value != null && value != _selectedGame) {
+                setState(() => _selectedGame = value);
+                _loadTMs();
+              }
+            },
+          ),
+        ),
       ),
     );
   }

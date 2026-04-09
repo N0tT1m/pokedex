@@ -102,8 +102,32 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
   final _searchCtrl = TextEditingController();
   String _searchQuery = '';
 
+  // Abbreviations with actual encounter data in the DB
+  Set<String> _availableAbbrs = {};
+
   List<String> get _abbrs =>
       List<String>.from((_selectedGame?['abbrs'] as List?) ?? []);
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAvailableGames();
+  }
+
+  Future<void> _loadAvailableGames() async {
+    try {
+      final response = await Requests.get('${PokeApiService.baseUrl}/location/games');
+      if (response.statusCode == 200) {
+        final data = response.json();
+        final games = List<Map<String, dynamic>>.from(data['games'] ?? []);
+        if (mounted) {
+          setState(() {
+            _availableAbbrs = games.map((g) => g['abbreviation'] as String).toSet();
+          });
+        }
+      }
+    } catch (_) {}
+  }
 
   Future<void> _loadRoutes() async {
     setState(() { _isLoadingRoutes = true; _routesByRegion = {}; });
@@ -269,16 +293,22 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
             ),
             ...games.map((game) {
               final color = Color(game['color'] as int);
-              return Card(
-                margin: const EdgeInsets.only(bottom: 8),
-                child: ListTile(
-                  leading: Icon(Icons.catching_pokemon, color: color, size: 32),
-                  title: Text(game['name'] as String, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    setState(() => _selectedGame = Map<String, dynamic>.from(game as Map));
-                    _loadRoutes();
-                  },
+              final abbrs = List<String>.from(game['abbrs'] as List);
+              final hasData = _availableAbbrs.isEmpty || abbrs.any((a) => _availableAbbrs.contains(a));
+              return Opacity(
+                opacity: hasData ? 1.0 : 0.4,
+                child: Card(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  child: ListTile(
+                    leading: Icon(Icons.catching_pokemon, color: color, size: 32),
+                    title: Text(game['name'] as String, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: !hasData ? const Text('No encounter data', style: TextStyle(fontSize: 11, color: Colors.grey)) : null,
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: hasData ? () {
+                      setState(() => _selectedGame = Map<String, dynamic>.from(game as Map));
+                      _loadRoutes();
+                    } : null,
+                  ),
                 ),
               );
             }),

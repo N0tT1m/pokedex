@@ -98,6 +98,9 @@ class _PokemonDetailBodyState extends State<_PokemonDetailBody> {
   String _biology = '';
   List<Map<String, dynamic>> _heldItems = [];
   List<Map<String, dynamic>> _gameLocations = [];
+  Map<String, dynamic>? _classification;
+  Map<String, dynamic>? _goStats;
+  List<Map<String, dynamic>> _contestStats = [];
   bool _isLoading = true;
   String? _error;
 
@@ -130,6 +133,9 @@ class _PokemonDetailBodyState extends State<_PokemonDetailBody> {
     String biology = '';
     List<Map<String, dynamic>> heldItems = [];
     List<Map<String, dynamic>> gameLocations = [];
+    Map<String, dynamic>? classification;
+    Map<String, dynamic>? goStats;
+    List<Map<String, dynamic>> contestStats = [];
 
     await Future.wait([
       PokeApiService.getPokemonTypeDefenses(name)
@@ -143,6 +149,15 @@ class _PokemonDetailBodyState extends State<_PokemonDetailBody> {
       }).catchError((_) {}),
       Requests.get('${PokeApiService.baseUrl}/pokemon/$name/game-locations').then((r) {
         if (r.statusCode == 200) gameLocations = List<Map<String, dynamic>>.from(r.json()['locations'] ?? []);
+      }).catchError((_) {}),
+      Requests.get('${PokeApiService.baseUrl}/pokemon/$name/classification').then((r) {
+        if (r.statusCode == 200) classification = Map<String, dynamic>.from(r.json());
+      }).catchError((_) {}),
+      Requests.get('${PokeApiService.baseUrl}/pokemon/$name/go').then((r) {
+        if (r.statusCode == 200) goStats = Map<String, dynamic>.from(r.json());
+      }).catchError((_) {}),
+      Requests.get('${PokeApiService.baseUrl}/pokemon/$name/contest-stats').then((r) {
+        if (r.statusCode == 200) contestStats = List<Map<String, dynamic>>.from(r.json()['contest_stats'] ?? []);
       }).catchError((_) {}),
     ]);
 
@@ -174,6 +189,9 @@ class _PokemonDetailBodyState extends State<_PokemonDetailBody> {
       _biology = biology;
       _heldItems = heldItems;
       _gameLocations = gameLocations;
+      _classification = classification;
+      _goStats = goStats;
+      _contestStats = contestStats;
       _isLoading = false;
     });
   }
@@ -437,11 +455,134 @@ class _PokemonDetailBodyState extends State<_PokemonDetailBody> {
                   ),
                 ),
               ),
-          ],
+            ],
+            if (_classification != null) ...[
+              const SizedBox(height: 8),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Classification', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          if (_classification!['generation_introduced'] != null)
+                            _infoBadge('Gen ${_classification!['generation_introduced']}', Colors.blue),
+                          if (_classification!['color'] != null)
+                            _infoBadge(_capitalize(_classification!['color']), Colors.blueGrey),
+                          if (_classification!['shape'] != null)
+                            _infoBadge(_capitalize(_classification!['shape']), Colors.teal),
+                          if (_classification!['habitat'] != null)
+                            _infoBadge(_capitalize(_classification!['habitat']), Colors.green),
+                          if (_classification!['is_legendary'] == true)
+                            _infoBadge('Legendary', Colors.amber.shade700),
+                          if (_classification!['is_mythical'] == true)
+                            _infoBadge('Mythical', Colors.purple),
+                          if (_classification!['is_ultra_beast'] == true)
+                            _infoBadge('Ultra Beast', Colors.deepOrange),
+                          if (_classification!['is_baby'] == true)
+                            _infoBadge('Baby', Colors.pink),
+                          if (_classification!['is_paradox'] == true)
+                            _infoBadge('Paradox', Colors.indigo),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+            if (_goStats != null) ...[
+              const SizedBox(height: 8),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Pokemon GO', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(child: _goStatBox('Max CP', '${_goStats!['max_cp'] ?? '-'}')),
+                          Expanded(child: _goStatBox('Attack', '${_goStats!['base_attack'] ?? '-'}')),
+                          Expanded(child: _goStatBox('Defense', '${_goStats!['base_defense'] ?? '-'}')),
+                          Expanded(child: _goStatBox('Stamina', '${_goStats!['base_stamina'] ?? '-'}')),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          if (_goStats!['buddy_distance_km'] != null)
+                            _infoBadge('${_goStats!['buddy_distance_km']} km buddy', Colors.orange),
+                          const SizedBox(width: 6),
+                          if (_goStats!['shiny_available'] == true)
+                            _infoBadge('Shiny available', Colors.amber),
+                          const SizedBox(width: 6),
+                          if (_goStats!['shadow_available'] == true)
+                            _infoBadge('Shadow available', Colors.deepPurple),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+            if (_contestStats.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Contest Stats', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      const SizedBox(height: 8),
+                      ..._contestStats.map((s) {
+                        final type = _capitalize(s['contest_type'] as String? ?? '');
+                        final appeal = s['appeal'] as int? ?? 0;
+                        final jam = s['jam'] as int? ?? 0;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Row(
+                            children: [
+                              SizedBox(width: 80, child: Text(type, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+                              Text('Appeal: $appeal', style: const TextStyle(fontSize: 12)),
+                              const SizedBox(width: 12),
+                              Text('Jam: $jam', style: TextStyle(fontSize: 12, color: Colors.red.shade600)),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              ),
+            ],
         ],
       );
     }
   }
+
+  Widget _infoBadge(String label, Color color) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+    decoration: BoxDecoration(
+      color: color.withOpacity(0.15),
+      border: Border.all(color: color, width: 1),
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: color)),
+  );
+
+  Widget _goStatBox(String label, String value) => Column(
+    children: [
+      Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+    ],
+  );
 
   List<Widget> _buildDefenseSections() {
     final weaknesses = _typeDefenses.where((t) => (t['multiplier'] as num) > 1).toList();

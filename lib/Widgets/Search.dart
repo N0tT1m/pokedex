@@ -1685,11 +1685,126 @@ class _SearchState extends State<Search> {
         : Container(
             height: MediaQuery.of(context).size.height - 130,
             color: Colors.red,
-            child: ListView.builder(
-              itemCount: 1,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: <Widget>[
+            child: Column(
+              children: [
+                // Persistent game selector + search bar at top of detail view
+                Container(
+                  color: Colors.red,
+                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.videogame_asset, color: Colors.white70, size: 18),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _isLoadingGameFilter
+                            ? const LinearProgressIndicator(color: Colors.white)
+                            : DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  value: _selectedGameKey,
+                                  hint: const Text('All Games', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                                  dropdownColor: const Color(0xFFb71c1c),
+                                  style: const TextStyle(color: Colors.white),
+                                  icon: const Icon(Icons.arrow_drop_down, color: Colors.white70),
+                                  isExpanded: true,
+                                  items: [
+                                    const DropdownMenuItem<String>(
+                                      value: null,
+                                      child: Text('All Games', style: TextStyle(color: Colors.white)),
+                                    ),
+                                    ..._gameGroups.expand((group) {
+                                      final gen = group['generation'] as String;
+                                      final games = group['games'] as List;
+                                      return [
+                                        DropdownMenuItem<String>(
+                                          enabled: false,
+                                          value: '__$gen',
+                                          child: Text(
+                                            gen,
+                                            style: TextStyle(
+                                              color: Colors.white.withValues(alpha: 0.5),
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        ...games.map((g) => DropdownMenuItem<String>(
+                                          value: g['key'] as String,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(left: 8),
+                                            child: Text(
+                                              g['name'] as String,
+                                              style: const TextStyle(color: Colors.white, fontSize: 13),
+                                            ),
+                                          ),
+                                        )),
+                                      ];
+                                    }),
+                                  ],
+                                  onChanged: (value) {
+                                    if (value == null) {
+                                      _clearGameFilter();
+                                      return;
+                                    }
+                                    int nationalDexMax = 1025;
+                                    String gameName = value;
+                                    for (final group in _gameGroups) {
+                                      for (final g in group['games'] as List) {
+                                        if (g['key'] == value) {
+                                          nationalDexMax = g['nationalDexMax'] as int;
+                                          gameName = g['name'] as String;
+                                          break;
+                                        }
+                                      }
+                                    }
+                                    _loadGameFilteredNames(value, gameName, nationalDexMax);
+                                  },
+                                ),
+                              ),
+                      ),
+                      if (_selectedGameKey != null)
+                        IconButton(
+                          icon: const Icon(Icons.clear, color: Colors.white70, size: 18),
+                          onPressed: _clearGameFilter,
+                          tooltip: 'Clear game filter',
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        icon: const Icon(Icons.search, color: Colors.white),
+                        tooltip: 'New search',
+                        onPressed: () => setState(() => _pokemonData = null),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                ),
+                if (_selectedGameName != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '${names.length} Pokémon in $_selectedGameName',
+                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                        ),
+                      ),
+                    ),
+                  ),
+                // Pokemon detail content
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: 1,
+                    itemBuilder: (context, index) {
+                      return Column(
+                        children: <Widget>[
                     if (_getSafeData('image').isNotEmpty)
                       Container(
                         alignment: Alignment.topCenter,
@@ -1917,6 +2032,9 @@ class _SearchState extends State<Search> {
                   ],
                 );
               },
+            ),
+                ),
+              ],
             ),
           );
   }

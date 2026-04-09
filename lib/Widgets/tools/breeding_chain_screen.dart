@@ -96,11 +96,47 @@ class _BreedingChainScreenState extends State<BreedingChainScreen>
     setState(() { _searching = true; _errorMessage = null; _chainResults = []; });
 
     try {
+      final moveApiName = _targetMove!.toLowerCase().replaceAll(' ', '-');
+      final pokeName = _targetPokemon!.toLowerCase();
+
+      // Try the dedicated egg-move-parents endpoint first (single server-side query)
+      try {
+        final response = await Requests.get(
+          '${PokeApiService.baseUrl}/pokemon/$pokeName/egg-move-parents?move=$moveApiName',
+        );
+        if (response.statusCode == 200) {
+          final data = response.json();
+          final parents = List<Map<String, dynamic>>.from(data['parents'] ?? []);
+          if (parents.isNotEmpty) {
+            final directParents = <Map<String, dynamic>>[];
+            for (final p in parents) {
+              final parentName = p['parent_name'] as String;
+              int? pokeId;
+              try {
+                final pokeData = await PokeApiService.getPokemon(parentName.toLowerCase());
+                pokeId = pokeData['id'] as int?;
+              } catch (_) {}
+              directParents.add({
+                'name': parentName.toLowerCase(),
+                'learnMethod': 'egg-parent',
+                'sharedGroups': <String>[],
+                'id': pokeId,
+              });
+            }
+            setState(() {
+              _chainResults = directParents;
+              _searching = false;
+            });
+            return;
+          }
+        }
+      } catch (_) {}
+
+      // Fallback: client-side search via move learners + egg group matching
       final targetSpecies = await PokeApiService.getPokemonSpecies(_targetPokemon!);
       final targetEggGroups = (targetSpecies['egg_groups'] as List)
           .map((g) => g['name'] as String).toList();
 
-      final moveApiName = _targetMove!.toLowerCase().replaceAll(' ', '-');
       final moveResponse = await Requests.get('${PokeApiService.baseUrl}/move/$moveApiName');
       if (moveResponse.statusCode != 200) {
         setState(() { _errorMessage = 'Could not load move data'; _searching = false; });
@@ -112,14 +148,14 @@ class _BreedingChainScreenState extends State<BreedingChainScreen>
 
       final directParents = <Map<String, dynamic>>[];
 
-      for (var pokeName in learnedBy) {
+      for (var name in learnedBy) {
         try {
-          final species = await PokeApiService.getPokemonSpecies(pokeName);
+          final species = await PokeApiService.getPokemonSpecies(name);
           final eggGroups = (species['egg_groups'] as List)
               .map((g) => g['name'] as String).toList();
           final shared = eggGroups.where((g) => targetEggGroups.contains(g)).toList();
           if (shared.isNotEmpty) {
-            final moves = await PokeApiService.getPokemonMoves(pokeName);
+            final moves = await PokeApiService.getPokemonMoves(name);
             String learnMethod = 'unknown';
             for (var move in moves) {
               if (move['name'] == _targetMove) {
@@ -135,11 +171,11 @@ class _BreedingChainScreenState extends State<BreedingChainScreen>
             if (learnMethod != 'unknown' && !learnMethod.toLowerCase().contains('egg')) {
               int? pokeId;
               try {
-                final pokeData = await PokeApiService.getPokemon(pokeName);
+                final pokeData = await PokeApiService.getPokemon(name);
                 pokeId = pokeData['id'] as int?;
               } catch (_) {}
               directParents.add({
-                'name': pokeName,
+                'name': name,
                 'learnMethod': learnMethod,
                 'sharedGroups': shared,
                 'id': pokeId,

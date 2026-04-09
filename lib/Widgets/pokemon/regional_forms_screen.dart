@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:requests/requests.dart';
 
+import '../../services/pokeapi_service.dart';
 import '../../theme/app_theme.dart';
 import 'pokemon_detail_sheet.dart';
 
@@ -11,7 +13,7 @@ class RegionalFormsScreen extends StatefulWidget {
 }
 
 class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+  TabController? _tabController;
   bool _isLoading = true;
 
   // Map display region names to PokeAPI region suffixes
@@ -30,8 +32,8 @@ class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTi
     'tauros (aqua)-paldea': 'tauros-paldea-aqua-breed',
   };
 
-  // Hardcoded regional form data since PokeAPI doesn't have a clean endpoint for this
-  static const Map<String, List<Map<String, String>>> _regionalForms = {
+  // Hardcoded fallback regional form data
+  static const Map<String, List<Map<String, String>>> _fallbackForms = {
     'Alolan': [
       {'name': 'Rattata', 'types': 'Dark, Normal'}, {'name': 'Raticate', 'types': 'Dark, Normal'},
       {'name': 'Raichu', 'types': 'Electric, Psychic'}, {'name': 'Sandshrew', 'types': 'Ice, Steel'},
@@ -71,21 +73,104 @@ class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTi
     ],
   };
 
+  // Live data from API, keyed by region
+  Map<String, List<Map<String, dynamic>>> _regionalForms = {};
+
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _regionalForms.length, vsync: this);
-    _isLoading = false;
+    _loadForms();
+  }
+
+  Future<void> _loadForms() async {
+    // Try to load forms from the API for every Pokemon that has regional variants
+    final Map<String, List<Map<String, dynamic>>> loaded = {};
+
+    // Collect all base Pokemon names from the fallback list
+    final allBaseNames = <String>{};
+    for (final forms in _fallbackForms.values) {
+      for (final f in forms) {
+        // Strip parenthetical variants like "Tauros (Combat)"
+        allBaseNames.add(f['name']!.split(' (')[0].toLowerCase().replaceAll('. ', '-').replaceAll("'", ''));
+      }
+    }
+
+    // Fetch forms for each base Pokemon from the API
+    final Map<String, List<Map<String, dynamic>>> formsByPokemon = {};
+    await Future.wait(allBaseNames.map((name) async {
+      try {
+        final response = await Requests.get('${PokeApiService.baseUrl}/pokemon/$name/forms');
+        if (response.statusCode == 200) {
+          final data = response.json();
+          final forms = List<Map<String, dynamic>>.from(data['forms'] ?? []);
+          if (forms.isNotEmpty) {
+            formsByPokemon[name] = forms;
+          }
+        }
+      } catch (_) {}
+    }));
+
+    if (formsByPokemon.isNotEmpty) {
+      // Group API forms by region
+      for (final entry in _regionToApi.entries) {
+        final regionLabel = entry.key; // e.g. "Alolan"
+        final regionSuffix = entry.value; // e.g. "alola"
+        final regionForms = <Map<String, dynamic>>[];
+
+        for (final pokeForms in formsByPokemon.entries) {
+          for (final form in pokeForms.value) {
+            final formName = (form['form_name'] as String? ?? '').toLowerCase();
+            if (formName.contains(regionSuffix)) {
+              regionForms.add(form);
+            }
+          }
+        }
+        if (regionForms.isNotEmpty) {
+          loaded[regionLabel] = regionForms;
+        }
+      }
+    }
+
+    // Fall back to hardcoded data for any region that didn't load
+    for (final region in _fallbackForms.keys) {
+      if (!loaded.containsKey(region) || loaded[region]!.isEmpty) {
+        loaded[region] = _fallbackForms[region]!.map((f) => <String, dynamic>{
+          'pokemon_name': f['name']!.split(' (')[0],
+          'form_name': '$region ${f['name']}',
+          'types': f['types']!.split(', '),
+          '_fallback': true,
+          '_displayName': f['name'],
+        }).toList();
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _regionalForms = loaded;
+        _tabController = TabController(length: _regionalForms.length, vsync: this);
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _tabController?.dispose();
     super.dispose();
   }
 
+  String _formatName(String name) =>
+      name.split('-').map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w).join(' ');
+
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Regional Forms'), backgroundColor: Colors.red),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     final regions = _regionalForms.keys.toList();
 
     return Scaffold(
@@ -100,7 +185,7 @@ class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTi
         ),
       ),
       body: TabBarView(
-        controller: _tabController,
+        controller: _tabController!,
         children: regions.map((region) {
           final forms = _regionalForms[region]!;
           return ListView.builder(
@@ -108,30 +193,51 @@ class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTi
             itemCount: forms.length,
             itemBuilder: (context, index) {
               final form = forms[index];
-              final types = form['types']!.split(', ');
+              final isFallback = form['_fallback'] == true;
 
-              // Build API name for regional form lookup
-              final rawName = form['name']!;
-              final baseName = rawName.toLowerCase().replaceAll('. ', '-').replaceAll("'", '');
-              final regionApi = _regionToApi[region] ?? region.toLowerCase();
-              // Special cases where PokeAPI uses a different name
-              final specialKey = '$baseName-$regionApi';
-              final apiName = _specialFormNames[specialKey] ?? '${baseName.split(' (')[0]}-$regionApi';
+              // Extract display info
+              final String displayName;
+              final List<String> types;
+              final String apiName;
+
+              if (isFallback) {
+                displayName = '$region ${form['_displayName']}';
+                types = List<String>.from(form['types']);
+                final rawName = (form['_displayName'] as String);
+                final baseName = rawName.toLowerCase().replaceAll('. ', '-').replaceAll("'", '');
+                final regionApi = _regionToApi[region] ?? region.toLowerCase();
+                final specialKey = '$baseName-$regionApi';
+                apiName = _specialFormNames[specialKey] ?? '${baseName.split(' (')[0]}-$regionApi';
+              } else {
+                final formName = form['form_name'] as String? ?? '';
+                final pokemonName = form['pokemon_name'] as String? ?? '';
+                displayName = formName.isNotEmpty ? _formatName(formName) : '$region ${_formatName(pokemonName)}';
+                types = List<String>.from(form['types'] ?? []);
+                apiName = formName.isNotEmpty
+                    ? formName.toLowerCase().replaceAll(' ', '-')
+                    : '${pokemonName.toLowerCase()}-${(_regionToApi[region] ?? region).toLowerCase()}';
+              }
 
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 4),
                 child: ListTile(
-                  title: Text('$region ${form['name']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  title: Text(displayName, style: const TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: Row(
-                    children: types.map((t) => Container(
-                      margin: const EdgeInsets.only(right: 4, top: 4),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: AppTheme.typeColors[t.trim()],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(t.trim(), style: const TextStyle(color: Colors.white, fontSize: 11)),
-                    )).toList(),
+                    children: types.map((t) {
+                      final typeName = t.trim();
+                      final capitalizedType = typeName.isNotEmpty
+                          ? typeName[0].toUpperCase() + typeName.substring(1)
+                          : typeName;
+                      return Container(
+                        margin: const EdgeInsets.only(right: 4, top: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppTheme.typeColors[capitalizedType] ?? AppTheme.typeColors[typeName],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(capitalizedType, style: const TextStyle(color: Colors.white, fontSize: 11)),
+                      );
+                    }).toList(),
                   ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => showPokemonDetailSheet(context, apiName),
