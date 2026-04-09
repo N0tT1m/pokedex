@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:requests/requests.dart';
+import '../../data/tm_data.dart';
 import '../../services/pokeapi_service.dart';
 import '../../theme/app_theme.dart';
 
@@ -87,15 +88,26 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
         final data = response.json();
         final rawList = data is Map ? data['results'] : data;
         if (rawList is List && rawList.isNotEmpty) {
+          final gameData = kTmMoveData[_selectedGame] ?? {};
           final items = List<Map<String, dynamic>>.from(rawList).map((m) {
-            final moveName = (m['move_name'] as String? ?? '').toLowerCase().replaceAll(' ', '-');
+            // Strip any leading letters from tm_number to get a clean padded key e.g. "TM001"
+            final rawNum = (m['tm_number'] as String? ?? '');
+            final prefix = rawNum.replaceAll(RegExp(r'[0-9]'), '');  // "TM" or "HM"
+            final digits = rawNum.replaceAll(RegExp(r'[^0-9]'), '');
+            final tmKey = '${prefix}${digits.padLeft(3, '0')}';
+
+            // Backend move_name is often empty — fall back to static lookup
+            var moveName = (m['move_name'] as String? ?? '').toLowerCase().replaceAll(' ', '-');
+            if (moveName.isEmpty) {
+              moveName = gameData[tmKey] ?? '';
+            }
+
             return {
-              'tmNumber': m['tm_number'],
+              'tmNumber': tmKey,
               'moveName': moveName,
-              'displayName': _formatName(moveName),
+              'displayName': moveName.isNotEmpty ? _formatName(moveName) : tmKey,
               'game': m['game'] ?? _selectedGame,
               'location': m['location'] ?? '',
-              // url for detail lookup
               'url': '${PokeApiService.baseUrl}/move/$moveName',
             };
           }).toList();
@@ -189,6 +201,7 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
   // ── Helpers ──────────────────────────────────────────────────────────────────
 
   String _formatName(String name) {
+    // Handle both hyphenated slugs (e.g. "black-white") and already-formatted names (e.g. "Black/White")
     return name
         .split('-')
         .map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w)
@@ -226,9 +239,11 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
           padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
           child: TextField(
             controller: _searchCtrl,
+            style: const TextStyle(color: Colors.black87),
             decoration: InputDecoration(
               hintText: 'Search by move name or location...',
-              prefixIcon: const Icon(Icons.search),
+              hintStyle: const TextStyle(color: Colors.black45),
+              prefixIcon: const Icon(Icons.search, color: Colors.black45),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               filled: true,
               fillColor: Colors.white,
@@ -271,6 +286,7 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: 'Game',
+          labelStyle: const TextStyle(color: Colors.black54),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           filled: true,
@@ -281,8 +297,10 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
             value: _selectedGame,
             isDense: true,
             isExpanded: true,
+            style: const TextStyle(color: Colors.black87, fontSize: 14),
+            dropdownColor: Colors.white,
             items: _games
-                .map((g) => DropdownMenuItem(value: g, child: Text(_formatName(g))))
+                .map((g) => DropdownMenuItem(value: g, child: Text(_formatName(g), style: const TextStyle(color: Colors.black87))))
                 .toList(),
             onChanged: (value) {
               if (value != null && value != _selectedGame) {
@@ -328,15 +346,19 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
       itemCount: _filteredItems.length,
       itemBuilder: (context, index) {
         final item = _filteredItems[index];
-        final tmNumber = item['tmNumber'];
+        // tmNumber is already normalized e.g. "TM001" or "HM001"
+        final tmLabel = item['tmNumber'] as String? ?? '';
         final location = (item['location'] as String? ?? '').trim();
+        final moveName = item['moveName'] as String? ?? '';
+        final hasMoveDetail = moveName.isNotEmpty;
+        final isHM = tmLabel.startsWith('HM');
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 2),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: tmNumber != null ? Colors.red : Colors.blue,
+              backgroundColor: isHM ? Colors.blue : Colors.red,
               child: Text(
-                tmNumber != null ? 'TM' : '${index + 1}',
+                isHM ? 'HM' : 'TM',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 10,
@@ -346,12 +368,12 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
             ),
             title: Row(
               children: [
-                if (tmNumber != null) ...[
+                if (tmLabel.isNotEmpty) ...[
                   Text(
-                    'TM${tmNumber.toString().padLeft(3, '0')} ',
-                    style: const TextStyle(
+                    '$tmLabel ',
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.red,
+                      color: isHM ? Colors.blue : Colors.red,
                       fontSize: 12,
                     ),
                   ),
@@ -372,9 +394,9 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
                     overflow: TextOverflow.ellipsis,
                   )
                 : null,
-            trailing: const Icon(Icons.chevron_right),
+            trailing: hasMoveDetail ? const Icon(Icons.chevron_right) : null,
             dense: true,
-            onTap: () => _loadMoveDetail(item['moveName'] as String),
+            onTap: hasMoveDetail ? () => _loadMoveDetail(moveName) : null,
           ),
         );
       },
