@@ -84,8 +84,9 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
       final response = await Requests.get(url);
       if (response.statusCode == 200) {
         final data = response.json();
-        if (data is List && data.isNotEmpty) {
-          final items = List<Map<String, dynamic>>.from(data).map((m) {
+        final rawList = data is Map ? data['results'] : data;
+        if (rawList is List && rawList.isNotEmpty) {
+          final items = List<Map<String, dynamic>>.from(rawList).map((m) {
             final moveName = (m['move_name'] as String? ?? '').toLowerCase().replaceAll(' ', '-');
             return {
               'tmNumber': m['tm_number'],
@@ -529,7 +530,7 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
                   Wrap(
                     spacing: 6,
                     runSpacing: 4,
-                    children: learnedBy.take(50).map((p) {
+                    children: learnedBy.map((p) {
                       final rawName = (p['pokemon']?['name'] ?? p['name'] ?? '') as String;
                       final pName = _formatName(rawName);
                       return Chip(
@@ -539,7 +540,6 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
                       );
                     }).toList(),
                   ),
-                  if (learnedBy.length > 50) Text('...and ${learnedBy.length - 50} more'),
                 ],
               ),
             ),

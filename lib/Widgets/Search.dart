@@ -39,12 +39,92 @@ class _SearchState extends State<Search> {
   bool isLoading = false;
   String? errorMessage;
 
+  // Game filter
+  List<String> _allNames = [];
+  String? _selectedGameKey;
+  String? _selectedGameName;
+  bool _isLoadingGameFilter = false;
+
+  static const List<Map<String, dynamic>> _gameGroups = [
+    {
+      'generation': 'Generation I',
+      'games': [
+        {'key': 'red-blue', 'name': 'Red / Blue', 'nationalDexMax': 151},
+        {'key': 'yellow', 'name': 'Yellow', 'nationalDexMax': 151},
+      ],
+    },
+    {
+      'generation': 'Generation II',
+      'games': [
+        {'key': 'gold-silver', 'name': 'Gold / Silver', 'nationalDexMax': 251},
+        {'key': 'crystal', 'name': 'Crystal', 'nationalDexMax': 251},
+      ],
+    },
+    {
+      'generation': 'Generation III',
+      'games': [
+        {'key': 'ruby-sapphire', 'name': 'Ruby / Sapphire', 'nationalDexMax': 386},
+        {'key': 'emerald', 'name': 'Emerald', 'nationalDexMax': 386},
+        {'key': 'firered-leafgreen', 'name': 'FireRed / LeafGreen', 'nationalDexMax': 386},
+      ],
+    },
+    {
+      'generation': 'Generation IV',
+      'games': [
+        {'key': 'diamond-pearl', 'name': 'Diamond / Pearl', 'nationalDexMax': 493},
+        {'key': 'platinum', 'name': 'Platinum', 'nationalDexMax': 493},
+        {'key': 'heartgold-soulsilver', 'name': 'HeartGold / SoulSilver', 'nationalDexMax': 493},
+      ],
+    },
+    {
+      'generation': 'Generation V',
+      'games': [
+        {'key': 'black-white', 'name': 'Black / White', 'nationalDexMax': 649},
+        {'key': 'black-2-white-2', 'name': 'Black 2 / White 2', 'nationalDexMax': 649},
+      ],
+    },
+    {
+      'generation': 'Generation VI',
+      'games': [
+        {'key': 'x-y', 'name': 'X / Y', 'nationalDexMax': 721},
+        {'key': 'omega-ruby-alpha-sapphire', 'name': 'Omega Ruby / Alpha Sapphire', 'nationalDexMax': 721},
+      ],
+    },
+    {
+      'generation': 'Generation VII',
+      'games': [
+        {'key': 'sun-moon', 'name': 'Sun / Moon', 'nationalDexMax': 802},
+        {'key': 'ultra-sun-ultra-moon', 'name': 'Ultra Sun / Ultra Moon', 'nationalDexMax': 807},
+        {'key': 'lets-go-pikachu-lets-go-eevee', 'name': "Let's Go Pikachu / Eevee", 'nationalDexMax': 151},
+      ],
+    },
+    {
+      'generation': 'Generation VIII',
+      'games': [
+        {'key': 'sword-shield', 'name': 'Sword / Shield', 'nationalDexMax': 898},
+        {'key': 'brilliant-diamond-shining-pearl', 'name': 'Brilliant Diamond / Shining Pearl', 'nationalDexMax': 493},
+        {'key': 'legends-arceus', 'name': 'Legends: Arceus', 'nationalDexMax': 905},
+      ],
+    },
+    {
+      'generation': 'Generation IX',
+      'games': [
+        {'key': 'scarlet-violet', 'name': 'Scarlet / Violet', 'nationalDexMax': 1025},
+        {'key': 'the-teal-mask', 'name': 'The Teal Mask (DLC)', 'nationalDexMax': 1025},
+        {'key': 'the-indigo-disk', 'name': 'The Indigo Disk (DLC)', 'nationalDexMax': 1025},
+      ],
+    },
+  ];
+
   @override
   void initState() {
     super.initState();
     _getPokemon().then((value) {
       if (mounted) {
-        setState(() => names = value);
+        setState(() {
+          names = value;
+          _allNames = List.from(value);
+        });
       }
     }).catchError((error) {
       if (mounted) {
@@ -72,6 +152,71 @@ class _SearchState extends State<Search> {
       print('Error fetching Pokemon list: $e');
       return [];
     }
+  }
+
+  Future<void> _loadGameFilteredNames(String gameKey, String gameName, int nationalDexMax) async {
+    setState(() => _isLoadingGameFilter = true);
+    try {
+      final versionData = await PokeApiService.getVersionGroup(gameKey);
+      final List<dynamic> pokedexes = versionData['pokedexes'] ?? [];
+
+      final Set<String> gameNames = {};
+
+      for (var pokedexRef in pokedexes) {
+        final pokedexUrl = pokedexRef['url'];
+        final pokedexName = pokedexRef['name'];
+        final pokedexId = PokeApiService.extractIdFromUrl(pokedexUrl);
+        if (pokedexId == null) continue;
+
+        final isNational = pokedexId == 1 || pokedexName == 'national';
+        final pokedexData = await PokeApiService.getPokedex(pokedexId);
+        final List<dynamic> entries = pokedexData['pokemon_entries'] ?? [];
+
+        for (var entry in entries) {
+          final entryNumber = entry['entry_number'];
+          if (isNational && entryNumber is int && entryNumber > nationalDexMax) continue;
+          final speciesName = entry['pokemon_species']['name'] as String;
+          gameNames.add(PokemonDataFormatter.capitalize(speciesName));
+        }
+      }
+
+      // If no regional dex found, fall back to national dex filtered by nationalDexMax
+      if (gameNames.isEmpty) {
+        final nationalData = await PokeApiService.getPokedex(1);
+        final List<dynamic> entries = nationalData['pokemon_entries'] ?? [];
+        for (var entry in entries) {
+          final entryNumber = entry['entry_number'] as int;
+          if (entryNumber > nationalDexMax) break;
+          final speciesName = entry['pokemon_species']['name'] as String;
+          gameNames.add(PokemonDataFormatter.capitalize(speciesName));
+        }
+      }
+
+      // Preserve ordering from the full list
+      final filtered = _allNames.where((n) => gameNames.contains(n)).toList();
+
+      if (mounted) {
+        setState(() {
+          _selectedGameKey = gameKey;
+          _selectedGameName = gameName;
+          names = filtered;
+          _isLoadingGameFilter = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading game filter: $e');
+      if (mounted) {
+        setState(() => _isLoadingGameFilter = false);
+      }
+    }
+  }
+
+  void _clearGameFilter() {
+    setState(() {
+      _selectedGameKey = null;
+      _selectedGameName = null;
+      names = List.from(_allNames);
+    });
   }
 
   Future<Map<String, dynamic>> _makeRequest(String pokemon) async {
@@ -1151,7 +1296,15 @@ class _SearchState extends State<Search> {
   }
 
   Widget _buildEvolutionTree(Map<String, dynamic> node, {bool isRoot = true}) {
-    final List<dynamic> evolvesTo = node['evolves_to'] ?? [];
+    final List<dynamic> rawEvolvesTo = node['evolves_to'] ?? [];
+
+    // When a game filter is active, remove evolutions that don't exist in that game
+    final List<dynamic> evolvesTo = _selectedGameKey != null
+        ? rawEvolvesTo.where((child) {
+            final childName = child['name']?.toString() ?? '';
+            return childName.isEmpty || names.contains(childName);
+          }).toList()
+        : rawEvolvesTo;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -1275,6 +1428,105 @@ class _SearchState extends State<Search> {
                   ),
                 ),
                 const SizedBox(height: 20),
+                // Game filter row
+                Row(
+                  children: [
+                    const Icon(Icons.videogame_asset, color: Colors.white70, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _isLoadingGameFilter
+                          ? const LinearProgressIndicator(color: Colors.white)
+                          : DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                value: _selectedGameKey,
+                                hint: const Text('All Games', style: TextStyle(color: Colors.white70)),
+                                dropdownColor: const Color(0xFFb71c1c),
+                                style: const TextStyle(color: Colors.white),
+                                icon: const Icon(Icons.arrow_drop_down, color: Colors.white70),
+                                isExpanded: true,
+                                items: [
+                                  const DropdownMenuItem<String>(
+                                    value: null,
+                                    child: Text('All Games', style: TextStyle(color: Colors.white)),
+                                  ),
+                                  ..._gameGroups.expand((group) {
+                                    final gen = group['generation'] as String;
+                                    final games = group['games'] as List;
+                                    return [
+                                      DropdownMenuItem<String>(
+                                        enabled: false,
+                                        value: '__$gen',
+                                        child: Text(
+                                          gen,
+                                          style: TextStyle(
+                                            color: Colors.white.withValues(alpha: 0.5),
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      ...games.map((g) => DropdownMenuItem<String>(
+                                        value: g['key'] as String,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(left: 8),
+                                          child: Text(
+                                            g['name'] as String,
+                                            style: const TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      )),
+                                    ];
+                                  }),
+                                ],
+                                onChanged: (value) {
+                                  if (value == null) {
+                                    _clearGameFilter();
+                                    return;
+                                  }
+                                  // Find nationalDexMax for selected game
+                                  int nationalDexMax = 1025;
+                                  String gameName = value;
+                                  for (final group in _gameGroups) {
+                                    for (final g in group['games'] as List) {
+                                      if (g['key'] == value) {
+                                        nationalDexMax = g['nationalDexMax'] as int;
+                                        gameName = g['name'] as String;
+                                        break;
+                                      }
+                                    }
+                                  }
+                                  _loadGameFilteredNames(value, gameName, nationalDexMax);
+                                },
+                              ),
+                            ),
+                    ),
+                    if (_selectedGameKey != null)
+                      IconButton(
+                        icon: const Icon(Icons.clear, color: Colors.white70, size: 18),
+                        onPressed: _clearGameFilter,
+                        tooltip: 'Clear game filter',
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                if (_selectedGameName != null)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '${names.length} Pokémon in $_selectedGameName',
+                        style: const TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 8),
                 Autocomplete<String>(
                   optionsBuilder: (TextEditingValue textEditingValue) {
                     if (textEditingValue.text.isEmpty) {
