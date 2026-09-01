@@ -1,5 +1,8 @@
 # Pokedex
 
+[![CI](https://github.com/N0tT1m/pokedex/actions/workflows/ci.yml/badge.svg)](https://github.com/N0tT1m/pokedex/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A Flutter companion app for playing Pokémon games — team building, type coverage, damage math, and move lookup across every generation.
 
 Built for the second screen while you play: look up what a Pokémon learns, work out whether a hit KOs, check what your team is weak to, or track a Nuzlocke run.
@@ -90,8 +93,20 @@ flutter build web --release          # Web
 ## Testing
 
 ```bash
-flutter test
-flutter analyze
+flutter test      # 93 unit tests over the calculation services
+flutter analyze   # clean: no errors, warnings or lints
+dart format .
+```
+
+CI runs all three on every push, then builds web, APK and macOS.
+
+## App icon
+
+The launcher icon is generated rather than committed by hand:
+
+```bash
+python3 tool/generate_icon.py   # writes assets/icon/
+dart run flutter_launcher_icons     # fans it out to every platform
 ```
 
 ## Project Structure
