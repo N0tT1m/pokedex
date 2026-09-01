@@ -4,7 +4,7 @@ import '../../theme/app_theme.dart';
 import '../pokemon/pokemon_detail_sheet.dart';
 
 class ComparePokemonScreen extends StatefulWidget {
-  const ComparePokemonScreen({Key? key}) : super(key: key);
+  const ComparePokemonScreen({super.key});
 
   @override
   State<ComparePokemonScreen> createState() => _ComparePokemonScreenState();
@@ -21,12 +21,20 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
   String _nature2 = 'Hardy';
 
   static const _statMap = {
-    'hp': 'HP', 'attack': 'Attack', 'defense': 'Defense',
-    'special-attack': 'Sp. Atk', 'special-defense': 'Sp. Def', 'speed': 'Speed'
+    'hp': 'HP',
+    'attack': 'Attack',
+    'defense': 'Defense',
+    'special-attack': 'Sp. Atk',
+    'special-defense': 'Sp. Def',
+    'speed': 'Speed'
   };
 
   static const _natures = <String, Map<String, double>>{
-    'Hardy': {}, 'Docile': {}, 'Serious': {}, 'Bashful': {}, 'Quirky': {},
+    'Hardy': {},
+    'Docile': {},
+    'Serious': {},
+    'Bashful': {},
+    'Quirky': {},
     'Lonely': {'Attack': 1.1, 'Defense': 0.9},
     'Brave': {'Attack': 1.1, 'Speed': 0.9},
     'Adamant': {'Attack': 1.1, 'Sp. Atk': 0.9},
@@ -74,8 +82,11 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
       final data = await PokeApiService.getPokemon(name.toLowerCase());
       if (!mounted) return;
       setState(() {
-        if (slot == 1) _pokemon1 = data;
-        else _pokemon2 = data;
+        if (slot == 1) {
+          _pokemon1 = data;
+        } else {
+          _pokemon2 = data;
+        }
       });
     } catch (_) {}
   }
@@ -97,7 +108,8 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
   }
 
   int _getBST(Map<String, dynamic> data) {
-    return (data['stats'] as List).fold(0, (sum, s) => sum + (s['base_stat'] as int));
+    return (data['stats'] as List)
+        .fold(0, (sum, s) => sum + (s['base_stat'] as int));
   }
 
   int _calculateStat(int base, String statName, int level, String nature) {
@@ -111,7 +123,8 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Compare Pokemon'), backgroundColor: Colors.red),
+      appBar: AppBar(
+          title: const Text('Compare Pokemon'), backgroundColor: Colors.red),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -122,7 +135,9 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
                     children: [
                       Expanded(child: _buildSelector(1, _pokemon1)),
                       const SizedBox(width: 8),
-                      const Text('VS', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                      const Text('VS',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 20)),
                       const SizedBox(width: 8),
                       Expanded(child: _buildSelector(2, _pokemon2)),
                     ],
@@ -143,11 +158,14 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
         Autocomplete<String>(
           optionsBuilder: (v) {
             if (v.text.isEmpty) return const Iterable.empty();
-            return _pokemonNames.where((n) => n.contains(v.text.toLowerCase())).take(8);
+            return _pokemonNames
+                .where((n) => n.contains(v.text.toLowerCase()))
+                .take(8);
           },
           onSelected: (v) => _loadPokemon(v, slot),
           fieldViewBuilder: (ctx, ctrl, focus, submit) => TextField(
-            controller: ctrl, focusNode: focus,
+            controller: ctrl,
+            focusNode: focus,
             decoration: InputDecoration(
               hintText: 'Pokemon $slot',
               border: const OutlineInputBorder(),
@@ -164,10 +182,18 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
                 value: slot == 1 ? _level1 : _level2,
                 isExpanded: true,
                 isDense: true,
-                items: [1, 5, 10, 25, 50, 100].map((l) =>
-                  DropdownMenuItem(value: l, child: Text('Lv $l', style: const TextStyle(fontSize: 12)))).toList(),
+                items: [1, 5, 10, 25, 50, 100]
+                    .map((l) => DropdownMenuItem(
+                        value: l,
+                        child: Text('Lv $l',
+                            style: const TextStyle(fontSize: 12))))
+                    .toList(),
                 onChanged: (v) => setState(() {
-                  if (slot == 1) _level1 = v!; else _level2 = v!;
+                  if (slot == 1) {
+                    _level1 = v!;
+                  } else {
+                    _level2 = v!;
+                  }
                 }),
               ),
             ),
@@ -177,10 +203,17 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
                 value: slot == 1 ? _nature1 : _nature2,
                 isExpanded: true,
                 isDense: true,
-                items: _natures.keys.map((n) =>
-                  DropdownMenuItem(value: n, child: Text(n, style: const TextStyle(fontSize: 12)))).toList(),
+                items: _natures.keys
+                    .map((n) => DropdownMenuItem(
+                        value: n,
+                        child: Text(n, style: const TextStyle(fontSize: 12))))
+                    .toList(),
                 onChanged: (v) => setState(() {
-                  if (slot == 1) _nature1 = v!; else _nature2 = v!;
+                  if (slot == 1) {
+                    _nature1 = v!;
+                  } else {
+                    _nature2 = v!;
+                  }
                 }),
               ),
             ),
@@ -190,20 +223,30 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
           const SizedBox(height: 8),
           GestureDetector(
             onTap: () => showPokemonDetailSheet(context, data['name']),
-            child: Text('#${data['id']} ${_capitalize(data['name'])}', style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline)),
+            child: Text('#${data['id']} ${_capitalize(data['name'])}',
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.underline)),
           ),
           const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: _getTypes(data).map((t) => Container(
-              margin: const EdgeInsets.symmetric(horizontal: 2),
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppTheme.typeColors[t], borderRadius: BorderRadius.circular(6)),
-              child: Text(t, style: const TextStyle(color: Colors.white, fontSize: 10)),
-            )).toList(),
+            children: _getTypes(data)
+                .map((t) => Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                          color: AppTheme.typeColors[t],
+                          borderRadius: BorderRadius.circular(6)),
+                      child: Text(t,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 10)),
+                    ))
+                .toList(),
           ),
-          Text('BST: ${_getBST(data)}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          Text('BST: ${_getBST(data)}',
+              style: const TextStyle(fontSize: 12, color: Colors.grey)),
         ],
       ],
     );
@@ -212,18 +255,28 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
   Widget _buildComparison() {
     final base1 = _getStats(_pokemon1!);
     final base2 = _getStats(_pokemon2!);
-    final statNames = ['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed'];
+    final statNames = [
+      'HP',
+      'Attack',
+      'Defense',
+      'Sp. Atk',
+      'Sp. Def',
+      'Speed'
+    ];
 
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            const Text('Stat Comparison', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Text('Stat Comparison',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             const SizedBox(height: 16),
             ...statNames.map((stat) {
-              final val1 = _calculateStat(base1[stat] ?? 0, stat, _level1, _nature1);
-              final val2 = _calculateStat(base2[stat] ?? 0, stat, _level2, _nature2);
+              final val1 =
+                  _calculateStat(base1[stat] ?? 0, stat, _level1, _nature1);
+              final val2 =
+                  _calculateStat(base2[stat] ?? 0, stat, _level2, _nature2);
               final max = stat == 'HP' ? 714.0 : 614.0;
               final isP1Higher = val1 > val2;
               final isEqual = val1 == val2;
@@ -232,28 +285,45 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Column(
                   children: [
-                    Text(stat, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                    Text(stat,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 12)),
                     Text('Base: ${base1[stat] ?? 0} / ${base2[stat] ?? 0}',
-                        style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                        style:
+                            const TextStyle(fontSize: 10, color: Colors.grey)),
                     const SizedBox(height: 4),
                     Row(
                       children: [
                         SizedBox(
                           width: 36,
-                          child: Text('$val1', textAlign: TextAlign.right,
-                              style: TextStyle(fontWeight: FontWeight.bold,
-                                  color: isP1Higher ? Colors.green : isEqual ? null : Colors.red, fontSize: 12)),
+                          child: Text('$val1',
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: isP1Higher
+                                      ? Colors.green
+                                      : isEqual
+                                          ? null
+                                          : Colors.red,
+                                  fontSize: 12)),
                         ),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Stack(
                             children: [
-                              Container(height: 14, decoration: BoxDecoration(
-                                color: Colors.grey.shade200, borderRadius: BorderRadius.circular(7))),
+                              Container(
+                                  height: 14,
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey.shade200,
+                                      borderRadius: BorderRadius.circular(7))),
                               FractionallySizedBox(
                                 widthFactor: (val1 / max).clamp(0.0, 1.0),
-                                child: Container(height: 14, decoration: BoxDecoration(
-                                  color: Colors.blue.shade400, borderRadius: BorderRadius.circular(7))),
+                                child: Container(
+                                    height: 14,
+                                    decoration: BoxDecoration(
+                                        color: Colors.blue.shade400,
+                                        borderRadius:
+                                            BorderRadius.circular(7))),
                               ),
                             ],
                           ),
@@ -262,12 +332,19 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
                         Expanded(
                           child: Stack(
                             children: [
-                              Container(height: 14, decoration: BoxDecoration(
-                                color: Colors.grey.shade200, borderRadius: BorderRadius.circular(7))),
+                              Container(
+                                  height: 14,
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey.shade200,
+                                      borderRadius: BorderRadius.circular(7))),
                               FractionallySizedBox(
                                 widthFactor: (val2 / max).clamp(0.0, 1.0),
-                                child: Container(height: 14, decoration: BoxDecoration(
-                                  color: Colors.orange.shade400, borderRadius: BorderRadius.circular(7))),
+                                child: Container(
+                                    height: 14,
+                                    decoration: BoxDecoration(
+                                        color: Colors.orange.shade400,
+                                        borderRadius:
+                                            BorderRadius.circular(7))),
                               ),
                             ],
                           ),
@@ -276,8 +353,14 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
                         SizedBox(
                           width: 36,
                           child: Text('$val2',
-                              style: TextStyle(fontWeight: FontWeight.bold,
-                                  color: !isP1Higher && !isEqual ? Colors.green : isEqual ? null : Colors.red, fontSize: 12)),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: !isP1Higher && !isEqual
+                                      ? Colors.green
+                                      : isEqual
+                                          ? null
+                                          : Colors.red,
+                                  fontSize: 12)),
                         ),
                       ],
                     ),
@@ -289,8 +372,10 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Total: ${_getBST(_pokemon1!)}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text('Total: ${_getBST(_pokemon2!)}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text('Total: ${_getBST(_pokemon1!)}',
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text('Total: ${_getBST(_pokemon2!)}',
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
               ],
             ),
           ],
@@ -299,5 +384,6 @@ class _ComparePokemonScreenState extends State<ComparePokemonScreen> {
     );
   }
 
-  String _capitalize(String s) => s.split('-').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ');
+  String _capitalize(String s) =>
+      s.split('-').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ');
 }

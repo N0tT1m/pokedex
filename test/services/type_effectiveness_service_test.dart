@@ -9,29 +9,34 @@ void main() {
     });
 
     test('Water is not very effective against Grass', () {
-      final result = TypeEffectivenessService.getEffectiveness('Water', 'Grass');
+      final result =
+          TypeEffectivenessService.getEffectiveness('Water', 'Grass');
       expect(result, 0.5);
     });
 
     test('Normal has no effect on Ghost', () {
-      final result = TypeEffectivenessService.getEffectiveness('Normal', 'Ghost');
+      final result =
+          TypeEffectivenessService.getEffectiveness('Normal', 'Ghost');
       expect(result, 0.0);
     });
 
     test('Electric has no effect on Ground', () {
-      final result = TypeEffectivenessService.getEffectiveness('Electric', 'Ground');
+      final result =
+          TypeEffectivenessService.getEffectiveness('Electric', 'Ground');
       expect(result, 0.0);
     });
 
     test('combined effectiveness for dual type', () {
       // Fire vs Grass/Ice = 2.0 * 2.0 = 4.0
-      final result = TypeEffectivenessService.getCombinedEffectiveness('Fire', ['Grass', 'Ice']);
+      final result = TypeEffectivenessService.getCombinedEffectiveness(
+          'Fire', ['Grass', 'Ice']);
       expect(result, 4.0);
     });
 
     test('combined effectiveness with resistance', () {
       // Fire vs Water/Rock = 0.5 * 0.5 = 0.25
-      final result = TypeEffectivenessService.getCombinedEffectiveness('Fire', ['Water', 'Rock']);
+      final result = TypeEffectivenessService.getCombinedEffectiveness(
+          'Fire', ['Water', 'Rock']);
       expect(result, 0.25);
     });
 

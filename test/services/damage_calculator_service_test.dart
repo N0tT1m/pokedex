@@ -107,8 +107,10 @@ void main() {
     });
 
     test('getEffectivenessLabel returns correct labels', () {
-      expect(DamageCalculatorService.getEffectivenessLabel(2.0), 'Super effective');
-      expect(DamageCalculatorService.getEffectivenessLabel(0.5), 'Not very effective');
+      expect(DamageCalculatorService.getEffectivenessLabel(2.0),
+          'Super effective');
+      expect(DamageCalculatorService.getEffectivenessLabel(0.5),
+          'Not very effective');
       expect(DamageCalculatorService.getEffectivenessLabel(0.0), 'No effect');
       expect(DamageCalculatorService.getEffectivenessLabel(1.0), 'Neutral');
     });

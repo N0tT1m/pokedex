@@ -3,7 +3,7 @@ import 'package:requests/requests.dart';
 import '../../services/pokeapi_service.dart';
 
 class ItemLocationScreen extends StatefulWidget {
-  const ItemLocationScreen({Key? key}) : super(key: key);
+  const ItemLocationScreen({super.key});
 
   @override
   State<ItemLocationScreen> createState() => _ItemLocationScreenState();
@@ -28,7 +28,8 @@ class _ItemLocationScreenState extends State<ItemLocationScreen> {
 
   Future<void> _loadGames() async {
     try {
-      final response = await Requests.get('${PokeApiService.baseUrl}/item-locations/games');
+      final response =
+          await Requests.get('${PokeApiService.baseUrl}/item-locations/games');
       if (response.statusCode == 200) {
         final data = response.json();
         final games = List<String>.from(data['games'] ?? []);
@@ -41,18 +42,28 @@ class _ItemLocationScreenState extends State<ItemLocationScreen> {
           }
         });
       } else {
-        setState(() { _error = 'Could not load games'; _isLoadingGames = false; });
+        setState(() {
+          _error = 'Could not load games';
+          _isLoadingGames = false;
+        });
       }
     } catch (e) {
-      setState(() { _error = 'Could not load games'; _isLoadingGames = false; });
+      setState(() {
+        _error = 'Could not load games';
+        _isLoadingGames = false;
+      });
     }
   }
 
   Future<void> _loadItems(String game) async {
-    setState(() { _isLoadingItems = true; _error = null; });
+    setState(() {
+      _isLoadingItems = true;
+      _error = null;
+    });
     try {
       final encoded = Uri.encodeComponent(game);
-      final response = await Requests.get('${PokeApiService.baseUrl}/item-locations?game=$encoded');
+      final response = await Requests.get(
+          '${PokeApiService.baseUrl}/item-locations?game=$encoded');
       if (response.statusCode == 200) {
         final data = response.json();
         final results = List<Map<String, dynamic>>.from(data['results'] ?? []);
@@ -62,10 +73,18 @@ class _ItemLocationScreenState extends State<ItemLocationScreen> {
           _applyFilter();
         });
       } else {
-        setState(() { _locations = []; _isLoadingItems = false; _applyFilter(); });
+        setState(() {
+          _locations = [];
+          _isLoadingItems = false;
+          _applyFilter();
+        });
       }
     } catch (e) {
-      setState(() { _locations = []; _isLoadingItems = false; _applyFilter(); });
+      setState(() {
+        _locations = [];
+        _isLoadingItems = false;
+        _applyFilter();
+      });
     }
   }
 
@@ -101,7 +120,8 @@ class _ItemLocationScreenState extends State<ItemLocationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Item Locations'), backgroundColor: Colors.red),
+      appBar: AppBar(
+          title: const Text('Item Locations'), backgroundColor: Colors.red),
       body: _isLoadingGames
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -109,47 +129,65 @@ class _ItemLocationScreenState extends State<ItemLocationScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
                   child: DropdownButtonFormField<String>(
-                    value: _selectedGame,
+                    initialValue: _selectedGame,
                     isExpanded: true,
-                    decoration: const InputDecoration(labelText: 'Game', border: OutlineInputBorder()),
-                    items: _games.map((g) => DropdownMenuItem(value: g, child: Text(g))).toList(),
+                    decoration: const InputDecoration(
+                        labelText: 'Game', border: OutlineInputBorder()),
+                    items: _games
+                        .map((g) => DropdownMenuItem(value: g, child: Text(g)))
+                        .toList(),
                     onChanged: (v) {
                       if (v == null) return;
-                      setState(() { _selectedGame = v; _selectedMethod = 'All'; _searchQuery = ''; });
+                      setState(() {
+                        _selectedGame = v;
+                        _selectedMethod = 'All';
+                        _searchQuery = '';
+                      });
                       _loadItems(v);
                     },
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: TextField(
                     decoration: const InputDecoration(
                       hintText: 'Search item or location...',
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(),
                     ),
-                    onChanged: (v) { _searchQuery = v; _applyFilter(); },
+                    onChanged: (v) {
+                      _searchQuery = v;
+                      _applyFilter();
+                    },
                   ),
                 ),
                 if (_methods.length > 1)
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     child: Row(
-                      children: _methods.map((m) => Padding(
-                        padding: const EdgeInsets.only(right: 6),
-                        child: ChoiceChip(
-                          label: Text(m),
-                          selected: _selectedMethod == m,
-                          onSelected: (_) { setState(() => _selectedMethod = m); _applyFilter(); },
-                        ),
-                      )).toList(),
+                      children: _methods
+                          .map((m) => Padding(
+                                padding: const EdgeInsets.only(right: 6),
+                                child: ChoiceChip(
+                                  label: Text(m),
+                                  selected: _selectedMethod == m,
+                                  onSelected: (_) {
+                                    setState(() => _selectedMethod = m);
+                                    _applyFilter();
+                                  },
+                                ),
+                              ))
+                          .toList(),
                     ),
                   ),
                 if (_error != null)
                   Padding(
                     padding: const EdgeInsets.all(12),
-                    child: Text(_error!, style: const TextStyle(color: Colors.red)),
+                    child: Text(_error!,
+                        style: const TextStyle(color: Colors.red)),
                   ),
                 Expanded(
                   child: _isLoadingItems
@@ -157,32 +195,48 @@ class _ItemLocationScreenState extends State<ItemLocationScreen> {
                       : _filtered.isEmpty
                           ? Center(
                               child: Text(
-                                _locations.isEmpty ? 'No data for this game' : 'No results',
+                                _locations.isEmpty
+                                    ? 'No data for this game'
+                                    : 'No results',
                                 style: TextStyle(color: Colors.grey.shade600),
                               ),
                             )
                           : ListView.builder(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
                               itemCount: _filtered.length,
                               itemBuilder: (context, index) {
                                 final loc = _filtered[index];
-                                final itemName = loc['item_name']?.toString() ?? '';
-                                final location = loc['location']?.toString() ?? '';
+                                final itemName =
+                                    loc['item_name']?.toString() ?? '';
+                                final location =
+                                    loc['location']?.toString() ?? '';
                                 final method = loc['method']?.toString() ?? '';
                                 return Card(
-                                  margin: const EdgeInsets.symmetric(vertical: 2),
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 2),
                                   child: ListTile(
                                     leading: CircleAvatar(
                                       backgroundColor: _methodColor(method),
-                                      child: const Icon(Icons.backpack, color: Colors.white, size: 18),
+                                      child: const Icon(Icons.backpack,
+                                          color: Colors.white, size: 18),
                                     ),
-                                    title: Text(itemName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                                    title: Text(itemName,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14)),
                                     subtitle: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(location, style: const TextStyle(fontSize: 12)),
+                                        Text(location,
+                                            style:
+                                                const TextStyle(fontSize: 12)),
                                         if (method.isNotEmpty)
-                                          Text(method, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+                                          Text(method,
+                                              style: TextStyle(
+                                                  fontSize: 11,
+                                                  color: Colors.grey.shade600)),
                                       ],
                                     ),
                                     isThreeLine: method.isNotEmpty,
@@ -199,10 +253,14 @@ class _ItemLocationScreenState extends State<ItemLocationScreen> {
 
   Color _methodColor(String method) {
     switch (method) {
-      case 'Finite': return Colors.purple;
-      case 'Repeatable': return Colors.blue;
-      case 'Finite & Repeatable': return Colors.teal;
-      default: return Colors.grey;
+      case 'Finite':
+        return Colors.purple;
+      case 'Repeatable':
+        return Colors.blue;
+      case 'Finite & Repeatable':
+        return Colors.teal;
+      default:
+        return Colors.grey;
     }
   }
 }

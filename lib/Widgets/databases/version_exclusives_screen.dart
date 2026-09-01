@@ -4,10 +4,11 @@ import '../../services/pokeapi_service.dart';
 import '../pokemon/pokemon_detail_sheet.dart';
 
 class VersionExclusivesScreen extends StatefulWidget {
-  const VersionExclusivesScreen({Key? key}) : super(key: key);
+  const VersionExclusivesScreen({super.key});
 
   @override
-  State<VersionExclusivesScreen> createState() => _VersionExclusivesScreenState();
+  State<VersionExclusivesScreen> createState() =>
+      _VersionExclusivesScreenState();
 }
 
 class _VersionExclusivesScreenState extends State<VersionExclusivesScreen> {
@@ -27,11 +28,15 @@ class _VersionExclusivesScreenState extends State<VersionExclusivesScreen> {
 
   Future<void> _load() async {
     try {
-      final r = await Requests.get('${PokeApiService.baseUrl}/version-exclusive');
+      final r =
+          await Requests.get('${PokeApiService.baseUrl}/version-exclusive');
       if (r.statusCode == 200) {
-        final results = List<Map<String, dynamic>>.from(r.json()['results'] ?? []);
+        final results =
+            List<Map<String, dynamic>>.from(r.json()['results'] ?? []);
         final gameSet = <String>{'All'};
-        for (final e in results) { gameSet.add(e['game'] as String); }
+        for (final e in results) {
+          gameSet.add(e['game'] as String);
+        }
         setState(() {
           _all = results;
           _filtered = results;
@@ -39,10 +44,16 @@ class _VersionExclusivesScreenState extends State<VersionExclusivesScreen> {
           _isLoading = false;
         });
       } else {
-        setState(() { _error = 'Server error ${r.statusCode}'; _isLoading = false; });
+        setState(() {
+          _error = 'Server error ${r.statusCode}';
+          _isLoading = false;
+        });
       }
     } catch (e) {
-      setState(() { _error = 'Could not load exclusives'; _isLoading = false; });
+      setState(() {
+        _error = 'Could not load exclusives';
+        _isLoading = false;
+      });
     }
   }
 
@@ -50,22 +61,29 @@ class _VersionExclusivesScreenState extends State<VersionExclusivesScreen> {
     setState(() {
       _filtered = _all.where((e) {
         final gameMatch = _selectedGame == 'All' || e['game'] == _selectedGame;
-        final queryMatch = _query.isEmpty || (e['pokemon_name'] as String).toLowerCase().contains(_query);
+        final queryMatch = _query.isEmpty ||
+            (e['pokemon_name'] as String).toLowerCase().contains(_query);
         return gameMatch && queryMatch;
       }).toList();
     });
   }
 
-  String _fmt(String s) => s.split('-').map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w).join(' ');
+  String _fmt(String s) => s
+      .split('-')
+      .map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w)
+      .join(' ');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Version Exclusives'), backgroundColor: Colors.red),
+      appBar: AppBar(
+          title: const Text('Version Exclusives'), backgroundColor: Colors.red),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
+              ? Center(
+                  child:
+                      Text(_error!, style: const TextStyle(color: Colors.red)))
               : Column(
                   children: [
                     Padding(
@@ -77,27 +95,46 @@ class _VersionExclusivesScreenState extends State<VersionExclusivesScreen> {
                               decoration: InputDecoration(
                                 hintText: 'Search Pokemon...',
                                 prefixIcon: const Icon(Icons.search),
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
-                                filled: true, fillColor: Colors.white,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                filled: true,
+                                fillColor: Colors.white,
+                                contentPadding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
                               ),
-                              onChanged: (v) { _query = v.toLowerCase(); _filter(); },
+                              onChanged: (v) {
+                                _query = v.toLowerCase();
+                                _filter();
+                              },
                             ),
                           ),
                           const SizedBox(width: 8),
                           DropdownButton<String>(
                             value: _selectedGame,
-                            items: _games.map((g) => DropdownMenuItem(value: g, child: Text(g, style: const TextStyle(fontSize: 13)))).toList(),
-                            onChanged: (v) { if (v != null) { _selectedGame = v; _filter(); } },
+                            items: _games
+                                .map((g) => DropdownMenuItem(
+                                    value: g,
+                                    child: Text(g,
+                                        style: const TextStyle(fontSize: 13))))
+                                .toList(),
+                            onChanged: (v) {
+                              if (v != null) {
+                                _selectedGame = v;
+                                _filter();
+                              }
+                            },
                           ),
                         ],
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 2),
                       child: Align(
                         alignment: Alignment.centerLeft,
-                        child: Text('${_filtered.length} exclusives', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                        child: Text('${_filtered.length} exclusives',
+                            style: TextStyle(
+                                color: Colors.grey.shade600, fontSize: 12)),
                       ),
                     ),
                     Expanded(
@@ -113,20 +150,32 @@ class _VersionExclusivesScreenState extends State<VersionExclusivesScreen> {
                             margin: const EdgeInsets.symmetric(vertical: 2),
                             child: ListTile(
                               dense: true,
-                              title: Text(pokemon, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              title: Text(pokemon,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
                               subtitle: gamePair != null
-                                  ? Text('Not in: $gamePair', style: TextStyle(fontSize: 11, color: Colors.grey.shade600))
+                                  ? Text('Not in: $gamePair',
+                                      style: TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.grey.shade600))
                                   : null,
                               trailing: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
                                 decoration: BoxDecoration(
                                   color: Colors.red.shade50,
                                   borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: Colors.red.shade200),
+                                  border:
+                                      Border.all(color: Colors.red.shade200),
                                 ),
-                                child: Text(game, style: TextStyle(fontSize: 11, color: Colors.red.shade700, fontWeight: FontWeight.bold)),
+                                child: Text(game,
+                                    style: TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.red.shade700,
+                                        fontWeight: FontWeight.bold)),
                               ),
-                              onTap: () => showPokemonDetailSheet(context, e['pokemon_name'] as String),
+                              onTap: () => showPokemonDetailSheet(
+                                  context, e['pokemon_name'] as String),
                             ),
                           );
                         },

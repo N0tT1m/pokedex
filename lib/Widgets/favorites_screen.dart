@@ -4,7 +4,7 @@ import '../models/favorite_pokemon.dart';
 import '../services/pokeapi_service.dart';
 
 class FavoritesScreen extends StatefulWidget {
-  const FavoritesScreen({Key? key}) : super(key: key);
+  const FavoritesScreen({super.key});
 
   @override
   State<FavoritesScreen> createState() => _FavoritesScreenState();
@@ -146,8 +146,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           AppBar(title: const Text('Favorites'), backgroundColor: Colors.red),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.red,
-        child: const Icon(Icons.add),
         onPressed: _addFavorite,
+        child: const Icon(Icons.add),
       ),
       body: _box == null
           ? const Center(child: CircularProgressIndicator())

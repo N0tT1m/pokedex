@@ -3,9 +3,11 @@ import 'pokeapi_service.dart';
 /// Service for fetching detailed evolution method information
 class EvolutionService {
   /// Get full evolution chain with detailed methods for a Pokemon
-  static Future<List<Map<String, dynamic>>> getEvolutionDetails(String pokemonName) async {
+  static Future<List<Map<String, dynamic>>> getEvolutionDetails(
+      String pokemonName) async {
     try {
-      final species = await PokeApiService.getPokemonSpecies(pokemonName.toLowerCase());
+      final species =
+          await PokeApiService.getPokemonSpecies(pokemonName.toLowerCase());
       final evoUrl = species['evolution_chain']?['url'] as String?;
       if (evoUrl == null) return [];
 
@@ -21,7 +23,8 @@ class EvolutionService {
     }
   }
 
-  static void _parseChain(Map<String, dynamic> link, List<Map<String, dynamic>> results) {
+  static void _parseChain(
+      Map<String, dynamic> link, List<Map<String, dynamic>> results) {
     final speciesName = link['species']['name'] as String;
     final evolvesTo = link['evolves_to'] as List;
 
@@ -42,7 +45,8 @@ class EvolutionService {
           'min_happiness': detail['min_happiness'],
           'min_affection': detail['min_affection'],
           'min_beauty': detail['min_beauty'],
-          'time_of_day': detail['time_of_day'] != '' ? detail['time_of_day'] : null,
+          'time_of_day':
+              detail['time_of_day'] != '' ? detail['time_of_day'] : null,
           'known_move': detail['known_move']?['name'],
           'known_move_type': detail['known_move_type']?['name'],
           'location': detail['location']?['name'],
@@ -114,17 +118,33 @@ class EvolutionService {
         parts.add(_formatName(trigger));
     }
 
-    if (evo['min_happiness'] != null) parts.add('Happiness ≥ ${evo['min_happiness']}');
-    if (evo['min_affection'] != null) parts.add('Affection ≥ ${evo['min_affection']}');
+    if (evo['min_happiness'] != null) {
+      parts.add('Happiness ≥ ${evo['min_happiness']}');
+    }
+    if (evo['min_affection'] != null) {
+      parts.add('Affection ≥ ${evo['min_affection']}');
+    }
     if (evo['min_beauty'] != null) parts.add('Beauty ≥ ${evo['min_beauty']}');
     if (evo['time_of_day'] != null) parts.add('(${evo['time_of_day']})');
-    if (evo['known_move'] != null) parts.add('knowing ${_formatName(evo['known_move'])}');
-    if (evo['known_move_type'] != null) parts.add('knowing a ${_formatName(evo['known_move_type'])}-type move');
-    if (evo['location'] != null) parts.add('at ${_formatName(evo['location'])}');
+    if (evo['known_move'] != null) {
+      parts.add('knowing ${_formatName(evo['known_move'])}');
+    }
+    if (evo['known_move_type'] != null) {
+      parts.add('knowing a ${_formatName(evo['known_move_type'])}-type move');
+    }
+    if (evo['location'] != null) {
+      parts.add('at ${_formatName(evo['location'])}');
+    }
     if (evo['needs_overworld_rain'] == true) parts.add('while raining');
-    if (evo['party_species'] != null) parts.add('with ${_formatName(evo['party_species'])} in party');
-    if (evo['party_type'] != null) parts.add('with ${_formatName(evo['party_type'])}-type in party');
-    if (evo['turn_upside_down'] == true) parts.add('holding console upside down');
+    if (evo['party_species'] != null) {
+      parts.add('with ${_formatName(evo['party_species'])} in party');
+    }
+    if (evo['party_type'] != null) {
+      parts.add('with ${_formatName(evo['party_type'])}-type in party');
+    }
+    if (evo['turn_upside_down'] == true) {
+      parts.add('holding console upside down');
+    }
 
     if (evo['gender'] != null) {
       parts.add(evo['gender'] == 1 ? '(Female only)' : '(Male only)');
@@ -141,6 +161,9 @@ class EvolutionService {
   }
 
   static String _formatName(String name) {
-    return name.split('-').map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1)).join(' ');
+    return name
+        .split('-')
+        .map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1))
+        .join(' ');
   }
 }

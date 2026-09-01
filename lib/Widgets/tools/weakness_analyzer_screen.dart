@@ -6,7 +6,7 @@ import '../../theme/app_theme.dart';
 import '../pokemon/pokemon_detail_sheet.dart';
 
 class WeaknessAnalyzerScreen extends StatefulWidget {
-  const WeaknessAnalyzerScreen({Key? key}) : super(key: key);
+  const WeaknessAnalyzerScreen({super.key});
 
   @override
   State<WeaknessAnalyzerScreen> createState() => _WeaknessAnalyzerScreenState();
@@ -14,7 +14,7 @@ class WeaknessAnalyzerScreen extends StatefulWidget {
 
 class _WeaknessAnalyzerScreenState extends State<WeaknessAnalyzerScreen> {
   List<String> _pokemonNames = [];
-  List<Map<String, dynamic>> _team = []; // {name, types: [String]}
+  final List<Map<String, dynamic>> _team = []; // {name, types: [String]}
   bool _isLoading = true;
 
   @override
@@ -56,11 +56,17 @@ class _WeaknessAnalyzerScreenState extends State<WeaknessAnalyzerScreen> {
   @override
   Widget build(BuildContext context) {
     final teamTypes = _team.map((m) => List<String>.from(m['types'])).toList();
-    final weaknesses = _team.isNotEmpty ? CoverageAnalyzerService.analyzeDefensiveWeaknesses(teamTypes) : <String, int>{};
-    final resistances = _team.isNotEmpty ? CoverageAnalyzerService.analyzeDefensiveResistances(teamTypes) : <String, int>{};
+    final weaknesses = _team.isNotEmpty
+        ? CoverageAnalyzerService.analyzeDefensiveWeaknesses(teamTypes)
+        : <String, int>{};
+    final resistances = _team.isNotEmpty
+        ? CoverageAnalyzerService.analyzeDefensiveResistances(teamTypes)
+        : <String, int>{};
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Team Weakness Analyzer'), backgroundColor: Colors.red),
+      appBar: AppBar(
+          title: const Text('Team Weakness Analyzer'),
+          backgroundColor: Colors.red),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -68,19 +74,26 @@ class _WeaknessAnalyzerScreenState extends State<WeaknessAnalyzerScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Add Pokemon (max 6):', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  const Text('Add Pokemon (max 6):',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   const SizedBox(height: 8),
                   if (_team.length < 6)
                     Autocomplete<String>(
                       optionsBuilder: (v) {
                         if (v.text.isEmpty) return const Iterable.empty();
-                        return _pokemonNames.where((n) => n.contains(v.text.toLowerCase())).take(10);
+                        return _pokemonNames
+                            .where((n) => n.contains(v.text.toLowerCase()))
+                            .take(10);
                       },
                       onSelected: _addPokemon,
                       fieldViewBuilder: (ctx, ctrl, focus, submit) => TextField(
-                        controller: ctrl, focusNode: focus,
+                        controller: ctrl,
+                        focusNode: focus,
                         decoration: InputDecoration(
-                          hintText: 'Search Pokemon...', border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          hintText: 'Search Pokemon...',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12)),
                         ),
                       ),
                     ),
@@ -93,36 +106,47 @@ class _WeaknessAnalyzerScreenState extends State<WeaknessAnalyzerScreen> {
                       final idx = entry.key;
                       final mon = entry.value;
                       return GestureDetector(
-                        onTap: () => showPokemonDetailSheet(context, mon['name']),
+                        onTap: () =>
+                            showPokemonDetailSheet(context, mon['name']),
                         child: Chip(
-                        label: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(_capitalize(mon['name']), style: const TextStyle(fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 4),
-                            ...(mon['types'] as List).map((t) => Container(
-                              margin: const EdgeInsets.only(left: 2),
-                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                              decoration: BoxDecoration(
-                                color: AppTheme.typeColors[t], borderRadius: BorderRadius.circular(4)),
-                              child: Text(t, style: const TextStyle(color: Colors.white, fontSize: 9)),
-                            )),
-                          ],
+                          label: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(_capitalize(mon['name']),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
+                              const SizedBox(width: 4),
+                              ...(mon['types'] as List).map((t) => Container(
+                                    margin: const EdgeInsets.only(left: 2),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 4, vertical: 1),
+                                    decoration: BoxDecoration(
+                                        color: AppTheme.typeColors[t],
+                                        borderRadius: BorderRadius.circular(4)),
+                                    child: Text(t,
+                                        style: const TextStyle(
+                                            color: Colors.white, fontSize: 9)),
+                                  )),
+                            ],
+                          ),
+                          deleteIcon: const Icon(Icons.close, size: 16),
+                          onDeleted: () => setState(() => _team.removeAt(idx)),
                         ),
-                        deleteIcon: const Icon(Icons.close, size: 16),
-                        onDeleted: () => setState(() => _team.removeAt(idx)),
-                      ),
                       );
                     }).toList(),
                   ),
                   if (_team.isNotEmpty) ...[
                     const SizedBox(height: 24),
-                    const Text('Defensive Coverage', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                    const Text('Defensive Coverage',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18)),
                     const SizedBox(height: 12),
                     _buildTypeGrid(weaknesses, resistances),
                     const SizedBox(height: 24),
                     // Shared weaknesses warning
-                    if (weaknesses.entries.where((e) => e.value >= 3).isNotEmpty) ...[
+                    if (weaknesses.entries
+                        .where((e) => e.value >= 3)
+                        .isNotEmpty) ...[
                       Card(
                         color: Colors.red.shade100,
                         child: Padding(
@@ -134,13 +158,18 @@ class _WeaknessAnalyzerScreenState extends State<WeaknessAnalyzerScreen> {
                                 children: [
                                   Icon(Icons.warning, color: Colors.red),
                                   SizedBox(width: 8),
-                                  Text('Shared Weaknesses', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  Text('Shared Weaknesses',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
                                 ],
                               ),
                               const SizedBox(height: 8),
-                              ...weaknesses.entries.where((e) => e.value >= 3).map((e) =>
-                                  Text('${e.key}: ${e.value}/${_team.length} team members weak',
-                                      style: const TextStyle(color: Colors.red))),
+                              ...weaknesses.entries
+                                  .where((e) => e.value >= 3)
+                                  .map((e) => Text(
+                                      '${e.key}: ${e.value}/${_team.length} team members weak',
+                                      style:
+                                          const TextStyle(color: Colors.red))),
                             ],
                           ),
                         ),
@@ -153,7 +182,8 @@ class _WeaknessAnalyzerScreenState extends State<WeaknessAnalyzerScreen> {
     );
   }
 
-  Widget _buildTypeGrid(Map<String, int> weaknesses, Map<String, int> resistances) {
+  Widget _buildTypeGrid(
+      Map<String, int> weaknesses, Map<String, int> resistances) {
     return GridView.count(
       crossAxisCount: 3,
       shrinkWrap: true,
@@ -194,7 +224,11 @@ class _WeaknessAnalyzerScreenState extends State<WeaknessAnalyzerScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(type, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
+              Text(type,
+                  style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white)),
               const SizedBox(height: 2),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
@@ -207,7 +241,11 @@ class _WeaknessAnalyzerScreenState extends State<WeaknessAnalyzerScreen> {
                   children: [
                     Icon(icon, size: 10, color: Colors.white),
                     const SizedBox(width: 2),
-                    Text(label, style: const TextStyle(fontSize: 9, color: Colors.white, fontWeight: FontWeight.bold)),
+                    Text(label,
+                        style: const TextStyle(
+                            fontSize: 9,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -218,5 +256,6 @@ class _WeaknessAnalyzerScreenState extends State<WeaknessAnalyzerScreen> {
     );
   }
 
-  String _capitalize(String s) => s.split('-').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ');
+  String _capitalize(String s) =>
+      s.split('-').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ');
 }

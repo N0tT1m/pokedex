@@ -6,10 +6,11 @@ import '../../theme/app_theme.dart';
 /// Screen where users select multiple types to find Pokemon strong against
 /// that type combination, and see the full defensive/offensive breakdown.
 class TypeStrengthFinderScreen extends StatefulWidget {
-  const TypeStrengthFinderScreen({Key? key}) : super(key: key);
+  const TypeStrengthFinderScreen({super.key});
 
   @override
-  State<TypeStrengthFinderScreen> createState() => _TypeStrengthFinderScreenState();
+  State<TypeStrengthFinderScreen> createState() =>
+      _TypeStrengthFinderScreenState();
 }
 
 class _TypeStrengthFinderScreenState extends State<TypeStrengthFinderScreen>
@@ -62,7 +63,8 @@ class _TypeStrengthFinderScreenState extends State<TypeStrengthFinderScreen>
       return;
     }
 
-    final matchups = TypeEffectivenessService.getDefensiveMatchups(_selectedTypes);
+    final matchups =
+        TypeEffectivenessService.getDefensiveMatchups(_selectedTypes);
 
     final weak = <_TypeGroup>[];
     final resist = <_TypeGroup>[];
@@ -157,7 +159,8 @@ class _TypeStrengthFinderScreenState extends State<TypeStrengthFinderScreen>
         double bestMultiplier = 4.0;
         for (var selType in _selectedTypes) {
           for (var pokType in superEffectiveTypes) {
-            final mult = TypeEffectivenessService.getEffectiveness(selType, pokType);
+            final mult =
+                TypeEffectivenessService.getEffectiveness(selType, pokType);
             if (mult < bestMultiplier) bestMultiplier = mult;
           }
         }
@@ -254,7 +257,8 @@ class _TypeStrengthFinderScreenState extends State<TypeStrengthFinderScreen>
                 onTap: () => _toggleType(type),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: selected ? color : color.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(16),
@@ -266,7 +270,8 @@ class _TypeStrengthFinderScreenState extends State<TypeStrengthFinderScreen>
                     type,
                     style: TextStyle(
                       color: selected ? Colors.white : Colors.white70,
-                      fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight:
+                          selected ? FontWeight.bold : FontWeight.normal,
                       fontSize: 13,
                     ),
                   ),
@@ -284,7 +289,9 @@ class _TypeStrengthFinderScreenState extends State<TypeStrengthFinderScreen>
                 },
                 child: const Text(
                   'Clear selection',
-                  style: TextStyle(color: Colors.white54, decoration: TextDecoration.underline),
+                  style: TextStyle(
+                      color: Colors.white54,
+                      decoration: TextDecoration.underline),
                 ),
               ),
             ),
@@ -296,7 +303,8 @@ class _TypeStrengthFinderScreenState extends State<TypeStrengthFinderScreen>
   Widget _buildMatchupsTab() {
     if (_selectedTypes.isEmpty) {
       return const Center(
-        child: Text('Select types above to see matchups', style: TextStyle(color: Colors.white54)),
+        child: Text('Select types above to see matchups',
+            style: TextStyle(color: Colors.white54)),
       );
     }
 
@@ -414,7 +422,8 @@ class _TypeStrengthFinderScreenState extends State<TypeStrengthFinderScreen>
               const SizedBox(height: 4),
               Text(
                 '4x weak to: ${_weakTo.where((g) => g.multiplier >= 4).map((g) => g.type).join(", ")}',
-                style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    color: Colors.redAccent, fontWeight: FontWeight.bold),
               ),
             ],
           ],
@@ -426,7 +435,8 @@ class _TypeStrengthFinderScreenState extends State<TypeStrengthFinderScreen>
   Widget _buildStrongPokemonTab() {
     if (_selectedTypes.isEmpty) {
       return const Center(
-        child: Text('Select types above to find counters', style: TextStyle(color: Colors.white54)),
+        child: Text('Select types above to find counters',
+            style: TextStyle(color: Colors.white54)),
       );
     }
 
@@ -464,7 +474,8 @@ class _TypeStrengthFinderScreenState extends State<TypeStrengthFinderScreen>
                 color: Colors.grey[850],
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: AppTheme.typeColors[p.types.first] ?? Colors.grey,
+                    backgroundColor:
+                        AppTheme.typeColors[p.types.first] ?? Colors.grey,
                     child: Text(
                       p.name.substring(0, 1).toUpperCase(),
                       style: const TextStyle(
@@ -483,27 +494,30 @@ class _TypeStrengthFinderScreenState extends State<TypeStrengthFinderScreen>
                   subtitle: Row(
                     children: [
                       ...p.types.map((t) => Padding(
-                        padding: const EdgeInsets.only(right: 4),
-                        child: _typeBadge(t, small: true),
-                      )),
+                            padding: const EdgeInsets.only(right: 4),
+                            child: _typeBadge(t, small: true),
+                          )),
                       if (p.takesReducedDamage) ...[
                         const SizedBox(width: 4),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.green.withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Text(
                             'Resists',
-                            style: TextStyle(color: Colors.greenAccent, fontSize: 11),
+                            style: TextStyle(
+                                color: Colors.greenAccent, fontSize: 11),
                           ),
                         ),
                       ],
                     ],
                   ),
                   trailing: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: Colors.deepPurple.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(8),
@@ -529,7 +543,8 @@ class _TypeStrengthFinderScreenState extends State<TypeStrengthFinderScreen>
   Widget _buildFullChartTab() {
     if (_selectedTypes.isEmpty) {
       return const Center(
-        child: Text('Select types to see the full chart', style: TextStyle(color: Colors.white54)),
+        child: Text('Select types to see the full chart',
+            style: TextStyle(color: Colors.white54)),
       );
     }
 
@@ -540,7 +555,10 @@ class _TypeStrengthFinderScreenState extends State<TypeStrengthFinderScreen>
         children: [
           const Text(
             'All type matchups vs selected types',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70, fontSize: 14),
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white70,
+                fontSize: 14),
           ),
           const SizedBox(height: 8),
           ...TypeEffectivenessService.allTypes.map((atkType) {
@@ -575,7 +593,8 @@ class _TypeStrengthFinderScreenState extends State<TypeStrengthFinderScreen>
                     mult == 0 ? 'Immune' : '${mult}x',
                     style: TextStyle(
                       color: Colors.white,
-                      fontWeight: mult != 1.0 ? FontWeight.bold : FontWeight.normal,
+                      fontWeight:
+                          mult != 1.0 ? FontWeight.bold : FontWeight.normal,
                       fontSize: 15,
                     ),
                   ),

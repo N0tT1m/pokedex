@@ -6,13 +6,14 @@ import '../../theme/app_theme.dart';
 import 'pokemon_detail_sheet.dart';
 
 class RegionalFormsScreen extends StatefulWidget {
-  const RegionalFormsScreen({Key? key}) : super(key: key);
+  const RegionalFormsScreen({super.key});
 
   @override
   State<RegionalFormsScreen> createState() => _RegionalFormsScreenState();
 }
 
-class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTickerProviderStateMixin {
+class _RegionalFormsScreenState extends State<RegionalFormsScreen>
+    with SingleTickerProviderStateMixin {
   TabController? _tabController;
   bool _isLoading = true;
 
@@ -35,41 +36,69 @@ class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTi
   // Hardcoded fallback regional form data
   static const Map<String, List<Map<String, String>>> _fallbackForms = {
     'Alolan': [
-      {'name': 'Rattata', 'types': 'Dark, Normal'}, {'name': 'Raticate', 'types': 'Dark, Normal'},
-      {'name': 'Raichu', 'types': 'Electric, Psychic'}, {'name': 'Sandshrew', 'types': 'Ice, Steel'},
-      {'name': 'Sandslash', 'types': 'Ice, Steel'}, {'name': 'Vulpix', 'types': 'Ice'},
-      {'name': 'Ninetales', 'types': 'Ice, Fairy'}, {'name': 'Diglett', 'types': 'Ground, Steel'},
-      {'name': 'Dugtrio', 'types': 'Ground, Steel'}, {'name': 'Meowth', 'types': 'Dark'},
-      {'name': 'Persian', 'types': 'Dark'}, {'name': 'Geodude', 'types': 'Rock, Electric'},
-      {'name': 'Graveler', 'types': 'Rock, Electric'}, {'name': 'Golem', 'types': 'Rock, Electric'},
-      {'name': 'Grimer', 'types': 'Poison, Dark'}, {'name': 'Muk', 'types': 'Poison, Dark'},
-      {'name': 'Exeggutor', 'types': 'Grass, Dragon'}, {'name': 'Marowak', 'types': 'Fire, Ghost'},
+      {'name': 'Rattata', 'types': 'Dark, Normal'},
+      {'name': 'Raticate', 'types': 'Dark, Normal'},
+      {'name': 'Raichu', 'types': 'Electric, Psychic'},
+      {'name': 'Sandshrew', 'types': 'Ice, Steel'},
+      {'name': 'Sandslash', 'types': 'Ice, Steel'},
+      {'name': 'Vulpix', 'types': 'Ice'},
+      {'name': 'Ninetales', 'types': 'Ice, Fairy'},
+      {'name': 'Diglett', 'types': 'Ground, Steel'},
+      {'name': 'Dugtrio', 'types': 'Ground, Steel'},
+      {'name': 'Meowth', 'types': 'Dark'},
+      {'name': 'Persian', 'types': 'Dark'},
+      {'name': 'Geodude', 'types': 'Rock, Electric'},
+      {'name': 'Graveler', 'types': 'Rock, Electric'},
+      {'name': 'Golem', 'types': 'Rock, Electric'},
+      {'name': 'Grimer', 'types': 'Poison, Dark'},
+      {'name': 'Muk', 'types': 'Poison, Dark'},
+      {'name': 'Exeggutor', 'types': 'Grass, Dragon'},
+      {'name': 'Marowak', 'types': 'Fire, Ghost'},
     ],
     'Galarian': [
-      {'name': 'Meowth', 'types': 'Steel'}, {'name': 'Ponyta', 'types': 'Psychic'},
-      {'name': 'Rapidash', 'types': 'Psychic, Fairy'}, {'name': 'Slowpoke', 'types': 'Psychic'},
-      {'name': 'Slowbro', 'types': 'Poison, Psychic'}, {'name': 'Slowking', 'types': 'Poison, Psychic'},
-      {'name': "Farfetch'd", 'types': 'Fighting'}, {'name': 'Weezing', 'types': 'Poison, Fairy'},
-      {'name': 'Mr. Mime', 'types': 'Ice, Psychic'}, {'name': 'Articuno', 'types': 'Psychic, Flying'},
-      {'name': 'Zapdos', 'types': 'Fighting, Flying'}, {'name': 'Moltres', 'types': 'Dark, Flying'},
-      {'name': 'Corsola', 'types': 'Ghost'}, {'name': 'Zigzagoon', 'types': 'Dark, Normal'},
-      {'name': 'Linoone', 'types': 'Dark, Normal'}, {'name': 'Darumaka', 'types': 'Ice'},
-      {'name': 'Darmanitan', 'types': 'Ice'}, {'name': 'Yamask', 'types': 'Ground, Ghost'},
+      {'name': 'Meowth', 'types': 'Steel'},
+      {'name': 'Ponyta', 'types': 'Psychic'},
+      {'name': 'Rapidash', 'types': 'Psychic, Fairy'},
+      {'name': 'Slowpoke', 'types': 'Psychic'},
+      {'name': 'Slowbro', 'types': 'Poison, Psychic'},
+      {'name': 'Slowking', 'types': 'Poison, Psychic'},
+      {'name': "Farfetch'd", 'types': 'Fighting'},
+      {'name': 'Weezing', 'types': 'Poison, Fairy'},
+      {'name': 'Mr. Mime', 'types': 'Ice, Psychic'},
+      {'name': 'Articuno', 'types': 'Psychic, Flying'},
+      {'name': 'Zapdos', 'types': 'Fighting, Flying'},
+      {'name': 'Moltres', 'types': 'Dark, Flying'},
+      {'name': 'Corsola', 'types': 'Ghost'},
+      {'name': 'Zigzagoon', 'types': 'Dark, Normal'},
+      {'name': 'Linoone', 'types': 'Dark, Normal'},
+      {'name': 'Darumaka', 'types': 'Ice'},
+      {'name': 'Darmanitan', 'types': 'Ice'},
+      {'name': 'Yamask', 'types': 'Ground, Ghost'},
       {'name': 'Stunfisk', 'types': 'Ground, Steel'},
     ],
     'Hisuian': [
-      {'name': 'Growlithe', 'types': 'Fire, Rock'}, {'name': 'Arcanine', 'types': 'Fire, Rock'},
-      {'name': 'Voltorb', 'types': 'Electric, Grass'}, {'name': 'Electrode', 'types': 'Electric, Grass'},
-      {'name': 'Typhlosion', 'types': 'Fire, Ghost'}, {'name': 'Qwilfish', 'types': 'Dark, Poison'},
-      {'name': 'Sneasel', 'types': 'Fighting, Poison'}, {'name': 'Samurott', 'types': 'Water, Dark'},
-      {'name': 'Lilligant', 'types': 'Grass, Fighting'}, {'name': 'Zorua', 'types': 'Normal, Ghost'},
-      {'name': 'Zoroark', 'types': 'Normal, Ghost'}, {'name': 'Braviary', 'types': 'Psychic, Flying'},
-      {'name': 'Sliggoo', 'types': 'Steel, Dragon'}, {'name': 'Goodra', 'types': 'Steel, Dragon'},
-      {'name': 'Avalugg', 'types': 'Ice, Rock'}, {'name': 'Decidueye', 'types': 'Grass, Fighting'},
+      {'name': 'Growlithe', 'types': 'Fire, Rock'},
+      {'name': 'Arcanine', 'types': 'Fire, Rock'},
+      {'name': 'Voltorb', 'types': 'Electric, Grass'},
+      {'name': 'Electrode', 'types': 'Electric, Grass'},
+      {'name': 'Typhlosion', 'types': 'Fire, Ghost'},
+      {'name': 'Qwilfish', 'types': 'Dark, Poison'},
+      {'name': 'Sneasel', 'types': 'Fighting, Poison'},
+      {'name': 'Samurott', 'types': 'Water, Dark'},
+      {'name': 'Lilligant', 'types': 'Grass, Fighting'},
+      {'name': 'Zorua', 'types': 'Normal, Ghost'},
+      {'name': 'Zoroark', 'types': 'Normal, Ghost'},
+      {'name': 'Braviary', 'types': 'Psychic, Flying'},
+      {'name': 'Sliggoo', 'types': 'Steel, Dragon'},
+      {'name': 'Goodra', 'types': 'Steel, Dragon'},
+      {'name': 'Avalugg', 'types': 'Ice, Rock'},
+      {'name': 'Decidueye', 'types': 'Grass, Fighting'},
     ],
     'Paldean': [
-      {'name': 'Tauros (Combat)', 'types': 'Fighting'}, {'name': 'Tauros (Blaze)', 'types': 'Fighting, Fire'},
-      {'name': 'Tauros (Aqua)', 'types': 'Fighting, Water'}, {'name': 'Wooper', 'types': 'Poison, Ground'},
+      {'name': 'Tauros (Combat)', 'types': 'Fighting'},
+      {'name': 'Tauros (Blaze)', 'types': 'Fighting, Fire'},
+      {'name': 'Tauros (Aqua)', 'types': 'Fighting, Water'},
+      {'name': 'Wooper', 'types': 'Poison, Ground'},
     ],
   };
 
@@ -91,7 +120,11 @@ class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTi
     for (final forms in _fallbackForms.values) {
       for (final f in forms) {
         // Strip parenthetical variants like "Tauros (Combat)"
-        allBaseNames.add(f['name']!.split(' (')[0].toLowerCase().replaceAll('. ', '-').replaceAll("'", ''));
+        allBaseNames.add(f['name']!
+            .split(' (')[0]
+            .toLowerCase()
+            .replaceAll('. ', '-')
+            .replaceAll("'", ''));
       }
     }
 
@@ -99,7 +132,8 @@ class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTi
     final Map<String, List<Map<String, dynamic>>> formsByPokemon = {};
     await Future.wait(allBaseNames.map((name) async {
       try {
-        final response = await Requests.get('${PokeApiService.baseUrl}/pokemon/$name/forms');
+        final response =
+            await Requests.get('${PokeApiService.baseUrl}/pokemon/$name/forms');
         if (response.statusCode == 200) {
           final data = response.json();
           final forms = List<Map<String, dynamic>>.from(data['forms'] ?? []);
@@ -134,20 +168,23 @@ class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTi
     // Fall back to hardcoded data for any region that didn't load
     for (final region in _fallbackForms.keys) {
       if (!loaded.containsKey(region) || loaded[region]!.isEmpty) {
-        loaded[region] = _fallbackForms[region]!.map((f) => <String, dynamic>{
-          'pokemon_name': f['name']!.split(' (')[0],
-          'form_name': '$region ${f['name']}',
-          'types': f['types']!.split(', '),
-          '_fallback': true,
-          '_displayName': f['name'],
-        }).toList();
+        loaded[region] = _fallbackForms[region]!
+            .map((f) => <String, dynamic>{
+                  'pokemon_name': f['name']!.split(' (')[0],
+                  'form_name': '$region ${f['name']}',
+                  'types': f['types']!.split(', '),
+                  '_fallback': true,
+                  '_displayName': f['name'],
+                })
+            .toList();
       }
     }
 
     if (mounted) {
       setState(() {
         _regionalForms = loaded;
-        _tabController = TabController(length: _regionalForms.length, vsync: this);
+        _tabController =
+            TabController(length: _regionalForms.length, vsync: this);
         _isLoading = false;
       });
     }
@@ -159,14 +196,17 @@ class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTi
     super.dispose();
   }
 
-  String _formatName(String name) =>
-      name.split('-').map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w).join(' ');
+  String _formatName(String name) => name
+      .split('-')
+      .map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w)
+      .join(' ');
 
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Regional Forms'), backgroundColor: Colors.red),
+        appBar: AppBar(
+            title: const Text('Regional Forms'), backgroundColor: Colors.red),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -204,14 +244,20 @@ class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTi
                 displayName = '$region ${form['_displayName']}';
                 types = List<String>.from(form['types']);
                 final rawName = (form['_displayName'] as String);
-                final baseName = rawName.toLowerCase().replaceAll('. ', '-').replaceAll("'", '');
+                final baseName = rawName
+                    .toLowerCase()
+                    .replaceAll('. ', '-')
+                    .replaceAll("'", '');
                 final regionApi = _regionToApi[region] ?? region.toLowerCase();
                 final specialKey = '$baseName-$regionApi';
-                apiName = _specialFormNames[specialKey] ?? '${baseName.split(' (')[0]}-$regionApi';
+                apiName = _specialFormNames[specialKey] ??
+                    '${baseName.split(' (')[0]}-$regionApi';
               } else {
                 final formName = form['form_name'] as String? ?? '';
                 final pokemonName = form['pokemon_name'] as String? ?? '';
-                displayName = formName.isNotEmpty ? _formatName(formName) : '$region ${_formatName(pokemonName)}';
+                displayName = formName.isNotEmpty
+                    ? _formatName(formName)
+                    : '$region ${_formatName(pokemonName)}';
                 types = List<String>.from(form['types'] ?? []);
                 apiName = formName.isNotEmpty
                     ? formName.toLowerCase().replaceAll(' ', '-')
@@ -221,7 +267,8 @@ class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTi
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 4),
                 child: ListTile(
-                  title: Text(displayName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  title: Text(displayName,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: Row(
                     children: types.map((t) {
                       final typeName = t.trim();
@@ -230,12 +277,16 @@ class _RegionalFormsScreenState extends State<RegionalFormsScreen> with SingleTi
                           : typeName;
                       return Container(
                         margin: const EdgeInsets.only(right: 4, top: 4),
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: AppTheme.typeColors[capitalizedType] ?? AppTheme.typeColors[typeName],
+                          color: AppTheme.typeColors[capitalizedType] ??
+                              AppTheme.typeColors[typeName],
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(capitalizedType, style: const TextStyle(color: Colors.white, fontSize: 11)),
+                        child: Text(capitalizedType,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 11)),
                       );
                     }).toList(),
                   ),

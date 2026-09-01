@@ -5,7 +5,7 @@ import '../services/pokemon_data_formatter.dart';
 
 /// Widget for finding Pokemon by EV yields and game version
 class EVTrainingFinder extends StatefulWidget {
-  const EVTrainingFinder({Key? key}) : super(key: key);
+  const EVTrainingFinder({super.key});
 
   @override
   State<EVTrainingFinder> createState() => _EVTrainingFinderState();
@@ -85,14 +85,17 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
       final int detailedLoadCount = 200;
 
       for (int i = 0; i < pokemonListData.length; i++) {
-        final pokemonId = PokeApiService.extractIdFromUrl(pokemonListData[i]['url']) ?? (i + 1);
+        final pokemonId =
+            PokeApiService.extractIdFromUrl(pokemonListData[i]['url']) ??
+                (i + 1);
         final pokemonName = pokemonListData[i]['name'];
 
         Map<String, dynamic> pokemonData = {
           'id': pokemonId,
           'name': PokemonDataFormatter.capitalize(pokemonName),
           'types': [],
-          'image': 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$pokemonId.png',
+          'image':
+              'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$pokemonId.png',
           'evYields': <String, int>{},
         };
 
@@ -102,7 +105,7 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
             final detailedData = await PokeApiService.getPokemon(pokemonName);
             pokemonData['evYields'] = _extractEVYields(detailedData);
           } catch (e) {
-            print('Error loading details for $pokemonName: $e');
+            debugPrint('Error loading details for $pokemonName: $e');
           }
         }
 
@@ -164,7 +167,8 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
 
     try {
       // Convert selected game keys to display names for matching
-      final selectedGameNames = selectedVersions.map((key) => gameVersions[key]!).toSet();
+      final selectedGameNames =
+          selectedVersions.map((key) => gameVersions[key]!).toSet();
 
       List<Map<String, dynamic>> filtered = [];
 
@@ -176,7 +180,7 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
             final detailedData = await PokeApiService.getPokemon(pokemonName);
             pokemon['evYields'] = _extractEVYields(detailedData);
           } catch (e) {
-            print('Error loading EV data for ${pokemon['name']}: $e');
+            debugPrint('Error loading EV data for ${pokemon['name']}: $e');
             continue;
           }
         }
@@ -199,13 +203,15 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
         // Filter by game version if selected (using PokemonDB)
         if (selectedGameNames.isNotEmpty) {
           try {
-            final encounters = await PokemonDBService.getEncounterLocations(pokemon['name'].toString().toLowerCase());
+            final encounters = await PokemonDBService.getEncounterLocations(
+                pokemon['name'].toString().toLowerCase());
 
             // Check if Pokemon appears in any of the selected games
             bool foundInGame = false;
             for (var gameKey in encounters.keys) {
               for (var selectedGame in selectedGameNames) {
-                if (gameKey.contains(selectedGame) || selectedGame.contains(gameKey)) {
+                if (gameKey.contains(selectedGame) ||
+                    selectedGame.contains(gameKey)) {
                   foundInGame = true;
                   break;
                 }
@@ -217,7 +223,7 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
               continue; // Skip this Pokemon
             }
           } catch (e) {
-            print('Error checking encounters for ${pokemon['name']}: $e');
+            debugPrint('Error checking encounters for ${pokemon['name']}: $e');
             continue;
           }
         }
@@ -240,7 +246,7 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
         });
       }
     } catch (e) {
-      print('Error filtering Pokemon: $e');
+      debugPrint('Error filtering Pokemon: $e');
       if (mounted) {
         setState(() {
           isFiltering = false;
@@ -304,14 +310,16 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
                     children: [
                       const Text(
                         'Select EV Stat to Train:',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
                         children: evStats.entries.map((entry) {
-                          final isSelected = selectedEVStats.contains(entry.key);
+                          final isSelected =
+                              selectedEVStats.contains(entry.key);
                           return FilterChip(
                             label: Text(entry.value),
                             selected: isSelected,
@@ -325,11 +333,13 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
                               });
                               _applyFilter();
                             },
-                            selectedColor: evStatColors[entry.key]?.withValues(alpha: 0.3),
+                            selectedColor:
+                                evStatColors[entry.key]?.withValues(alpha: 0.3),
                             checkmarkColor: evStatColors[entry.key],
                             avatar: isSelected
                                 ? null
-                                : Icon(Icons.fitness_center, size: 16, color: evStatColors[entry.key]),
+                                : Icon(Icons.fitness_center,
+                                    size: 16, color: evStatColors[entry.key]),
                           );
                         }).toList(),
                       ),
@@ -347,16 +357,19 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
                     children: [
                       const Text(
                         'Filter by Game (optional):',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
                         children: gameVersions.entries.map((entry) {
-                          final isSelected = selectedVersions.contains(entry.key);
+                          final isSelected =
+                              selectedVersions.contains(entry.key);
                           return FilterChip(
-                            label: Text(entry.value, style: const TextStyle(fontSize: 12)),
+                            label: Text(entry.value,
+                                style: const TextStyle(fontSize: 12)),
                             selected: isSelected,
                             onSelected: (selected) {
                               setState(() {
@@ -388,18 +401,21 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
                       children: [
                         const Text(
                           'Active Filters:',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 14),
                         ),
                         const SizedBox(height: 8),
                         if (selectedEVStats.isNotEmpty)
                           Text(
                             'EV Stats: ${selectedEVStats.join(', ')}',
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.grey),
                           ),
                         if (selectedVersions.isNotEmpty)
                           Text(
                             'Games: ${selectedVersions.map((v) => gameVersions[v]).join(', ')}',
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.grey),
                           ),
                       ],
                     ),
@@ -409,7 +425,8 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
 
                 // Pokemon count
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -550,12 +567,16 @@ class _EVTrainingFinderState extends State<EVTrainingFinder> {
                     alignment: WrapAlignment.center,
                     children: evYields.entries.map((entry) {
                       return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: evStatColors[entry.key]?.withValues(alpha: 0.2),
+                          color:
+                              evStatColors[entry.key]?.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: evStatColors[entry.key]?.withValues(alpha: 0.5) ?? Colors.grey,
+                            color: evStatColors[entry.key]
+                                    ?.withValues(alpha: 0.5) ??
+                                Colors.grey,
                             width: 1,
                           ),
                         ),

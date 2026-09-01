@@ -5,10 +5,11 @@ import '../../theme/app_theme.dart';
 import '../pokemon/pokemon_detail_sheet.dart';
 
 class ReverseMoveLookupScreen extends StatefulWidget {
-  const ReverseMoveLookupScreen({Key? key}) : super(key: key);
+  const ReverseMoveLookupScreen({super.key});
 
   @override
-  State<ReverseMoveLookupScreen> createState() => _ReverseMoveLookupScreenState();
+  State<ReverseMoveLookupScreen> createState() =>
+      _ReverseMoveLookupScreenState();
 }
 
 class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
@@ -26,12 +27,15 @@ class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
 
   Future<void> _loadMoveList() async {
     try {
-      final response = await Requests.get('${PokeApiService.baseUrl}/move?limit=1000');
+      final response =
+          await Requests.get('${PokeApiService.baseUrl}/move?limit=1000');
       if (!mounted) return;
       if (response.statusCode == 200) {
         final data = response.json();
         setState(() {
-          _moveNames = (data['results'] as List).map((m) => m['name'] as String).toList();
+          _moveNames = (data['results'] as List)
+              .map((m) => m['name'] as String)
+              .toList();
           _isLoading = false;
         });
       }
@@ -42,9 +46,12 @@ class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
   }
 
   Future<void> _loadMoveDetails(String moveName) async {
-    setState(() { _loadingResults = true; });
+    setState(() {
+      _loadingResults = true;
+    });
     try {
-      final response = await Requests.get('${PokeApiService.baseUrl}/move/${moveName.toLowerCase()}');
+      final response = await Requests.get(
+          '${PokeApiService.baseUrl}/move/${moveName.toLowerCase()}');
       if (!mounted) return;
       if (response.statusCode == 200) {
         final data = response.json();
@@ -78,7 +85,9 @@ class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      setState(() { _loadingResults = false; });
+      setState(() {
+        _loadingResults = false;
+      });
     }
   }
 
@@ -93,13 +102,17 @@ class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
   }
 
   String _formatName(String name) {
-    return name.split('-').map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1)).join(' ');
+    return name
+        .split('-')
+        .map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1))
+        .join(' ');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Move → Pokemon'), backgroundColor: Colors.red),
+      appBar: AppBar(
+          title: const Text('Move → Pokemon'), backgroundColor: Colors.red),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -110,12 +123,15 @@ class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
                     optionsBuilder: (v) {
                       if (v.text.isEmpty) return const Iterable.empty();
                       final query = v.text.toLowerCase().replaceAll(' ', '-');
-                      return _moveNames.where((n) => n.contains(query)).take(15);
+                      return _moveNames
+                          .where((n) => n.contains(query))
+                          .take(15);
                     },
                     onSelected: _loadMoveDetails,
                     displayStringForOption: _formatName,
                     fieldViewBuilder: (ctx, ctrl, focus, submit) => TextField(
-                      controller: ctrl, focusNode: focus,
+                      controller: ctrl,
+                      focusNode: focus,
                       decoration: const InputDecoration(
                         hintText: 'Search a move...',
                         prefixIcon: Icon(Icons.search),
@@ -126,12 +142,14 @@ class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
                 ),
                 if (_moveData != null) _buildMoveInfo(),
                 if (_loadingResults)
-                  const Expanded(child: Center(child: CircularProgressIndicator())),
+                  const Expanded(
+                      child: Center(child: CircularProgressIndicator())),
                 if (!_loadingResults && _pokemonList.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text('${_pokemonList.length} Pokemon can learn this move',
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text(
+                        '${_pokemonList.length} Pokemon can learn this move',
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 if (!_loadingResults)
                   Expanded(
@@ -140,16 +158,23 @@ class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
                       itemCount: _pokemonList.length,
                       itemBuilder: (context, index) {
                         final pokemon = _pokemonList[index];
-                        final id = PokeApiService.extractIdFromUrl(pokemon['url']);
+                        final id =
+                            PokeApiService.extractIdFromUrl(pokemon['url']);
                         return ListTile(
-                          onTap: () => showPokemonDetailSheet(context, pokemon['name']),
-                          leading: id != null ? Image.network(
-                            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png',
-                            width: 40, height: 40,
-                            errorBuilder: (_, __, ___) => const Icon(Icons.catching_pokemon),
-                          ) : const Icon(Icons.catching_pokemon),
+                          onTap: () =>
+                              showPokemonDetailSheet(context, pokemon['name']),
+                          leading: id != null
+                              ? Image.network(
+                                  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png',
+                                  width: 40,
+                                  height: 40,
+                                  errorBuilder: (_, __, ___) =>
+                                      const Icon(Icons.catching_pokemon),
+                                )
+                              : const Icon(Icons.catching_pokemon),
                           title: Text(_formatName(pokemon['name']),
-                            style: const TextStyle(fontWeight: FontWeight.bold)),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
                           subtitle: Text('#${id ?? "?"}'),
                           dense: true,
                         );
@@ -170,9 +195,11 @@ class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: (AppTheme.typeColors[typeTitle] ?? Colors.grey).withValues(alpha: 0.1),
+        color: (AppTheme.typeColors[typeTitle] ?? Colors.grey)
+            .withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppTheme.typeColors[typeTitle] ?? Colors.grey),
+        border:
+            Border.all(color: AppTheme.typeColors[typeTitle] ?? Colors.grey),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,12 +209,14 @@ class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: AppTheme.typeColors[typeTitle], borderRadius: BorderRadius.circular(8)),
-                child: Text(typeTitle, style: const TextStyle(color: Colors.white, fontSize: 12)),
+                    color: AppTheme.typeColors[typeTitle],
+                    borderRadius: BorderRadius.circular(8)),
+                child: Text(typeTitle,
+                    style: const TextStyle(color: Colors.white, fontSize: 12)),
               ),
               const SizedBox(width: 8),
               Text(_formatName(m['category']),
-                style: const TextStyle(fontStyle: FontStyle.italic)),
+                  style: const TextStyle(fontStyle: FontStyle.italic)),
               const Spacer(),
               if (m['power'] != null) Text('Pwr: ${m['power']}  '),
               if (m['accuracy'] != null) Text('Acc: ${m['accuracy']}  '),
@@ -196,7 +225,8 @@ class _ReverseMoveLookupScreenState extends State<ReverseMoveLookupScreen> {
           ),
           if ((m['effect'] as String).isNotEmpty) ...[
             const SizedBox(height: 6),
-            Text(m['effect'], style: const TextStyle(fontSize: 13, color: Colors.grey)),
+            Text(m['effect'],
+                style: const TextStyle(fontSize: 13, color: Colors.grey)),
           ],
         ],
       ),

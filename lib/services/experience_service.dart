@@ -36,7 +36,9 @@ class ExperienceService {
         return (5 * n * n * n) ~/ 4;
 
       case 'fluctuating':
-        if (n <= 15) return (n * n * n * ((((n + 1) / 3).floor() + 24) ~/ 1)) ~/ 50;
+        if (n <= 15) {
+          return (n * n * n * ((((n + 1) / 3).floor() + 24) ~/ 1)) ~/ 50;
+        }
         if (n <= 36) return (n * n * n * (n + 14)) ~/ 50;
         return (n * n * n * ((n ~/ 2) + 32)) ~/ 50;
 
@@ -47,15 +49,18 @@ class ExperienceService {
 
   /// Calculate XP needed to go from one level to the next
   static int xpBetweenLevels(String growthRate, int fromLevel, int toLevel) {
-    return totalXPForLevel(growthRate, toLevel) - totalXPForLevel(growthRate, fromLevel);
+    return totalXPForLevel(growthRate, toLevel) -
+        totalXPForLevel(growthRate, fromLevel);
   }
 
   /// Get a table of XP per level for a growth rate
-  static List<Map<String, dynamic>> getXPTable(String growthRate, {int fromLevel = 1, int toLevel = 100}) {
+  static List<Map<String, dynamic>> getXPTable(String growthRate,
+      {int fromLevel = 1, int toLevel = 100}) {
     final table = <Map<String, dynamic>>[];
     for (int level = fromLevel; level <= toLevel; level++) {
       final totalXP = totalXPForLevel(growthRate, level);
-      final nextXP = level < 100 ? totalXPForLevel(growthRate, level + 1) : totalXP;
+      final nextXP =
+          level < 100 ? totalXPForLevel(growthRate, level + 1) : totalXP;
       table.add({
         'level': level,
         'totalXP': totalXP,
@@ -66,6 +71,11 @@ class ExperienceService {
   }
 
   static const List<String> allGrowthRates = [
-    'erratic', 'fast', 'medium-fast', 'medium-slow', 'slow', 'fluctuating',
+    'erratic',
+    'fast',
+    'medium-fast',
+    'medium-slow',
+    'slow',
+    'fluctuating',
   ];
 }

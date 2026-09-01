@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import '../nuzlocke/nuzlocke_tracker_screen.dart';
 import '../favorites_screen.dart';
-import '../News.dart';
+import '../news.dart';
 import '../databases/walkthrough_screen.dart';
 import '../../services/pokemondb_service.dart';
 
 class MoreHub extends StatelessWidget {
-  const MoreHub({Key? key}) : super(key: key);
+  const MoreHub({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,16 +17,24 @@ class MoreHub extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         children: [
           _tile(context, 'Favorites', Icons.favorite, Colors.red, () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const FavoritesScreen()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const FavoritesScreen()));
           }),
-          _tile(context, 'Nuzlocke Tracker', Icons.catching_pokemon, Colors.deepOrange, () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const NuzlockeTrackerScreen()));
+          _tile(context, 'Nuzlocke Tracker', Icons.catching_pokemon,
+              Colors.deepOrange, () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const NuzlockeTrackerScreen()));
           }),
-          _tile(context, 'Walkthrough Checklist', Icons.checklist, Colors.green, () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const WalkthroughScreen()));
+          _tile(context, 'Walkthrough Checklist', Icons.checklist, Colors.green,
+              () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const WalkthroughScreen()));
           }),
           _tile(context, 'News & Events', Icons.newspaper, Colors.blue, () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const News()));
+            Navigator.push(
+                context, MaterialPageRoute(builder: (_) => const News()));
           }),
           const Divider(),
           _tile(context, 'Dark Mode', Icons.dark_mode, Colors.indigo, () {
@@ -40,10 +48,12 @@ class MoreHub extends StatelessWidget {
     );
   }
 
-  Widget _tile(BuildContext context, String title, IconData icon, Color color, VoidCallback onTap) {
+  Widget _tile(BuildContext context, String title, IconData icon, Color color,
+      VoidCallback onTap) {
     return Card(
       child: ListTile(
-        leading: CircleAvatar(backgroundColor: color, child: Icon(icon, color: Colors.white)),
+        leading: CircleAvatar(
+            backgroundColor: color, child: Icon(icon, color: Colors.white)),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         trailing: const Icon(Icons.chevron_right),
         onTap: onTap,
@@ -57,7 +67,9 @@ class MoreHub extends StatelessWidget {
     await box.put('darkMode', !current);
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Dark mode ${!current ? "enabled" : "disabled"}. Restart app to apply.')),
+        SnackBar(
+            content: Text(
+                'Dark mode ${!current ? "enabled" : "disabled"}. Restart app to apply.')),
       );
     }
   }
@@ -67,9 +79,11 @@ class MoreHub extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Clear Cache'),
-        content: const Text('This will clear all cached API data. Your saved Pokemon and teams will not be affected.'),
+        content: const Text(
+            'This will clear all cached API data. Your saved Pokemon and teams will not be affected.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(ctx);

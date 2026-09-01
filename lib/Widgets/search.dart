@@ -6,7 +6,7 @@ import '../services/pokemondb_service.dart';
 import '../services/nature_recommendation_service.dart';
 
 class Search extends StatefulWidget {
-  const Search({Key? key}) : super(key: key);
+  const Search({super.key});
 
   @override
   State<Search> createState() => _SearchState();
@@ -63,55 +63,111 @@ class _SearchState extends State<Search> {
     {
       'generation': 'Generation III',
       'games': [
-        {'key': 'ruby-sapphire', 'name': 'Ruby / Sapphire', 'nationalDexMax': 386},
+        {
+          'key': 'ruby-sapphire',
+          'name': 'Ruby / Sapphire',
+          'nationalDexMax': 386
+        },
         {'key': 'emerald', 'name': 'Emerald', 'nationalDexMax': 386},
-        {'key': 'firered-leafgreen', 'name': 'FireRed / LeafGreen', 'nationalDexMax': 386},
+        {
+          'key': 'firered-leafgreen',
+          'name': 'FireRed / LeafGreen',
+          'nationalDexMax': 386
+        },
       ],
     },
     {
       'generation': 'Generation IV',
       'games': [
-        {'key': 'diamond-pearl', 'name': 'Diamond / Pearl', 'nationalDexMax': 493},
+        {
+          'key': 'diamond-pearl',
+          'name': 'Diamond / Pearl',
+          'nationalDexMax': 493
+        },
         {'key': 'platinum', 'name': 'Platinum', 'nationalDexMax': 493},
-        {'key': 'heartgold-soulsilver', 'name': 'HeartGold / SoulSilver', 'nationalDexMax': 493},
+        {
+          'key': 'heartgold-soulsilver',
+          'name': 'HeartGold / SoulSilver',
+          'nationalDexMax': 493
+        },
       ],
     },
     {
       'generation': 'Generation V',
       'games': [
         {'key': 'black-white', 'name': 'Black / White', 'nationalDexMax': 649},
-        {'key': 'black-2-white-2', 'name': 'Black 2 / White 2', 'nationalDexMax': 649},
+        {
+          'key': 'black-2-white-2',
+          'name': 'Black 2 / White 2',
+          'nationalDexMax': 649
+        },
       ],
     },
     {
       'generation': 'Generation VI',
       'games': [
         {'key': 'x-y', 'name': 'X / Y', 'nationalDexMax': 721},
-        {'key': 'omega-ruby-alpha-sapphire', 'name': 'Omega Ruby / Alpha Sapphire', 'nationalDexMax': 721},
+        {
+          'key': 'omega-ruby-alpha-sapphire',
+          'name': 'Omega Ruby / Alpha Sapphire',
+          'nationalDexMax': 721
+        },
       ],
     },
     {
       'generation': 'Generation VII',
       'games': [
         {'key': 'sun-moon', 'name': 'Sun / Moon', 'nationalDexMax': 802},
-        {'key': 'ultra-sun-ultra-moon', 'name': 'Ultra Sun / Ultra Moon', 'nationalDexMax': 807},
-        {'key': 'lets-go-pikachu-lets-go-eevee', 'name': "Let's Go Pikachu / Eevee", 'nationalDexMax': 151},
+        {
+          'key': 'ultra-sun-ultra-moon',
+          'name': 'Ultra Sun / Ultra Moon',
+          'nationalDexMax': 807
+        },
+        {
+          'key': 'lets-go-pikachu-lets-go-eevee',
+          'name': "Let's Go Pikachu / Eevee",
+          'nationalDexMax': 151
+        },
       ],
     },
     {
       'generation': 'Generation VIII',
       'games': [
-        {'key': 'sword-shield', 'name': 'Sword / Shield', 'nationalDexMax': 898},
-        {'key': 'brilliant-diamond-shining-pearl', 'name': 'Brilliant Diamond / Shining Pearl', 'nationalDexMax': 493},
-        {'key': 'legends-arceus', 'name': 'Legends: Arceus', 'nationalDexMax': 905},
+        {
+          'key': 'sword-shield',
+          'name': 'Sword / Shield',
+          'nationalDexMax': 898
+        },
+        {
+          'key': 'brilliant-diamond-shining-pearl',
+          'name': 'Brilliant Diamond / Shining Pearl',
+          'nationalDexMax': 493
+        },
+        {
+          'key': 'legends-arceus',
+          'name': 'Legends: Arceus',
+          'nationalDexMax': 905
+        },
       ],
     },
     {
       'generation': 'Generation IX',
       'games': [
-        {'key': 'scarlet-violet', 'name': 'Scarlet / Violet', 'nationalDexMax': 1025},
-        {'key': 'the-teal-mask', 'name': 'The Teal Mask (DLC)', 'nationalDexMax': 1025},
-        {'key': 'the-indigo-disk', 'name': 'The Indigo Disk (DLC)', 'nationalDexMax': 1025},
+        {
+          'key': 'scarlet-violet',
+          'name': 'Scarlet / Violet',
+          'nationalDexMax': 1025
+        },
+        {
+          'key': 'the-teal-mask',
+          'name': 'The Teal Mask (DLC)',
+          'nationalDexMax': 1025
+        },
+        {
+          'key': 'the-indigo-disk',
+          'name': 'The Indigo Disk (DLC)',
+          'nationalDexMax': 1025
+        },
       ],
     },
   ];
@@ -149,12 +205,13 @@ class _SearchState extends State<Search> {
           .toList();
       return names;
     } catch (e) {
-      print('Error fetching Pokemon list: $e');
+      debugPrint('Error fetching Pokemon list: $e');
       return [];
     }
   }
 
-  Future<void> _loadGameFilteredNames(String gameKey, String gameName, int nationalDexMax) async {
+  Future<void> _loadGameFilteredNames(
+      String gameKey, String gameName, int nationalDexMax) async {
     setState(() => _isLoadingGameFilter = true);
     try {
       final versionData = await PokeApiService.getVersionGroup(gameKey);
@@ -174,7 +231,11 @@ class _SearchState extends State<Search> {
 
         for (var entry in entries) {
           final entryNumber = entry['entry_number'];
-          if (isNational && entryNumber is int && entryNumber > nationalDexMax) continue;
+          if (isNational &&
+              entryNumber is int &&
+              entryNumber > nationalDexMax) {
+            continue;
+          }
           final speciesName = entry['pokemon_species']['name'] as String;
           gameNames.add(PokemonDataFormatter.capitalize(speciesName));
         }
@@ -204,7 +265,7 @@ class _SearchState extends State<Search> {
         });
       }
     } catch (e) {
-      print('Error loading game filter: $e');
+      debugPrint('Error loading game filter: $e');
       if (mounted) {
         setState(() => _isLoadingGameFilter = false);
       }
@@ -291,37 +352,47 @@ class _SearchState extends State<Search> {
 
       // Fetch Bulbapedia data (biology, held items, game locations)
       try {
-        final bioRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/$apiName/biology');
-        if (bioRes.statusCode == 200) _biology = bioRes.json()['biology'] as String? ?? '';
-      } catch (_) {}
-      try {
-        final heldRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/$apiName/held-items');
-        if (heldRes.statusCode == 200) {
-          _heldItems = List<Map<String, dynamic>>.from(heldRes.json()['held_items'] ?? []);
+        final bioRes = await Requests.get(
+            '${PokeApiService.baseUrl}/pokemon/$apiName/biology');
+        if (bioRes.statusCode == 200) {
+          _biology = bioRes.json()['biology'] as String? ?? '';
         }
       } catch (_) {}
       try {
-        final locRes = await Requests.get('${PokeApiService.baseUrl}/pokemon/$apiName/game-locations');
+        final heldRes = await Requests.get(
+            '${PokeApiService.baseUrl}/pokemon/$apiName/held-items');
+        if (heldRes.statusCode == 200) {
+          _heldItems = List<Map<String, dynamic>>.from(
+              heldRes.json()['held_items'] ?? []);
+        }
+      } catch (_) {}
+      try {
+        final locRes = await Requests.get(
+            '${PokeApiService.baseUrl}/pokemon/$apiName/game-locations');
         if (locRes.statusCode == 200) {
-          _gameLocations = List<Map<String, dynamic>>.from(locRes.json()['locations'] ?? []);
+          _gameLocations =
+              List<Map<String, dynamic>>.from(locRes.json()['locations'] ?? []);
         }
       } catch (_) {}
 
       // Fetch ability descriptions for this Pokemon's abilities
       try {
-        final rawAbilities = List<Map<String, dynamic>>.from(pokemonData['abilities'] ?? []);
+        final rawAbilities =
+            List<Map<String, dynamic>>.from(pokemonData['abilities'] ?? []);
         final fetched = <Map<String, dynamic>>[];
         for (final a in rawAbilities) {
           final abilityName = a['ability']?['name'] as String? ?? '';
           if (abilityName.isEmpty) continue;
           try {
-            final res = await Requests.get('${PokeApiService.baseUrl}/ability/$abilityName');
+            final res = await Requests.get(
+                '${PokeApiService.baseUrl}/ability/$abilityName');
             if (res.statusCode == 200) {
               final d = res.json();
               final effect = (d['effect_entries'] as List?)?.firstWhere(
-                (e) => e['language']?['name'] == 'en',
-                orElse: () => null,
-              )?['short_effect'] as String? ?? '';
+                    (e) => e['language']?['name'] == 'en',
+                    orElse: () => null,
+                  )?['short_effect'] as String? ??
+                  '';
               fetched.add({
                 'name': abilityName,
                 'is_hidden': a['is_hidden'] ?? false,
@@ -336,22 +407,23 @@ class _SearchState extends State<Search> {
 
       // Fetch encounter locations from PokemonDB
       try {
-        print('Fetching encounter data for: $apiName');
-        final encounterData = await PokemonDBService.getEncounterLocations(apiName);
-        print('Encounter data received: ${encounterData.keys.length} games found');
+        debugPrint('Fetching encounter data for: $apiName');
+        final encounterData =
+            await PokemonDBService.getEncounterLocations(apiName);
+        debugPrint(
+            'Encounter data received: ${encounterData.keys.length} games found');
         pokemonLocations = [];
 
         // Format encounter data: "Game Version: Location1, Location2, ..."
         for (var entry in encounterData.entries) {
           final game = entry.key;
           final locations = entry.value;
-          print('Game: $game, Locations: ${locations}');
           if (locations.isNotEmpty) {
             pokemonLocations.add('$game: ${locations.join(', ')}');
           }
         }
       } catch (e) {
-        print('Could not fetch encounter locations from PokemonDB: $e');
+        debugPrint('Could not fetch encounter locations from PokemonDB: $e');
         // Don't show the full error to user, just a simple message
         pokemonLocations = ['Unable to load location data'];
       }
@@ -361,7 +433,7 @@ class _SearchState extends State<Search> {
 
       return formattedData;
     } catch (e) {
-      print('Error fetching Pokemon data: $e');
+      debugPrint('Error fetching Pokemon data: $e');
       return {
         'image': '',
         'name': 'Error',
@@ -387,7 +459,8 @@ class _SearchState extends State<Search> {
             children: [
               Text(
                 parts[0],
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 2),
               Text(
@@ -416,7 +489,8 @@ class _SearchState extends State<Search> {
   Widget getEggs() {
     if (_pokemonData == null) return const SizedBox.shrink();
 
-    final breedingData = _pokemonData!['data']?['Breeding'] as Map<String, dynamic>?;
+    final breedingData =
+        _pokemonData!['data']?['Breeding'] as Map<String, dynamic>?;
     if (breedingData == null) return const SizedBox.shrink();
 
     final eggGroups = breedingData['Egg Groups'] ?? 'N/A';
@@ -446,7 +520,7 @@ class _SearchState extends State<Search> {
           gender.toString().contains('Genderless')
               ? 'Genderless Pokemon can only breed with Ditto.'
               : 'Breeding requires one male and one female from the same egg group. '
-                'The offspring is always the same species as the mother (or non-Ditto parent).',
+                  'The offspring is always the same species as the mother (or non-Ditto parent).',
           style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
         ),
         const SizedBox(height: 10),
@@ -484,7 +558,11 @@ class _SearchState extends State<Search> {
             children: [
               Icon(Icons.lightbulb_outline, size: 16, color: Colors.blue),
               SizedBox(width: 4),
-              Text('Breeding Tips', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blue)),
+              Text('Breeding Tips',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      color: Colors.blue)),
             ],
           ),
           const SizedBox(height: 6),
@@ -494,12 +572,16 @@ class _SearchState extends State<Search> {
             'Males and genderless Pokemon can pass Hidden Abilities only when breeding with Ditto.',
             style: TextStyle(fontSize: 11, color: Colors.grey.shade800),
           ),
-          if (abilities.contains('(H)') || abilities.toLowerCase().contains('hidden')) ...[
+          if (abilities.contains('(H)') ||
+              abilities.toLowerCase().contains('hidden')) ...[
             const SizedBox(height: 4),
             Text(
               'This Pokemon has a Hidden Ability. To breed for it, use a parent that already has '
               'the Hidden Ability — there is a 60% chance it will be passed to the offspring.',
-              style: TextStyle(fontSize: 11, color: Colors.orange.shade800, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.orange.shade800,
+                  fontWeight: FontWeight.w500),
             ),
           ],
           const SizedBox(height: 4),
@@ -545,7 +627,8 @@ class _SearchState extends State<Search> {
   Widget _buildRecommendedNatureCard() {
     if (_pokemonData == null) return const SizedBox.shrink();
 
-    final baseStatsRaw = _pokemonData!['data']?['Base Stats'] as Map<String, dynamic>?;
+    final baseStatsRaw =
+        _pokemonData!['data']?['Base Stats'] as Map<String, dynamic>?;
     if (baseStatsRaw == null) return const SizedBox.shrink();
 
     final baseStats = <String, int>{};
@@ -555,10 +638,15 @@ class _SearchState extends State<Search> {
     }
 
     final pokemonName = _pokemonData!['name']?.toString() ?? '';
-    final competitiveNatures = NatureRecommendationService.getCompetitiveNatures(pokemonName, baseStats);
-    final ingameNatures = NatureRecommendationService.getIngameNatures(pokemonName, baseStats);
+    final competitiveNatures =
+        NatureRecommendationService.getCompetitiveNatures(
+            pokemonName, baseStats);
+    final ingameNatures =
+        NatureRecommendationService.getIngameNatures(pokemonName, baseStats);
 
-    if (competitiveNatures.isEmpty && ingameNatures.isEmpty) return const SizedBox.shrink();
+    if (competitiveNatures.isEmpty && ingameNatures.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Container(
       padding: const EdgeInsets.all(5),
@@ -581,7 +669,8 @@ class _SearchState extends State<Search> {
               if (ingameNatures.isNotEmpty) ...[
                 Row(
                   children: [
-                    Icon(Icons.videogame_asset, size: 16, color: Colors.blue.shade700),
+                    Icon(Icons.videogame_asset,
+                        size: 16, color: Colors.blue.shade700),
                     const SizedBox(width: 4),
                     Text(
                       'In-Game (Story)',
@@ -599,7 +688,8 @@ class _SearchState extends State<Search> {
                   style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
                 ),
                 const SizedBox(height: 6),
-                ...ingameNatures.map((n) => _buildNatureRow(n, Colors.blue.shade700)),
+                ...ingameNatures
+                    .map((n) => _buildNatureRow(n, Colors.blue.shade700)),
                 const SizedBox(height: 12),
               ],
 
@@ -607,7 +697,8 @@ class _SearchState extends State<Search> {
               if (competitiveNatures.isNotEmpty) ...[
                 Row(
                   children: [
-                    Icon(Icons.emoji_events, size: 16, color: Colors.amber.shade700),
+                    Icon(Icons.emoji_events,
+                        size: 16, color: Colors.amber.shade700),
                     const SizedBox(width: 4),
                     Text(
                       'Competitive (PvP)',
@@ -625,7 +716,8 @@ class _SearchState extends State<Search> {
                   style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
                 ),
                 const SizedBox(height: 6),
-                ...competitiveNatures.map((n) => _buildNatureRow(n, Colors.amber.shade700)),
+                ...competitiveNatures
+                    .map((n) => _buildNatureRow(n, Colors.amber.shade700)),
               ],
             ],
           ),
@@ -648,7 +740,8 @@ class _SearchState extends State<Search> {
               children: [
                 Text(
                   '${n['nature']}',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 Text(
                   '${n['reason']}',
@@ -669,9 +762,14 @@ class _SearchState extends State<Search> {
   Widget _buildTypeDefensesCard() {
     if (_typeDefenses.isEmpty) return const SizedBox.shrink();
 
-    final weaknesses = _typeDefenses.where((t) => (t['multiplier'] as num) > 1).toList();
-    final resistances = _typeDefenses.where((t) => (t['multiplier'] as num) < 1 && (t['multiplier'] as num) > 0).toList();
-    final immunities = _typeDefenses.where((t) => (t['multiplier'] as num) == 0).toList();
+    final weaknesses =
+        _typeDefenses.where((t) => (t['multiplier'] as num) > 1).toList();
+    final resistances = _typeDefenses
+        .where(
+            (t) => (t['multiplier'] as num) < 1 && (t['multiplier'] as num) > 0)
+        .toList();
+    final immunities =
+        _typeDefenses.where((t) => (t['multiplier'] as num) == 0).toList();
 
     return Container(
       padding: const EdgeInsets.all(5),
@@ -684,65 +782,96 @@ class _SearchState extends State<Search> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Type Defenses', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const Text('Type Defenses',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               const SizedBox(height: 8),
               if (weaknesses.isNotEmpty) ...[
-                Text('Weak to:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.red.shade700)),
+                Text('Weak to:',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: Colors.red.shade700)),
                 const SizedBox(height: 4),
                 Wrap(
                   spacing: 6,
                   runSpacing: 4,
-                  children: weaknesses.map((t) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: Colors.red.shade100,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      '${t['type_name']} ${t['multiplier']}x',
-                      style: TextStyle(fontSize: 12, color: Colors.red.shade800, fontWeight: FontWeight.bold),
-                    ),
-                  )).toList(),
+                  children: weaknesses
+                      .map((t) => Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade100,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              '${t['type_name']} ${t['multiplier']}x',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.red.shade800,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ))
+                      .toList(),
                 ),
                 const SizedBox(height: 8),
               ],
               if (resistances.isNotEmpty) ...[
-                Text('Resists:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.green.shade700)),
+                Text('Resists:',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: Colors.green.shade700)),
                 const SizedBox(height: 4),
                 Wrap(
                   spacing: 6,
                   runSpacing: 4,
-                  children: resistances.map((t) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade100,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      '${t['type_name']} ${t['multiplier']}x',
-                      style: TextStyle(fontSize: 12, color: Colors.green.shade800, fontWeight: FontWeight.bold),
-                    ),
-                  )).toList(),
+                  children: resistances
+                      .map((t) => Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: Colors.green.shade100,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              '${t['type_name']} ${t['multiplier']}x',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.green.shade800,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ))
+                      .toList(),
                 ),
                 const SizedBox(height: 8),
               ],
               if (immunities.isNotEmpty) ...[
-                Text('Immune to:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blue.shade700)),
+                Text('Immune to:',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: Colors.blue.shade700)),
                 const SizedBox(height: 4),
                 Wrap(
                   spacing: 6,
                   runSpacing: 4,
-                  children: immunities.map((t) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade100,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      '${t['type_name']}',
-                      style: TextStyle(fontSize: 12, color: Colors.blue.shade800, fontWeight: FontWeight.bold),
-                    ),
-                  )).toList(),
+                  children: immunities
+                      .map((t) => Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade100,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              '${t['type_name']}',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.blue.shade800,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ))
+                      .toList(),
                 ),
               ],
             ],
@@ -760,9 +889,12 @@ class _SearchState extends State<Search> {
       return moves.where((m) => seen.add(m['name']?.toString() ?? '')).toList();
     }
 
-    final levelUp = dedup(_moveLearnset.where((m) => m['learn_method'] == 'level-up').toList());
-    final tm = dedup(_moveLearnset.where((m) => m['learn_method'] == 'tm').toList());
-    final egg = dedup(_moveLearnset.where((m) => m['learn_method'] == 'egg').toList());
+    final levelUp = dedup(
+        _moveLearnset.where((m) => m['learn_method'] == 'level-up').toList());
+    final tm =
+        dedup(_moveLearnset.where((m) => m['learn_method'] == 'tm').toList());
+    final egg =
+        dedup(_moveLearnset.where((m) => m['learn_method'] == 'egg').toList());
 
     // Sort level-up by level
     levelUp.sort((a, b) {
@@ -773,7 +905,8 @@ class _SearchState extends State<Search> {
       return aNum.compareTo(bNum);
     });
 
-    Widget buildMoveSection(String title, List<Map<String, dynamic>> moves, IconData icon, Color color) {
+    Widget buildMoveSection(String title, List<Map<String, dynamic>> moves,
+        IconData icon, Color color) {
       if (moves.isEmpty) return const SizedBox.shrink();
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -782,9 +915,12 @@ class _SearchState extends State<Search> {
             children: [
               Icon(icon, size: 16, color: color),
               const SizedBox(width: 4),
-              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: color)),
+              Text(title,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 13, color: color)),
               const SizedBox(width: 4),
-              Text('(${moves.length})', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+              Text('(${moves.length})',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
             ],
           ),
           const SizedBox(height: 4),
@@ -792,7 +928,10 @@ class _SearchState extends State<Search> {
             final level = m['level_or_tm']?.toString() ?? '';
             final power = m['power'];
             final acc = m['accuracy'];
-            final prefix = level.isNotEmpty && level != '\u2014' && level != 'null' ? 'Lv.$level ' : '';
+            final prefix =
+                level.isNotEmpty && level != '\u2014' && level != 'null'
+                    ? 'Lv.$level '
+                    : '';
             final suffix = power != null ? ' | Pow:$power' : '';
             final accStr = acc != null ? ' | Acc:$acc' : '';
             return Padding(
@@ -819,7 +958,9 @@ class _SearchState extends State<Search> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Moves (${_moveLearnset.length})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              Text('Moves (${_moveLearnset.length})',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16)),
               const SizedBox(height: 8),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxHeight: 400),
@@ -827,9 +968,12 @@ class _SearchState extends State<Search> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      buildMoveSection('Level Up', levelUp, Icons.arrow_upward, Colors.blue.shade700),
-                      buildMoveSection('TM/HM', tm, Icons.album, Colors.purple.shade700),
-                      buildMoveSection('Egg Moves', egg, Icons.egg, Colors.orange.shade700),
+                      buildMoveSection('Level Up', levelUp, Icons.arrow_upward,
+                          Colors.blue.shade700),
+                      buildMoveSection(
+                          'TM/HM', tm, Icons.album, Colors.purple.shade700),
+                      buildMoveSection(
+                          'Egg Moves', egg, Icons.egg, Colors.orange.shade700),
                     ],
                   ),
                 ),
@@ -855,7 +999,8 @@ class _SearchState extends State<Search> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Pokédex Entries', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const Text('Pokédex Entries',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               const SizedBox(height: 8),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxHeight: 300),
@@ -863,7 +1008,8 @@ class _SearchState extends State<Search> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: _flavorTextEntries.map((entry) {
-                      final version = entry['version']?['name']?.toString() ?? '';
+                      final version =
+                          entry['version']?['name']?.toString() ?? '';
                       final text = entry['flavor_text']?.toString() ?? '';
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 8),
@@ -874,11 +1020,15 @@ class _SearchState extends State<Search> {
                               width: 80,
                               child: Text(
                                 version,
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red.shade700),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                    color: Colors.red.shade700),
                               ),
                             ),
                             Expanded(
-                              child: Text(text, style: const TextStyle(fontSize: 12)),
+                              child: Text(text,
+                                  style: const TextStyle(fontSize: 12)),
                             ),
                           ],
                         ),
@@ -908,7 +1058,8 @@ class _SearchState extends State<Search> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Names in Other Languages', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const Text('Names in Other Languages',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               const SizedBox(height: 8),
               ..._pokemonNames.map((entry) {
                 final language = entry['language']?.toString() ?? '';
@@ -919,10 +1070,14 @@ class _SearchState extends State<Search> {
                     children: [
                       SizedBox(
                         width: 100,
-                        child: Text(language, style: TextStyle(fontSize: 12, color: Colors.grey.shade700)),
+                        child: Text(language,
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey.shade700)),
                       ),
                       Expanded(
-                        child: Text(name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                        child: Text(name,
+                            style: const TextStyle(
+                                fontSize: 13, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),
@@ -957,7 +1112,8 @@ class _SearchState extends State<Search> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Sprite Gallery', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const Text('Sprite Gallery',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               const SizedBox(height: 8),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxHeight: 400),
@@ -968,14 +1124,19 @@ class _SearchState extends State<Search> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(genEntry.key, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.red.shade700)),
+                          Text(genEntry.key,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  color: Colors.red.shade700)),
                           const SizedBox(height: 4),
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
                             children: genEntry.value.map((sprite) {
                               final url = sprite['url']?.toString() ?? '';
-                              final type = sprite['sprite_type']?.toString() ?? '';
+                              final type =
+                                  sprite['sprite_type']?.toString() ?? '';
                               if (url.isEmpty) return const SizedBox.shrink();
                               return Column(
                                 children: [
@@ -983,9 +1144,12 @@ class _SearchState extends State<Search> {
                                     url,
                                     width: 64,
                                     height: 64,
-                                    errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 32),
+                                    errorBuilder: (_, __, ___) => const Icon(
+                                        Icons.broken_image,
+                                        size: 32),
                                   ),
-                                  Text(type, style: const TextStyle(fontSize: 9)),
+                                  Text(type,
+                                      style: const TextStyle(fontSize: 9)),
                                 ],
                               );
                             }).toList(),
@@ -1017,7 +1181,8 @@ class _SearchState extends State<Search> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Biology', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const Text('Biology',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               const SizedBox(height: 8),
               Text(_biology, style: const TextStyle(fontSize: 13)),
             ],
@@ -1040,10 +1205,15 @@ class _SearchState extends State<Search> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Wild Held Items', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const Text('Wild Held Items',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               const SizedBox(height: 8),
               ..._heldItems.map((h) {
-                final itemName = (h['item']?['name'] as String? ?? '').split('-').map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w).join(' ');
+                final itemName = (h['item']?['name'] as String? ?? '')
+                    .split('-')
+                    .map((w) =>
+                        w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w)
+                    .join(' ');
                 final game = h['game']?.toString() ?? '';
                 final rarity = h['rarity']?.toString() ?? '';
                 return Padding(
@@ -1052,12 +1222,21 @@ class _SearchState extends State<Search> {
                     children: [
                       const Icon(Icons.backpack, size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
-                      Expanded(child: Text(itemName, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500))),
-                      if (rarity.isNotEmpty) Text(rarity, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-                      if (game.isNotEmpty) Padding(
-                        padding: const EdgeInsets.only(left: 6),
-                        child: Text(game, style: TextStyle(fontSize: 11, color: Colors.red.shade400)),
-                      ),
+                      Expanded(
+                          child: Text(itemName,
+                              style: const TextStyle(
+                                  fontSize: 13, fontWeight: FontWeight.w500))),
+                      if (rarity.isNotEmpty)
+                        Text(rarity,
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey.shade600)),
+                      if (game.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 6),
+                          child: Text(game,
+                              style: TextStyle(
+                                  fontSize: 11, color: Colors.red.shade400)),
+                        ),
                     ],
                   ),
                 );
@@ -1072,8 +1251,10 @@ class _SearchState extends State<Search> {
   Widget _buildAbilitiesCard() {
     if (_abilityDetails.isEmpty) return const SizedBox.shrink();
 
-    String formatName(String name) =>
-        name.split('-').map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1)).join(' ');
+    String formatName(String name) => name
+        .split('-')
+        .map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1))
+        .join(' ');
 
     return Container(
       padding: const EdgeInsets.all(5),
@@ -1086,7 +1267,8 @@ class _SearchState extends State<Search> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Abilities', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const Text('Abilities',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               const SizedBox(height: 8),
               ..._abilityDetails.map((a) {
                 final name = formatName(a['name'] as String);
@@ -1100,14 +1282,18 @@ class _SearchState extends State<Search> {
                       if (isHidden)
                         Container(
                           margin: const EdgeInsets.only(top: 2, right: 8),
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.purple.withValues(alpha: 0.12),
                             border: Border.all(color: Colors.purple, width: 1),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: const Text('HA',
-                              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.purple)),
+                              style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.purple)),
                         )
                       else
                         const SizedBox(width: 0),
@@ -1123,7 +1309,10 @@ class _SearchState extends State<Search> {
                             if (effect.isNotEmpty) ...[
                               const SizedBox(height: 2),
                               Text(effect,
-                                  style: TextStyle(fontSize: 12, color: Colors.grey.shade700, height: 1.4)),
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade700,
+                                      height: 1.4)),
                             ],
                           ],
                         ),
@@ -1147,41 +1336,76 @@ class _SearchState extends State<Search> {
     String inferMethod(String method, String location) {
       if (method.isNotEmpty && method != 'Wild') return method;
       final loc = location.toLowerCase();
-      if (loc == 'trade' || loc.contains('in-game trade') || loc.contains('npc trade')) return 'Trade';
-      if (loc == 'gift' || loc.contains('received from') || loc.contains('first partner') ||
-          loc.contains('first pok') || loc.contains('starter') ||
+      if (loc == 'trade' ||
+          loc.contains('in-game trade') ||
+          loc.contains('npc trade')) {
+        return 'Trade';
+      }
+      if (loc == 'gift' ||
+          loc.contains('received from') ||
+          loc.contains('first partner') ||
+          loc.contains('first pok') ||
+          loc.contains('starter') ||
           loc.startsWith('gift from')) {
         return 'Gift';
       }
-      if (loc == 'event' || loc.contains('mystery gift') || loc.contains('limited-time')) return 'Event';
-      if (loc == 'fossil' || loc.contains('revive') || loc.contains('fossil')) return 'Fossil';
+      if (loc == 'event' ||
+          loc.contains('mystery gift') ||
+          loc.contains('limited-time')) {
+        return 'Event';
+      }
+      if (loc == 'fossil' || loc.contains('revive') || loc.contains('fossil')) {
+        return 'Fossil';
+      }
       if (loc == 'hatch' || loc.contains('hatch from')) return 'Hatch';
       return method.isEmpty ? 'Wild' : method;
     }
 
     // When the location IS just the method keyword (no real detail), provide helpful context
     String methodHint(String method, String rawLocation) {
-      final methodKeywords = {'gift', 'trade', 'event', 'wild', 'special', 'fossil', 'hatch', 'roaming'};
+      final methodKeywords = {
+        'gift',
+        'trade',
+        'event',
+        'wild',
+        'special',
+        'fossil',
+        'hatch',
+        'roaming'
+      };
       if (!methodKeywords.contains(rawLocation.toLowerCase().trim())) return '';
       switch (method) {
-        case 'Gift':  return 'Received as a gift from an NPC — check story progress';
-        case 'Trade': return 'Obtained via an in-game trade — bring the requested Pokémon to the NPC';
-        case 'Event': return 'Obtained via a Mystery Gift or a past limited-time event';
-        default:      return '';
+        case 'Gift':
+          return 'Received as a gift from an NPC — check story progress';
+        case 'Trade':
+          return 'Obtained via an in-game trade — bring the requested Pokémon to the NPC';
+        case 'Event':
+          return 'Obtained via a Mystery Gift or a past limited-time event';
+        default:
+          return '';
       }
     }
 
     Color methodColor(String method) {
       switch (method) {
-        case 'Special':  return Colors.purple;
-        case 'Roaming':  return Colors.deepPurple;
-        case 'Event':    return Colors.orange;
-        case 'Gift':     return Colors.green;
-        case 'Fossil':   return Colors.brown;
-        case 'Trade':    return Colors.blue;
-        case 'Hatch':    return Colors.pink;
-        case 'Wild':     return Colors.grey.shade600;
-        default:         return Colors.grey.shade600;
+        case 'Special':
+          return Colors.purple;
+        case 'Roaming':
+          return Colors.deepPurple;
+        case 'Event':
+          return Colors.orange;
+        case 'Gift':
+          return Colors.green;
+        case 'Fossil':
+          return Colors.brown;
+        case 'Trade':
+          return Colors.blue;
+        case 'Hatch':
+          return Colors.pink;
+        case 'Wild':
+          return Colors.grey.shade600;
+        default:
+          return Colors.grey.shade600;
       }
     }
 
@@ -1196,7 +1420,8 @@ class _SearchState extends State<Search> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('How to Obtain', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const Text('How to Obtain',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               const SizedBox(height: 8),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxHeight: 400),
@@ -1211,8 +1436,18 @@ class _SearchState extends State<Search> {
                       final color = methodColor(method);
 
                       // Hide location text when it's just a method keyword (it's redundant with the badge)
-                      final methodKeywords = {'gift', 'trade', 'event', 'wild', 'special', 'fossil', 'hatch', 'roaming'};
-                      final locationDisplay = methodKeywords.contains(rawLocation.toLowerCase().trim())
+                      final methodKeywords = {
+                        'gift',
+                        'trade',
+                        'event',
+                        'wild',
+                        'special',
+                        'fossil',
+                        'hatch',
+                        'roaming'
+                      };
+                      final locationDisplay = methodKeywords
+                              .contains(rawLocation.toLowerCase().trim())
                           ? ''
                           : rawLocation;
                       final hint = methodHint(method, rawLocation);
@@ -1224,7 +1459,8 @@ class _SearchState extends State<Search> {
                           children: [
                             Container(
                               margin: const EdgeInsets.only(top: 2, right: 8),
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
                                 color: color.withValues(alpha: 0.15),
                                 border: Border.all(color: color, width: 1),
@@ -1232,18 +1468,30 @@ class _SearchState extends State<Search> {
                               ),
                               child: Text(
                                 method,
-                                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: color),
+                                style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: color),
                               ),
                             ),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(game, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.red.shade700)),
+                                  Text(game,
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.red.shade700)),
                                   if (locationDisplay.isNotEmpty)
-                                    Text(locationDisplay, style: const TextStyle(fontSize: 12)),
+                                    Text(locationDisplay,
+                                        style: const TextStyle(fontSize: 12)),
                                   if (hint.isNotEmpty)
-                                    Text(hint, style: TextStyle(fontSize: 11, color: Colors.grey.shade600, fontStyle: FontStyle.italic)),
+                                    Text(hint,
+                                        style: TextStyle(
+                                            fontSize: 11,
+                                            color: Colors.grey.shade600,
+                                            fontStyle: FontStyle.italic)),
                                 ],
                               ),
                             ),
@@ -1261,13 +1509,12 @@ class _SearchState extends State<Search> {
     );
   }
 
-  Widget _buildEvolutionNode(Map<String, dynamic> node, {bool showInfo = false}) {
+  Widget _buildEvolutionNode(Map<String, dynamic> node,
+      {bool showInfo = false}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (showInfo &&
-            node['info'] != null &&
-            node['info'] != node['name'])
+        if (showInfo && node['info'] != null && node['info'] != node['name'])
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
             child: Text(
@@ -1316,7 +1563,8 @@ class _SearchState extends State<Search> {
             child: Icon(Icons.arrow_downward),
           ),
           if (evolvesTo.length == 1)
-            _buildEvolutionTree(evolvesTo[0] as Map<String, dynamic>, isRoot: false)
+            _buildEvolutionTree(evolvesTo[0] as Map<String, dynamic>,
+                isRoot: false)
           else
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -1327,7 +1575,8 @@ class _SearchState extends State<Search> {
                   for (var child in evolvesTo)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: _buildEvolutionTree(child as Map<String, dynamic>, isRoot: false),
+                      child: _buildEvolutionTree(child as Map<String, dynamic>,
+                          isRoot: false),
                     ),
                 ],
               ),
@@ -1341,7 +1590,9 @@ class _SearchState extends State<Search> {
     final evolution = _pokemonData?['evolution'];
     final titles = _getSafeList('titles') as List;
     final bool noEvolution = evolution == null ||
-        (evolution is Map && (evolution.isEmpty || (evolution['evolves_to'] as List?)?.isEmpty == true));
+        (evolution is Map &&
+            (evolution.isEmpty ||
+                (evolution['evolves_to'] as List?)?.isEmpty == true));
 
     return Container(
       padding: const EdgeInsets.all(5),
@@ -1386,7 +1637,9 @@ class _SearchState extends State<Search> {
               children: [
                 const Icon(Icons.cloud_off, size: 64, color: Colors.white70),
                 const SizedBox(height: 16),
-                Text(errorMessage!, style: const TextStyle(color: Colors.white, fontSize: 16), textAlign: TextAlign.center),
+                Text(errorMessage!,
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                    textAlign: TextAlign.center),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: () {
@@ -1403,7 +1656,9 @@ class _SearchState extends State<Search> {
                   },
                   icon: const Icon(Icons.refresh),
                   label: const Text('Retry'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.red),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.red),
                 ),
               ],
             ),
@@ -1431,7 +1686,8 @@ class _SearchState extends State<Search> {
                 // Game filter row
                 Row(
                   children: [
-                    const Icon(Icons.videogame_asset, color: Colors.white70, size: 18),
+                    const Icon(Icons.videogame_asset,
+                        color: Colors.white70, size: 18),
                     const SizedBox(width: 8),
                     Expanded(
                       child: _isLoadingGameFilter
@@ -1439,15 +1695,18 @@ class _SearchState extends State<Search> {
                           : DropdownButtonHideUnderline(
                               child: DropdownButton<String>(
                                 value: _selectedGameKey,
-                                hint: const Text('All Games', style: TextStyle(color: Colors.white70)),
+                                hint: const Text('All Games',
+                                    style: TextStyle(color: Colors.white70)),
                                 dropdownColor: const Color(0xFFb71c1c),
                                 style: const TextStyle(color: Colors.white),
-                                icon: const Icon(Icons.arrow_drop_down, color: Colors.white70),
+                                icon: const Icon(Icons.arrow_drop_down,
+                                    color: Colors.white70),
                                 isExpanded: true,
                                 items: [
                                   const DropdownMenuItem<String>(
                                     value: null,
-                                    child: Text('All Games', style: TextStyle(color: Colors.white)),
+                                    child: Text('All Games',
+                                        style: TextStyle(color: Colors.white)),
                                   ),
                                   ..._gameGroups.expand((group) {
                                     final gen = group['generation'] as String;
@@ -1459,22 +1718,27 @@ class _SearchState extends State<Search> {
                                         child: Text(
                                           gen,
                                           style: TextStyle(
-                                            color: Colors.white.withValues(alpha: 0.5),
+                                            color: Colors.white
+                                                .withValues(alpha: 0.5),
                                             fontSize: 11,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                       ),
-                                      ...games.map((g) => DropdownMenuItem<String>(
-                                        value: g['key'] as String,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(left: 8),
-                                          child: Text(
-                                            g['name'] as String,
-                                            style: const TextStyle(color: Colors.white),
-                                          ),
-                                        ),
-                                      )),
+                                      ...games
+                                          .map((g) => DropdownMenuItem<String>(
+                                                value: g['key'] as String,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8),
+                                                  child: Text(
+                                                    g['name'] as String,
+                                                    style: const TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                ),
+                                              )),
                                     ];
                                   }),
                                 ],
@@ -1489,20 +1753,23 @@ class _SearchState extends State<Search> {
                                   for (final group in _gameGroups) {
                                     for (final g in group['games'] as List) {
                                       if (g['key'] == value) {
-                                        nationalDexMax = g['nationalDexMax'] as int;
+                                        nationalDexMax =
+                                            g['nationalDexMax'] as int;
                                         gameName = g['name'] as String;
                                         break;
                                       }
                                     }
                                   }
-                                  _loadGameFilteredNames(value, gameName, nationalDexMax);
+                                  _loadGameFilteredNames(
+                                      value, gameName, nationalDexMax);
                                 },
                               ),
                             ),
                     ),
                     if (_selectedGameKey != null)
                       IconButton(
-                        icon: const Icon(Icons.clear, color: Colors.white70, size: 18),
+                        icon: const Icon(Icons.clear,
+                            color: Colors.white70, size: 18),
                         onPressed: _clearGameFilter,
                         tooltip: 'Clear game filter',
                         padding: EdgeInsets.zero,
@@ -1515,14 +1782,16 @@ class _SearchState extends State<Search> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         '${names.length} Pokémon in $_selectedGameName',
-                        style: const TextStyle(color: Colors.white, fontSize: 12),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ),
                   ),
@@ -1534,8 +1803,8 @@ class _SearchState extends State<Search> {
                     }
                     return names.where((String option) {
                       return option.toLowerCase().contains(
-                        textEditingValue.text.toLowerCase(),
-                      );
+                            textEditingValue.text.toLowerCase(),
+                          );
                     }).take(10);
                   },
                   onSelected: (String selection) {
@@ -1573,10 +1842,12 @@ class _SearchState extends State<Search> {
                       decoration: InputDecoration(
                         hintText: 'Enter Pokemon name...',
                         hintStyle: const TextStyle(color: Colors.white54),
-                        prefixIcon: const Icon(Icons.search, color: Colors.white),
+                        prefixIcon:
+                            const Icon(Icons.search, color: Colors.white),
                         suffixIcon: fieldTextEditingController.text.isNotEmpty
                             ? IconButton(
-                                icon: const Icon(Icons.clear, color: Colors.white),
+                                icon: const Icon(Icons.clear,
+                                    color: Colors.white),
                                 onPressed: () {
                                   fieldTextEditingController.clear();
                                   setState(() {
@@ -1594,11 +1865,13 @@ class _SearchState extends State<Search> {
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
-                          borderSide: const BorderSide(color: Colors.white, width: 2),
+                          borderSide:
+                              const BorderSide(color: Colors.white, width: 2),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
-                          borderSide: const BorderSide(color: Colors.red, width: 2),
+                          borderSide:
+                              const BorderSide(color: Colors.red, width: 2),
                         ),
                       ),
                       onSubmitted: (String value) {
@@ -1654,7 +1927,8 @@ class _SearchState extends State<Search> {
                                   decoration: BoxDecoration(
                                     border: Border(
                                       bottom: BorderSide(
-                                        color: Colors.white.withValues(alpha: 0.2),
+                                        color:
+                                            Colors.white.withValues(alpha: 0.2),
                                       ),
                                     ),
                                   ),
@@ -1693,7 +1967,8 @@ class _SearchState extends State<Search> {
                   padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
                   child: Row(
                     children: [
-                      const Icon(Icons.videogame_asset, color: Colors.white70, size: 18),
+                      const Icon(Icons.videogame_asset,
+                          color: Colors.white70, size: 18),
                       const SizedBox(width: 8),
                       Expanded(
                         child: _isLoadingGameFilter
@@ -1701,15 +1976,20 @@ class _SearchState extends State<Search> {
                             : DropdownButtonHideUnderline(
                                 child: DropdownButton<String>(
                                   value: _selectedGameKey,
-                                  hint: const Text('All Games', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                                  hint: const Text('All Games',
+                                      style: TextStyle(
+                                          color: Colors.white70, fontSize: 13)),
                                   dropdownColor: const Color(0xFFb71c1c),
                                   style: const TextStyle(color: Colors.white),
-                                  icon: const Icon(Icons.arrow_drop_down, color: Colors.white70),
+                                  icon: const Icon(Icons.arrow_drop_down,
+                                      color: Colors.white70),
                                   isExpanded: true,
                                   items: [
                                     const DropdownMenuItem<String>(
                                       value: null,
-                                      child: Text('All Games', style: TextStyle(color: Colors.white)),
+                                      child: Text('All Games',
+                                          style:
+                                              TextStyle(color: Colors.white)),
                                     ),
                                     ..._gameGroups.expand((group) {
                                       final gen = group['generation'] as String;
@@ -1721,22 +2001,28 @@ class _SearchState extends State<Search> {
                                           child: Text(
                                             gen,
                                             style: TextStyle(
-                                              color: Colors.white.withValues(alpha: 0.5),
+                                              color: Colors.white
+                                                  .withValues(alpha: 0.5),
                                               fontSize: 11,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                         ),
-                                        ...games.map((g) => DropdownMenuItem<String>(
-                                          value: g['key'] as String,
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(left: 8),
-                                            child: Text(
-                                              g['name'] as String,
-                                              style: const TextStyle(color: Colors.white, fontSize: 13),
-                                            ),
-                                          ),
-                                        )),
+                                        ...games.map(
+                                            (g) => DropdownMenuItem<String>(
+                                                  value: g['key'] as String,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 8),
+                                                    child: Text(
+                                                      g['name'] as String,
+                                                      style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 13),
+                                                    ),
+                                                  ),
+                                                )),
                                       ];
                                     }),
                                   ],
@@ -1750,20 +2036,23 @@ class _SearchState extends State<Search> {
                                     for (final group in _gameGroups) {
                                       for (final g in group['games'] as List) {
                                         if (g['key'] == value) {
-                                          nationalDexMax = g['nationalDexMax'] as int;
+                                          nationalDexMax =
+                                              g['nationalDexMax'] as int;
                                           gameName = g['name'] as String;
                                           break;
                                         }
                                       }
                                     }
-                                    _loadGameFilteredNames(value, gameName, nationalDexMax);
+                                    _loadGameFilteredNames(
+                                        value, gameName, nationalDexMax);
                                   },
                                 ),
                               ),
                       ),
                       if (_selectedGameKey != null)
                         IconButton(
-                          icon: const Icon(Icons.clear, color: Colors.white70, size: 18),
+                          icon: const Icon(Icons.clear,
+                              color: Colors.white70, size: 18),
                           onPressed: _clearGameFilter,
                           tooltip: 'Clear game filter',
                           padding: EdgeInsets.zero,
@@ -1786,14 +2075,16 @@ class _SearchState extends State<Search> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           '${names.length} Pokémon in $_selectedGameName',
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 12),
                         ),
                       ),
                     ),
@@ -1805,234 +2096,256 @@ class _SearchState extends State<Search> {
                     itemBuilder: (context, index) {
                       return Column(
                         children: <Widget>[
-                    if (_getSafeData('image').isNotEmpty)
-                      Container(
-                        alignment: Alignment.topCenter,
-                        width: double.infinity,
-                        child: Image.network(
-                          _getSafeData('image'),
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(Icons.error, size: 100);
-                          },
-                        ),
-                      ),
-                    Container(
-                      padding: const EdgeInsets.all(5),
-                      width: double.infinity,
-                      child: Card(
-                        elevation: 10,
-                        margin: const EdgeInsets.all(5),
-                        child: Padding(
-                          padding: const EdgeInsets.all(5),
-                          child: Column(
-                            children: <Widget>[
-                              if ((_getSafeList('titles') as List).isNotEmpty)
-                                Text(
-                                  '${(_getSafeList('titles') as List)[0]}\n',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              Column(
-                                children: <Widget>[
-                                  Text(
-                                    'National No: ${_getSafeData('data', 'Pokédex Data', 'National №')}',
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                  Text(
-                                    'Type: ${_getSafeData('data', 'Pokédex Data', 'Type')}',
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                  Text(
-                                    'Species: ${_getSafeData('data', 'Pokédex Data', 'Species')}',
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                  Text(
-                                    'Height: ${_getSafeData('data', 'Pokédex Data', 'Height')}',
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                  Text(
-                                    'Weight: ${_getSafeData('data', 'Pokédex Data', 'Weight')}',
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                  Text(
-                                    'Abilities: ${_getSafeData('data', 'Pokédex Data', 'Abilities')}',
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(5),
-                      width: double.infinity,
-                      child: Card(
-                        margin: const EdgeInsets.all(5),
-                        elevation: 10,
-                        child: Padding(
-                          padding: const EdgeInsets.all(5),
-                          child: Column(
-                            children: <Widget>[
-                              if ((_getSafeList('titles') as List).length > 1)
-                                Text(
-                                  '${(_getSafeList('titles') as List)[1]}\n',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              Column(
-                                children: <Widget>[
-                                  Text(
-                                    'EV yield: ${_getSafeData('data', 'Training', 'EV Yield')}',
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                  Text(
-                                    'Catch rate: ${_getSafeData('data', 'Training', 'Catch Rate')}',
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                  Text(
-                                    'Base Friendship: ${_getSafeData('data', 'Training', 'Base Friendship')}',
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                  Text(
-                                    'Base Exp.: ${_getSafeData('data', 'Training', 'Base Exp')}',
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                  Text(
-                                    'Growth Rate: ${_getSafeData('data', 'Training', 'Growth Rate')}',
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(5),
-                                  ),
-                                ],
+                          if (_getSafeData('image').isNotEmpty)
+                            Container(
+                              alignment: Alignment.topCenter,
+                              width: double.infinity,
+                              child: Image.network(
+                                _getSafeData('image'),
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(Icons.error, size: 100);
+                                },
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(5),
-                      width: double.infinity,
-                      child: Card(
-                        margin: const EdgeInsets.all(5),
-                        elevation: 10,
-                        child: Padding(
-                          padding: const EdgeInsets.all(5),
-                          child: Column(
-                            children: <Widget>[
-                              if ((_getSafeList('titles') as List).length > 2)
-                                Text(
-                                  '${(_getSafeList('titles') as List)[2]}\n',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                            ),
+                          Container(
+                            padding: const EdgeInsets.all(5),
+                            width: double.infinity,
+                            child: Card(
+                              elevation: 10,
+                              margin: const EdgeInsets.all(5),
+                              child: Padding(
+                                padding: const EdgeInsets.all(5),
+                                child: Column(
+                                  children: <Widget>[
+                                    if ((_getSafeList('titles') as List)
+                                        .isNotEmpty)
+                                      Text(
+                                        '${(_getSafeList('titles') as List)[0]}\n',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    Column(
+                                      children: <Widget>[
+                                        Text(
+                                          'National No: ${_getSafeData('data', 'Pokédex Data', 'National №')}',
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.all(5),
+                                        ),
+                                        Text(
+                                          'Type: ${_getSafeData('data', 'Pokédex Data', 'Type')}',
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.all(5),
+                                        ),
+                                        Text(
+                                          'Species: ${_getSafeData('data', 'Pokédex Data', 'Species')}',
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.all(5),
+                                        ),
+                                        Text(
+                                          'Height: ${_getSafeData('data', 'Pokédex Data', 'Height')}',
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.all(5),
+                                        ),
+                                        Text(
+                                          'Weight: ${_getSafeData('data', 'Pokédex Data', 'Weight')}',
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.all(5),
+                                        ),
+                                        Text(
+                                          'Abilities: ${_getSafeData('data', 'Pokédex Data', 'Abilities')}',
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.all(5),
+                                        ),
+                                      ],
+                                    )
+                                  ],
                                 ),
-                              getEggs(),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(5),
-                      width: double.infinity,
-                      child: Card(
-                        margin: const EdgeInsets.all(5),
-                        elevation: 10,
-                        child: Padding(
-                          padding: const EdgeInsets.all(5),
-                          child: Column(
-                            children: <Widget>[
-                              if ((_getSafeList('titles') as List).length > 3)
-                                Text(
-                                  '${(_getSafeList('titles') as List)[3]}\n',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              Column(
-                                children: <Widget>[
-                                  Text('HP: ${_getSafeData('data', 'Base Stats', 'HP')}'),
-                                  const Padding(padding: EdgeInsets.all(5)),
-                                  Text('Attack: ${_getSafeData('data', 'Base Stats', 'Attack')}'),
-                                  const Padding(padding: EdgeInsets.all(5)),
-                                  Text('Defense: ${_getSafeData('data', 'Base Stats', 'Defense')}'),
-                                  const Padding(padding: EdgeInsets.all(5)),
-                                  Text('Sp. Atk: ${_getSafeData('data', 'Base Stats', 'Sp. Atk')}'),
-                                  const Padding(padding: EdgeInsets.all(5)),
-                                  Text('Sp. Def: ${_getSafeData('data', 'Base Stats', 'Sp. Def')}'),
-                                  const Padding(padding: EdgeInsets.all(5)),
-                                  Text('Speed: ${_getSafeData('data', 'Base Stats', 'Speed')}'),
-                                  const Padding(padding: EdgeInsets.all(5)),
-                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    _buildFlavorTextCard(),
-                    _buildTypeDefensesCard(),
-                    _buildRecommendedNatureCard(),
-                    _buildMovesCard(),
-                    _buildEvolutionCard(),
-                    _buildPokemonNamesCard(),
-                    _buildBiologyCard(),
-                    _buildHeldItemsCard(),
-                    _buildAbilitiesCard(),
-                    _buildGameLocationsCard(),
-                    _buildSpritesCard(),
-                    if (pokemonLocations.isNotEmpty &&
-                        pokemonLocations[0] != 'No location data available')
-                      Container(
-                        padding: const EdgeInsets.all(5),
-                        width: double.infinity,
-                        child: Card(
-                          margin: const EdgeInsets.all(5),
-                          elevation: 10,
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                const Text(
-                                  'Encounter Locations\n',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                getPokemonWidget(),
-                              ],
                             ),
                           ),
-                        ),
-                      ),
-                  ],
-                );
-              },
-            ),
+                          Container(
+                            padding: const EdgeInsets.all(5),
+                            width: double.infinity,
+                            child: Card(
+                              margin: const EdgeInsets.all(5),
+                              elevation: 10,
+                              child: Padding(
+                                padding: const EdgeInsets.all(5),
+                                child: Column(
+                                  children: <Widget>[
+                                    if ((_getSafeList('titles') as List)
+                                            .length >
+                                        1)
+                                      Text(
+                                        '${(_getSafeList('titles') as List)[1]}\n',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    Column(
+                                      children: <Widget>[
+                                        Text(
+                                          'EV yield: ${_getSafeData('data', 'Training', 'EV Yield')}',
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.all(5),
+                                        ),
+                                        Text(
+                                          'Catch rate: ${_getSafeData('data', 'Training', 'Catch Rate')}',
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.all(5),
+                                        ),
+                                        Text(
+                                          'Base Friendship: ${_getSafeData('data', 'Training', 'Base Friendship')}',
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.all(5),
+                                        ),
+                                        Text(
+                                          'Base Exp.: ${_getSafeData('data', 'Training', 'Base Exp')}',
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.all(5),
+                                        ),
+                                        Text(
+                                          'Growth Rate: ${_getSafeData('data', 'Training', 'Growth Rate')}',
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.all(5),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(5),
+                            width: double.infinity,
+                            child: Card(
+                              margin: const EdgeInsets.all(5),
+                              elevation: 10,
+                              child: Padding(
+                                padding: const EdgeInsets.all(5),
+                                child: Column(
+                                  children: <Widget>[
+                                    if ((_getSafeList('titles') as List)
+                                            .length >
+                                        2)
+                                      Text(
+                                        '${(_getSafeList('titles') as List)[2]}\n',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    getEggs(),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(5),
+                            width: double.infinity,
+                            child: Card(
+                              margin: const EdgeInsets.all(5),
+                              elevation: 10,
+                              child: Padding(
+                                padding: const EdgeInsets.all(5),
+                                child: Column(
+                                  children: <Widget>[
+                                    if ((_getSafeList('titles') as List)
+                                            .length >
+                                        3)
+                                      Text(
+                                        '${(_getSafeList('titles') as List)[3]}\n',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    Column(
+                                      children: <Widget>[
+                                        Text(
+                                            'HP: ${_getSafeData('data', 'Base Stats', 'HP')}'),
+                                        const Padding(
+                                            padding: EdgeInsets.all(5)),
+                                        Text(
+                                            'Attack: ${_getSafeData('data', 'Base Stats', 'Attack')}'),
+                                        const Padding(
+                                            padding: EdgeInsets.all(5)),
+                                        Text(
+                                            'Defense: ${_getSafeData('data', 'Base Stats', 'Defense')}'),
+                                        const Padding(
+                                            padding: EdgeInsets.all(5)),
+                                        Text(
+                                            'Sp. Atk: ${_getSafeData('data', 'Base Stats', 'Sp. Atk')}'),
+                                        const Padding(
+                                            padding: EdgeInsets.all(5)),
+                                        Text(
+                                            'Sp. Def: ${_getSafeData('data', 'Base Stats', 'Sp. Def')}'),
+                                        const Padding(
+                                            padding: EdgeInsets.all(5)),
+                                        Text(
+                                            'Speed: ${_getSafeData('data', 'Base Stats', 'Speed')}'),
+                                        const Padding(
+                                            padding: EdgeInsets.all(5)),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          _buildFlavorTextCard(),
+                          _buildTypeDefensesCard(),
+                          _buildRecommendedNatureCard(),
+                          _buildMovesCard(),
+                          _buildEvolutionCard(),
+                          _buildPokemonNamesCard(),
+                          _buildBiologyCard(),
+                          _buildHeldItemsCard(),
+                          _buildAbilitiesCard(),
+                          _buildGameLocationsCard(),
+                          _buildSpritesCard(),
+                          if (pokemonLocations.isNotEmpty &&
+                              pokemonLocations[0] !=
+                                  'No location data available')
+                            Container(
+                              padding: const EdgeInsets.all(5),
+                              width: double.infinity,
+                              child: Card(
+                                margin: const EdgeInsets.all(5),
+                                elevation: 10,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      const Text(
+                                        'Encounter Locations\n',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      getPokemonWidget(),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
               ],
             ),

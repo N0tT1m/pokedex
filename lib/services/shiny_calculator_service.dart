@@ -48,14 +48,15 @@ class ShinyCalculatorService {
 
       case 'SOS Chaining':
         int sosRolls;
-        if (chainLength >= 31)
+        if (chainLength >= 31) {
           sosRolls = 13;
-        else if (chainLength >= 21)
+        } else if (chainLength >= 21) {
           sosRolls = 9;
-        else if (chainLength >= 11)
+        } else if (chainLength >= 11) {
           sosRolls = 5;
-        else
+        } else {
           sosRolls = 1;
+        }
         probability = 1.0 / (baseOdds / (sosRolls + extraRolls));
         break;
 
@@ -80,28 +81,31 @@ class ShinyCalculatorService {
 
       case 'Sandwich Power (SV)':
         int svRolls = extraRolls;
-        if (sandwichPower >= 3)
+        if (sandwichPower >= 3) {
           svRolls += 3;
-        else if (sandwichPower >= 2)
+        } else if (sandwichPower >= 2) {
           svRolls += 2;
-        else if (sandwichPower >= 1) svRolls += 1;
+        } else if (sandwichPower >= 1) {
+          svRolls += 1;
+        }
         probability = 1.0 / (baseOdds / (1 + svRolls));
         break;
 
       case 'KO Method (Sw/Sh)':
         int koRolls;
-        if (koCount >= 500)
+        if (koCount >= 500) {
           koRolls = 6;
-        else if (koCount >= 300)
+        } else if (koCount >= 300) {
           koRolls = 5;
-        else if (koCount >= 200)
+        } else if (koCount >= 200) {
           koRolls = 4;
-        else if (koCount >= 100)
+        } else if (koCount >= 100) {
           koRolls = 3;
-        else if (koCount >= 50)
+        } else if (koCount >= 50) {
           koRolls = 2;
-        else
+        } else {
           koRolls = 0;
+        }
         // Sword/Shield KO method has a 3% chance of activating the bonus
         probability = (0.03 * (1.0 / (baseOdds / (1 + koRolls + extraRolls)))) +
             (0.97 * (1.0 / (baseOdds / (1 + extraRolls))));
@@ -113,14 +117,15 @@ class ShinyCalculatorService {
 
       case 'Catch Combo (LGPE)':
         int comboRolls;
-        if (chainLength >= 31)
+        if (chainLength >= 31) {
           comboRolls = 11;
-        else if (chainLength >= 21)
+        } else if (chainLength >= 21) {
           comboRolls = 7;
-        else if (chainLength >= 11)
+        } else if (chainLength >= 11) {
           comboRolls = 3;
-        else
+        } else {
           comboRolls = 0;
+        }
         probability = 1.0 / (baseOdds / (1 + comboRolls + extraRolls));
         break;
 

@@ -3,7 +3,7 @@ import 'package:requests/requests.dart';
 import '../../services/pokeapi_service.dart';
 
 class MoveTutorScreen extends StatefulWidget {
-  const MoveTutorScreen({Key? key}) : super(key: key);
+  const MoveTutorScreen({super.key});
 
   @override
   State<MoveTutorScreen> createState() => _MoveTutorScreenState();
@@ -28,9 +28,12 @@ class _MoveTutorScreenState extends State<MoveTutorScreen> {
     try {
       final r = await Requests.get('${PokeApiService.baseUrl}/move-tutor');
       if (r.statusCode == 200) {
-        final results = List<Map<String, dynamic>>.from(r.json()['results'] ?? []);
+        final results =
+            List<Map<String, dynamic>>.from(r.json()['results'] ?? []);
         final gameSet = <String>{'All'};
-        for (final t in results) { gameSet.add(t['game'] as String); }
+        for (final t in results) {
+          gameSet.add(t['game'] as String);
+        }
         setState(() {
           _all = results;
           _filtered = results;
@@ -38,10 +41,16 @@ class _MoveTutorScreenState extends State<MoveTutorScreen> {
           _isLoading = false;
         });
       } else {
-        setState(() { _error = 'Server error ${r.statusCode}'; _isLoading = false; });
+        setState(() {
+          _error = 'Server error ${r.statusCode}';
+          _isLoading = false;
+        });
       }
     } catch (e) {
-      setState(() { _error = 'Could not load tutors'; _isLoading = false; });
+      setState(() {
+        _error = 'Could not load tutors';
+        _isLoading = false;
+      });
     }
   }
 
@@ -57,16 +66,22 @@ class _MoveTutorScreenState extends State<MoveTutorScreen> {
     });
   }
 
-  String _fmt(String s) => s.split('-').map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w).join(' ');
+  String _fmt(String s) => s
+      .split('-')
+      .map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w)
+      .join(' ');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Move Tutors'), backgroundColor: Colors.red),
+      appBar:
+          AppBar(title: const Text('Move Tutors'), backgroundColor: Colors.red),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
+              ? Center(
+                  child:
+                      Text(_error!, style: const TextStyle(color: Colors.red)))
               : Column(
                   children: [
                     Padding(
@@ -78,27 +93,46 @@ class _MoveTutorScreenState extends State<MoveTutorScreen> {
                               decoration: InputDecoration(
                                 hintText: 'Search move or location...',
                                 prefixIcon: const Icon(Icons.search),
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
-                                filled: true, fillColor: Colors.white,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                filled: true,
+                                fillColor: Colors.white,
+                                contentPadding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
                               ),
-                              onChanged: (v) { _query = v.toLowerCase(); _filter(); },
+                              onChanged: (v) {
+                                _query = v.toLowerCase();
+                                _filter();
+                              },
                             ),
                           ),
                           const SizedBox(width: 8),
                           DropdownButton<String>(
                             value: _selectedGame,
-                            items: _games.map((g) => DropdownMenuItem(value: g, child: Text(g, style: const TextStyle(fontSize: 13)))).toList(),
-                            onChanged: (v) { if (v != null) { _selectedGame = v; _filter(); } },
+                            items: _games
+                                .map((g) => DropdownMenuItem(
+                                    value: g,
+                                    child: Text(g,
+                                        style: const TextStyle(fontSize: 13))))
+                                .toList(),
+                            onChanged: (v) {
+                              if (v != null) {
+                                _selectedGame = v;
+                                _filter();
+                              }
+                            },
                           ),
                         ],
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 2),
                       child: Align(
                         alignment: Alignment.centerLeft,
-                        child: Text('${_filtered.length} tutor moves', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                        child: Text('${_filtered.length} tutor moves',
+                            style: TextStyle(
+                                color: Colors.grey.shade600, fontSize: 12)),
                       ),
                     ),
                     Expanded(
@@ -115,14 +149,27 @@ class _MoveTutorScreenState extends State<MoveTutorScreen> {
                             margin: const EdgeInsets.symmetric(vertical: 2),
                             child: ListTile(
                               dense: true,
-                              title: Text(move, style: const TextStyle(fontWeight: FontWeight.bold)),
-                              subtitle: location != null ? Text(location, style: const TextStyle(fontSize: 12)) : null,
+                              title: Text(move,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
+                              subtitle: location != null
+                                  ? Text(location,
+                                      style: const TextStyle(fontSize: 12))
+                                  : null,
                               trailing: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Text(game, style: TextStyle(fontSize: 11, color: Colors.red.shade600, fontWeight: FontWeight.bold)),
-                                  if (cost != null) Text(cost, style: TextStyle(fontSize: 11, color: Colors.green.shade600)),
+                                  Text(game,
+                                      style: TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.red.shade600,
+                                          fontWeight: FontWeight.bold)),
+                                  if (cost != null)
+                                    Text(cost,
+                                        style: TextStyle(
+                                            fontSize: 11,
+                                            color: Colors.green.shade600)),
                                 ],
                               ),
                             ),

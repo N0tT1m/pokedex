@@ -4,7 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../../models/nuzlocke_run.dart';
 
 class NuzlockeTrackerScreen extends StatefulWidget {
-  const NuzlockeTrackerScreen({Key? key}) : super(key: key);
+  const NuzlockeTrackerScreen({super.key});
 
   @override
   State<NuzlockeTrackerScreen> createState() => _NuzlockeTrackerScreenState();
@@ -169,10 +169,10 @@ class _NuzlockeTrackerScreenState extends State<NuzlockeTrackerScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.red,
-        child: const Icon(Icons.add),
         onPressed: _selectedRun != null
             ? () => _addEncounter(_selectedRun!)
             : _createRun,
+        child: const Icon(Icons.add),
       ),
       body: _box == null
           ? const Center(child: CircularProgressIndicator())

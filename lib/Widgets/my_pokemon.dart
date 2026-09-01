@@ -5,7 +5,7 @@ import '../services/pokemon_storage_service.dart';
 import 'pokemon_detail_view.dart';
 
 class MyPokemon extends StatefulWidget {
-  const MyPokemon({Key? key}) : super(key: key);
+  const MyPokemon({super.key});
 
   @override
   State<MyPokemon> createState() => _MyPokemonState();
@@ -70,7 +70,8 @@ class _MyPokemonState extends State<MyPokemon> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Pokemon'),
-        content: Text('Are you sure you want to delete ${pokemon.displayName}?'),
+        content:
+            Text('Are you sure you want to delete ${pokemon.displayName}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -408,7 +409,8 @@ class _MyPokemonState extends State<MyPokemon> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => PokemonDetailView(pokemon: pokemon),
+                        builder: (context) =>
+                            PokemonDetailView(pokemon: pokemon),
                       ),
                     ).then((_) => _loadPokemon());
                   } else if (value == 'delete') {

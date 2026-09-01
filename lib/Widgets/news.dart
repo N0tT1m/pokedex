@@ -6,24 +6,24 @@ import '../services/pokeapi_service.dart';
 // Type → colour mapping for tera badge
 // ---------------------------------------------------------------------------
 const Map<String, Color> _typeColors = {
-  'Normal':   Color(0xFFA8A878),
-  'Fire':     Color(0xFFF08030),
-  'Water':    Color(0xFF6890F0),
+  'Normal': Color(0xFFA8A878),
+  'Fire': Color(0xFFF08030),
+  'Water': Color(0xFF6890F0),
   'Electric': Color(0xFFF8D030),
-  'Grass':    Color(0xFF78C850),
-  'Ice':      Color(0xFF98D8D8),
+  'Grass': Color(0xFF78C850),
+  'Ice': Color(0xFF98D8D8),
   'Fighting': Color(0xFFC03028),
-  'Poison':   Color(0xFFA040A0),
-  'Ground':   Color(0xFFE0C068),
-  'Flying':   Color(0xFFA890F0),
-  'Psychic':  Color(0xFFF85888),
-  'Bug':      Color(0xFFA8B820),
-  'Rock':     Color(0xFFB8A038),
-  'Ghost':    Color(0xFF705898),
-  'Dragon':   Color(0xFF7038F8),
-  'Dark':     Color(0xFF705848),
-  'Steel':    Color(0xFFB8B8D0),
-  'Fairy':    Color(0xFFEE99AC),
+  'Poison': Color(0xFFA040A0),
+  'Ground': Color(0xFFE0C068),
+  'Flying': Color(0xFFA890F0),
+  'Psychic': Color(0xFFF85888),
+  'Bug': Color(0xFFA8B820),
+  'Rock': Color(0xFFB8A038),
+  'Ghost': Color(0xFF705898),
+  'Dragon': Color(0xFF7038F8),
+  'Dark': Color(0xFF705848),
+  'Steel': Color(0xFFB8B8D0),
+  'Fairy': Color(0xFFEE99AC),
 };
 
 Color _typeColor(String? type) =>
@@ -35,14 +35,13 @@ Color _typeColor(String? type) =>
 String _capitalize(String s) =>
     s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 
-String _displayName(String raw) =>
-    raw.split('-').map(_capitalize).join(' ');
+String _displayName(String raw) => raw.split('-').map(_capitalize).join(' ');
 
 // ---------------------------------------------------------------------------
 // News widget
 // ---------------------------------------------------------------------------
 class News extends StatefulWidget {
-  const News({Key? key}) : super(key: key);
+  const News({super.key});
 
   @override
   State<News> createState() => _NewsState();
@@ -58,7 +57,7 @@ class _NewsState extends State<News> with SingleTickerProviderStateMixin {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _activeFuture = PokemonDBService.getActiveRaids();
-    _allFuture   = PokemonDBService.getRaidEvents();
+    _allFuture = PokemonDBService.getRaidEvents();
   }
 
   @override
@@ -71,7 +70,7 @@ class _NewsState extends State<News> with SingleTickerProviderStateMixin {
     PokemonDBService.clearRaidCache();
     setState(() {
       _activeFuture = PokemonDBService.getActiveRaids();
-      _allFuture    = PokemonDBService.getRaidEvents();
+      _allFuture = PokemonDBService.getRaidEvents();
     });
   }
 
@@ -103,8 +102,16 @@ class _NewsState extends State<News> with SingleTickerProviderStateMixin {
       body: TabBarView(
         controller: _tabController,
         children: [
-          _RaidList(future: _activeFuture, onRefresh: _refresh, emptyMessage: 'No active Tera Raid events right now.\nCheck back when a new event starts!'),
-          _RaidList(future: _allFuture,    onRefresh: _refresh, emptyMessage: 'No raid events have been recorded yet.\nRun the game8 spider to populate data.'),
+          _RaidList(
+              future: _activeFuture,
+              onRefresh: _refresh,
+              emptyMessage:
+                  'No active Tera Raid events right now.\nCheck back when a new event starts!'),
+          _RaidList(
+              future: _allFuture,
+              onRefresh: _refresh,
+              emptyMessage:
+                  'No raid events have been recorded yet.\nRun the game8 spider to populate data.'),
         ],
       ),
     );
@@ -160,11 +167,11 @@ class _RaidCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pokemonName = raid['pokemon_name'] as String? ?? '';
-    final teraType    = raid['tera_type']    as String?;
-    final starRating  = raid['star_rating']  as int?;
-    final eventStart  = raid['event_start']  as String?;
-    final eventEnd    = raid['event_end']    as String?;
-    final isActive    = raid['is_active']    as bool? ?? false;
+    final teraType = raid['tera_type'] as String?;
+    final starRating = raid['star_rating'] as int?;
+    final eventStart = raid['event_start'] as String?;
+    final eventEnd = raid['event_end'] as String?;
+    final isActive = raid['is_active'] as bool? ?? false;
 
     final teraColor = _typeColor(teraType);
 
@@ -194,7 +201,8 @@ class _RaidCard extends StatelessWidget {
                   if (isActive)
                     Container(
                       margin: const EdgeInsets.only(right: 6),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
                         color: Colors.green,
                         borderRadius: BorderRadius.circular(12),
@@ -210,7 +218,8 @@ class _RaidCard extends StatelessWidget {
                     ),
                   if (starRating != null)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
                         color: Colors.red,
                         borderRadius: BorderRadius.circular(12),
@@ -231,7 +240,8 @@ class _RaidCard extends StatelessWidget {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 3),
                       decoration: BoxDecoration(
                         color: teraColor,
                         borderRadius: BorderRadius.circular(20),
@@ -278,7 +288,8 @@ class _RaidCard extends StatelessWidget {
     );
   }
 
-  void _showCounters(BuildContext context, String pokemonName, String? teraType) {
+  void _showCounters(
+      BuildContext context, String pokemonName, String? teraType) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -316,7 +327,8 @@ class _CountersSheetState extends State<_CountersSheet> {
       widget.pokemonName,
       teraType: widget.teraType,
     );
-    _weaknessesFuture = PokeApiService.getPokemonTypeDefenses(widget.pokemonName);
+    _weaknessesFuture =
+        PokeApiService.getPokemonTypeDefenses(widget.pokemonName);
   }
 
   @override
@@ -361,7 +373,8 @@ class _CountersSheetState extends State<_CountersSheet> {
                       ),
                       if (widget.teraType != null)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
                             color: teraColor,
                             borderRadius: BorderRadius.circular(20),
@@ -385,11 +398,14 @@ class _CountersSheetState extends State<_CountersSheet> {
             FutureBuilder<List<Map<String, dynamic>>>(
               future: _weaknessesFuture,
               builder: (context, snap) {
-                if (!snap.hasData || snap.data!.isEmpty) return const SizedBox.shrink();
+                if (!snap.hasData || snap.data!.isEmpty) {
+                  return const SizedBox.shrink();
+                }
                 final weaknesses = snap.data!
                     .where((d) => (d['multiplier'] as num? ?? 1) > 1)
                     .toList()
-                  ..sort((a, b) => (b['multiplier'] as num).compareTo(a['multiplier'] as num));
+                  ..sort((a, b) => (b['multiplier'] as num)
+                      .compareTo(a['multiplier'] as num));
                 if (weaknesses.isEmpty) return const SizedBox.shrink();
                 return Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -415,7 +431,8 @@ class _CountersSheetState extends State<_CountersSheet> {
                           final mult = d['multiplier'] as num? ?? 1;
                           final color = _typeColor(type);
                           return Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: color,
                               borderRadius: BorderRadius.circular(16),
@@ -460,13 +477,14 @@ class _CountersSheetState extends State<_CountersSheet> {
                   final counters = snapshot.data!;
                   return ListView.separated(
                     controller: scrollController,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     itemCount: counters.length,
                     separatorBuilder: (_, __) => const Divider(height: 1),
                     itemBuilder: (context, i) {
                       final c = counters[i];
-                      final rank  = c['rank'] as int?;
-                      final name  = c['counter_pokemon'] as String? ?? '';
+                      final rank = c['rank'] as int?;
+                      final name = c['counter_pokemon'] as String? ?? '';
                       final notes = c['notes'] as String?;
                       return ListTile(
                         contentPadding: const EdgeInsets.symmetric(vertical: 4),

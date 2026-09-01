@@ -6,7 +6,7 @@ import '../models/saved_pokemon.dart';
 class PokemonDetailView extends StatelessWidget {
   final SavedPokemon pokemon;
 
-  const PokemonDetailView({Key? key, required this.pokemon}) : super(key: key);
+  const PokemonDetailView({super.key, required this.pokemon});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,8 @@ class PokemonDetailView extends StatelessWidget {
           ),
           if (pokemon.nickname != null)
             Text(
-              pokemon.speciesName[0].toUpperCase() + pokemon.speciesName.substring(1),
+              pokemon.speciesName[0].toUpperCase() +
+                  pokemon.speciesName.substring(1),
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey.shade600,
@@ -115,8 +116,7 @@ class PokemonDetailView extends StatelessWidget {
             _buildInfoRow('Nature', pokemon.nature),
             if (pokemon.ability != null)
               _buildInfoRow('Ability', pokemon.ability!),
-            if (pokemon.game != null)
-              _buildInfoRow('Game', pokemon.game!),
+            if (pokemon.game != null) _buildInfoRow('Game', pokemon.game!),
             if (pokemon.location != null)
               _buildInfoRow('Caught at', pokemon.location!),
             if (pokemon.pokeball != null)
@@ -196,12 +196,13 @@ class PokemonDetailView extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       'Base: $baseStat',
-                      style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                      style:
+                          TextStyle(fontSize: 10, color: Colors.grey.shade600),
                     ),
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -271,7 +272,7 @@ class PokemonDetailView extends StatelessWidget {
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -336,7 +337,7 @@ class PokemonDetailView extends StatelessWidget {
                   ],
                 ),
               );
-            }).toList(),
+            }),
             if (pokemon.totalEVs == 0)
               const Center(
                 child: Text(
@@ -374,7 +375,7 @@ class PokemonDetailView extends StatelessWidget {
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -396,8 +397,7 @@ class PokemonDetailView extends StatelessWidget {
             const SizedBox(height: 12),
             _buildInfoRow('Pokemon ID', pokemon.id),
             _buildInfoRow('Species', pokemon.speciesName),
-            if (pokemon.isShiny)
-              _buildInfoRow('Shiny', 'Yes ✨'),
+            if (pokemon.isShiny) _buildInfoRow('Shiny', 'Yes ✨'),
           ],
         ),
       ),

@@ -23,11 +23,20 @@ class DamageCalculatorService {
     bool isBurned = false,
   }) {
     if (movePower == 0) {
-      return {'min': 0, 'max': 0, 'minPercent': 0.0, 'maxPercent': 0.0, 'hits': 'No damage'};
+      return {
+        'min': 0,
+        'max': 0,
+        'minPercent': 0.0,
+        'maxPercent': 0.0,
+        'hits': 'No damage'
+      };
     }
 
     // Base damage
-    double baseDamage = ((2.0 * level / 5.0 + 2) * movePower * attackStat / defenseStat) / 50.0 + 2;
+    double baseDamage =
+        ((2.0 * level / 5.0 + 2) * movePower * attackStat / defenseStat) /
+                50.0 +
+            2;
 
     // Critical hit (1.5x in Gen VI+)
     if (isCritical) baseDamage *= 1.5;
@@ -39,13 +48,15 @@ class DamageCalculatorService {
     }
 
     // Type effectiveness
-    double typeEffect = TypeEffectivenessService.getCombinedEffectiveness(moveType, defenderTypes);
+    double typeEffect = TypeEffectivenessService.getCombinedEffectiveness(
+        moveType, defenderTypes);
 
     // Burn (halves physical damage)
     double burnMod = (isBurned && moveCategory == 'physical') ? 0.5 : 1.0;
 
     // Combined modifiers (excluding random)
-    double modifier = stabMod * typeEffect * weatherMod * screenMod * burnMod * otherMod;
+    double modifier =
+        stabMod * typeEffect * weatherMod * screenMod * burnMod * otherMod;
 
     // Min roll (0.85) and max roll (1.0)
     int minDamage = max(1, (baseDamage * 0.85 * modifier).floor());

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class UsageStatsScreen extends StatefulWidget {
-  const UsageStatsScreen({Key? key}) : super(key: key);
+  const UsageStatsScreen({super.key});
 
   @override
   State<UsageStatsScreen> createState() => _UsageStatsScreenState();
@@ -14,13 +14,21 @@ class _UsageStatsScreenState extends State<UsageStatsScreen> {
   static const Map<String, List<Map<String, dynamic>>> _tierData = {
     'OU': [
       {'name': 'Great Tusk', 'usage': 28.5, 'role': 'Hazard Lead / Spinner'},
-      {'name': 'Gholdengo', 'usage': 26.1, 'role': 'Special Attacker / Hazard Blocker'},
+      {
+        'name': 'Gholdengo',
+        'usage': 26.1,
+        'role': 'Special Attacker / Hazard Blocker'
+      },
       {'name': 'Kingambit', 'usage': 24.8, 'role': 'Wincon / Sucker Punch'},
       {'name': 'Dragapult', 'usage': 22.3, 'role': 'Fast Attacker / Hex'},
       {'name': 'Iron Valiant', 'usage': 20.1, 'role': 'Mixed Attacker'},
       {'name': 'Gliscor', 'usage': 19.7, 'role': 'Defensive Pivot / Toxic'},
       {'name': 'Heatran', 'usage': 18.9, 'role': 'Special Wall / Trapper'},
-      {'name': 'Landorus-Therian', 'usage': 18.2, 'role': 'Pivot / Stealth Rock'},
+      {
+        'name': 'Landorus-Therian',
+        'usage': 18.2,
+        'role': 'Pivot / Stealth Rock'
+      },
       {'name': 'Corviknight', 'usage': 17.5, 'role': 'Physical Wall / Defog'},
       {'name': 'Darkrai', 'usage': 16.8, 'role': 'Special Sweeper / Dark Void'},
       {'name': 'Samurott-Hisui', 'usage': 15.3, 'role': 'Ceaseless Edge Spam'},
@@ -48,14 +56,22 @@ class _UsageStatsScreenState extends State<UsageStatsScreen> {
     ],
     'Uber': [
       {'name': 'Koraidon', 'usage': 45.2, 'role': 'Physical Sweeper / Sun'},
-      {'name': 'Miraidon', 'usage': 43.8, 'role': 'Special Sweeper / Electric Terrain'},
+      {
+        'name': 'Miraidon',
+        'usage': 43.8,
+        'role': 'Special Sweeper / Electric Terrain'
+      },
       {'name': 'Calyrex-Shadow', 'usage': 35.1, 'role': 'Special Sweeper'},
       {'name': 'Zacian-Crowned', 'usage': 32.7, 'role': 'Physical Sweeper'},
       {'name': 'Arceus', 'usage': 28.4, 'role': 'Support / Various Types'},
       {'name': 'Kyogre', 'usage': 25.9, 'role': 'Rain Special Attacker'},
       {'name': 'Ho-Oh', 'usage': 22.3, 'role': 'Physical Wall / Regenerator'},
       {'name': 'Giratina-Origin', 'usage': 20.8, 'role': 'Defog / Spinblocker'},
-      {'name': 'Necrozma-Dusk Mane', 'usage': 19.5, 'role': 'Physical Tank / Stealth Rock'},
+      {
+        'name': 'Necrozma-Dusk Mane',
+        'usage': 19.5,
+        'role': 'Physical Tank / Stealth Rock'
+      },
       {'name': 'Groudon', 'usage': 18.1, 'role': 'Sun Support / Physical'},
     ],
     'VGC': [
@@ -65,10 +81,22 @@ class _UsageStatsScreenState extends State<UsageStatsScreen> {
       {'name': 'Amoonguss', 'usage': 26.4, 'role': 'Spore / Redirector'},
       {'name': 'Urshifu-Rapid', 'usage': 24.7, 'role': 'Physical Sweeper'},
       {'name': 'Tornadus', 'usage': 22.1, 'role': 'Tailwind Support'},
-      {'name': 'Chien-Pao', 'usage': 20.5, 'role': 'Physical Sweeper / Sword of Ruin'},
-      {'name': 'Landorus', 'usage': 19.8, 'role': 'Special Attacker / Intimidate'},
+      {
+        'name': 'Chien-Pao',
+        'usage': 20.5,
+        'role': 'Physical Sweeper / Sword of Ruin'
+      },
+      {
+        'name': 'Landorus',
+        'usage': 19.8,
+        'role': 'Special Attacker / Intimidate'
+      },
       {'name': 'Iron Hands', 'usage': 18.3, 'role': 'Fake Out / Bulk'},
-      {'name': 'Ogerpon-Wellspring', 'usage': 17.6, 'role': 'Water Tera / Attacker'},
+      {
+        'name': 'Ogerpon-Wellspring',
+        'usage': 17.6,
+        'role': 'Water Tera / Attacker'
+      },
     ],
   };
 
@@ -79,31 +107,39 @@ class _UsageStatsScreenState extends State<UsageStatsScreen> {
     final tierPokemon = _tierData[_selectedTier] ?? [];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Usage Stats & Tiers'), backgroundColor: Colors.red),
+      appBar: AppBar(
+          title: const Text('Usage Stats & Tiers'),
+          backgroundColor: Colors.red),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
-              children: _tiers.map((tier) => Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                  child: ChoiceChip(
-                    label: Text(tier),
-                    selected: _selectedTier == tier,
-                    onSelected: (v) => setState(() => _selectedTier = tier),
-                  ),
-                ),
-              )).toList(),
+              children: _tiers
+                  .map((tier) => Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2),
+                          child: ChoiceChip(
+                            label: Text(tier),
+                            selected: _selectedTier == tier,
+                            onSelected: (v) =>
+                                setState(() => _selectedTier = tier),
+                          ),
+                        ),
+                      ))
+                  .toList(),
             ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Row(
               children: [
-                Text('$_selectedTier Tier', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                Text('$_selectedTier Tier',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 18)),
                 const Spacer(),
-                const Text('Gen 9 (approximate)', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                const Text('Gen 9 (approximate)',
+                    style: TextStyle(color: Colors.grey, fontSize: 12)),
               ],
             ),
           ),
@@ -118,17 +154,26 @@ class _UsageStatsScreenState extends State<UsageStatsScreen> {
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundColor: _usageColor(usage),
-                      child: Text('${index + 1}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      child: Text('${index + 1}',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold)),
                     ),
-                    title: Text(pokemon['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text(pokemon['role'], style: const TextStyle(fontSize: 12)),
+                    title: Text(pokemon['name'],
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(pokemon['role'],
+                        style: const TextStyle(fontSize: 12)),
                     trailing: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text('${usage.toStringAsFixed(1)}%',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: _usageColor(usage))),
-                        const Text('usage', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: _usageColor(usage))),
+                        const Text('usage',
+                            style: TextStyle(fontSize: 10, color: Colors.grey)),
                       ],
                     ),
                   ),

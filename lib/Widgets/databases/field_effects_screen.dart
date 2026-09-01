@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 
 class FieldEffectsScreen extends StatefulWidget {
-  const FieldEffectsScreen({Key? key}) : super(key: key);
+  const FieldEffectsScreen({super.key});
 
   @override
   State<FieldEffectsScreen> createState() => _FieldEffectsScreenState();
 }
 
-class _FieldEffectsScreenState extends State<FieldEffectsScreen> with SingleTickerProviderStateMixin {
+class _FieldEffectsScreenState extends State<FieldEffectsScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -303,7 +304,8 @@ class _FieldEffectsScreenState extends State<FieldEffectsScreen> with SingleTick
             color: AppTheme.typeColors[type] ?? Colors.grey,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Text(type, style: const TextStyle(color: Colors.white, fontSize: 11)),
+          child: Text(type,
+              style: const TextStyle(color: Colors.white, fontSize: 11)),
         ),
         title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
         initiallyExpanded: false,
@@ -312,15 +314,20 @@ class _FieldEffectsScreenState extends State<FieldEffectsScreen> with SingleTick
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: details.map((d) => Padding(
-                padding: const EdgeInsets.only(bottom: 3),
-                child: d.isEmpty
-                  ? const SizedBox(height: 4)
-                  : Text(d, style: TextStyle(
-                      fontSize: 13,
-                      color: d.startsWith('  ') ? Colors.blue.shade700 : null,
-                    )),
-              )).toList(),
+              children: details
+                  .map((d) => Padding(
+                        padding: const EdgeInsets.only(bottom: 3),
+                        child: d.isEmpty
+                            ? const SizedBox(height: 4)
+                            : Text(d,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: d.startsWith('  ')
+                                      ? Colors.blue.shade700
+                                      : null,
+                                )),
+                      ))
+                  .toList(),
             ),
           ),
         ],

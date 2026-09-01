@@ -4,7 +4,7 @@ import '../../services/pokeapi_service.dart';
 import '../../services/experience_service.dart';
 
 class XPCalculatorScreen extends StatefulWidget {
-  const XPCalculatorScreen({Key? key}) : super(key: key);
+  const XPCalculatorScreen({super.key});
 
   @override
   State<XPCalculatorScreen> createState() => _XPCalculatorScreenState();
@@ -44,7 +44,8 @@ class _XPCalculatorScreenState extends State<XPCalculatorScreen> {
 
   Future<void> _loadPokemonGrowthRate(String name) async {
     try {
-      final species = await PokeApiService.getPokemonSpecies(name.toLowerCase());
+      final species =
+          await PokeApiService.getPokemonSpecies(name.toLowerCase());
       if (!mounted) return;
       final rate = species['growth_rate']?['name'] as String?;
       if (rate != null) {
@@ -57,7 +58,10 @@ class _XPCalculatorScreenState extends State<XPCalculatorScreen> {
   }
 
   String _formatName(String name) {
-    return name.split('-').map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1)).join(' ');
+    return name
+        .split('-')
+        .map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1))
+        .join(' ');
   }
 
   String _formatNumber(int n) {
@@ -68,12 +72,16 @@ class _XPCalculatorScreenState extends State<XPCalculatorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final xpNeeded = ExperienceService.xpBetweenLevels(_growthRate, _currentLevel, _targetLevel);
-    final totalXPTarget = ExperienceService.totalXPForLevel(_growthRate, _targetLevel);
-    final totalXPCurrent = ExperienceService.totalXPForLevel(_growthRate, _currentLevel);
+    final xpNeeded = ExperienceService.xpBetweenLevels(
+        _growthRate, _currentLevel, _targetLevel);
+    final totalXPTarget =
+        ExperienceService.totalXPForLevel(_growthRate, _targetLevel);
+    final totalXPCurrent =
+        ExperienceService.totalXPForLevel(_growthRate, _currentLevel);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('XP Calculator'), backgroundColor: Colors.red),
+      appBar: AppBar(
+          title: const Text('XP Calculator'), backgroundColor: Colors.red),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -87,16 +95,22 @@ class _XPCalculatorScreenState extends State<XPCalculatorScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Pokemon (optional)', style: TextStyle(fontWeight: FontWeight.bold)),
+                          const Text('Pokemon (optional)',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                           const SizedBox(height: 8),
                           Autocomplete<String>(
                             optionsBuilder: (v) {
                               if (v.text.isEmpty) return const Iterable.empty();
-                              return _pokemonNames.where((n) => n.contains(v.text.toLowerCase())).take(10);
+                              return _pokemonNames
+                                  .where(
+                                      (n) => n.contains(v.text.toLowerCase()))
+                                  .take(10);
                             },
                             onSelected: _loadPokemonGrowthRate,
-                            fieldViewBuilder: (ctx, ctrl, focus, submit) => TextField(
-                              controller: ctrl, focusNode: focus,
+                            fieldViewBuilder: (ctx, ctrl, focus, submit) =>
+                                TextField(
+                              controller: ctrl,
+                              focusNode: focus,
                               decoration: const InputDecoration(
                                 hintText: 'Auto-detect growth rate...',
                                 border: OutlineInputBorder(),
@@ -104,15 +118,23 @@ class _XPCalculatorScreenState extends State<XPCalculatorScreen> {
                             ),
                           ),
                           const SizedBox(height: 12),
-                          const Text('Growth Rate', style: TextStyle(fontWeight: FontWeight.bold)),
+                          const Text('Growth Rate',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<String>(
-                            initialValue: _growthRate, isExpanded: true,
-                            decoration: const InputDecoration(border: OutlineInputBorder()),
-                            items: ExperienceService.allGrowthRates.map((r) =>
-                              DropdownMenuItem(value: r,
-                                child: Text(ExperienceService.groupDescriptions[r] ?? r,
-                                  style: const TextStyle(fontSize: 13)))).toList(),
+                            initialValue: _growthRate,
+                            isExpanded: true,
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder()),
+                            items: ExperienceService.allGrowthRates
+                                .map((r) => DropdownMenuItem(
+                                    value: r,
+                                    child: Text(
+                                        ExperienceService
+                                                .groupDescriptions[r] ??
+                                            r,
+                                        style: const TextStyle(fontSize: 13))))
+                                .toList(),
                             onChanged: (v) => setState(() => _growthRate = v!),
                           ),
                           const SizedBox(height: 12),
@@ -122,9 +144,15 @@ class _XPCalculatorScreenState extends State<XPCalculatorScreen> {
                                 child: TextField(
                                   controller: _currentCtrl,
                                   keyboardType: TextInputType.number,
-                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                  decoration: const InputDecoration(labelText: 'Current Level', border: OutlineInputBorder()),
-                                  onChanged: (v) => setState(() => _currentLevel = (int.tryParse(v) ?? 1).clamp(1, 100)),
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ],
+                                  decoration: const InputDecoration(
+                                      labelText: 'Current Level',
+                                      border: OutlineInputBorder()),
+                                  onChanged: (v) => setState(() =>
+                                      _currentLevel =
+                                          (int.tryParse(v) ?? 1).clamp(1, 100)),
                                 ),
                               ),
                               const Padding(
@@ -135,9 +163,15 @@ class _XPCalculatorScreenState extends State<XPCalculatorScreen> {
                                 child: TextField(
                                   controller: _targetCtrl,
                                   keyboardType: TextInputType.number,
-                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                  decoration: const InputDecoration(labelText: 'Target Level', border: OutlineInputBorder()),
-                                  onChanged: (v) => setState(() => _targetLevel = (int.tryParse(v) ?? 100).clamp(1, 100)),
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ],
+                                  decoration: const InputDecoration(
+                                      labelText: 'Target Level',
+                                      border: OutlineInputBorder()),
+                                  onChanged: (v) => setState(() =>
+                                      _targetLevel = (int.tryParse(v) ?? 100)
+                                          .clamp(1, 100)),
                                 ),
                               ),
                             ],
@@ -154,10 +188,15 @@ class _XPCalculatorScreenState extends State<XPCalculatorScreen> {
                       child: Column(
                         children: [
                           Text(_formatNumber(xpNeeded),
-                            style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.blue)),
-                          const Text('XP needed', style: TextStyle(color: Colors.grey)),
+                              style: const TextStyle(
+                                  fontSize: 36,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue)),
+                          const Text('XP needed',
+                              style: TextStyle(color: Colors.grey)),
                           const Divider(height: 24),
-                          _row('Current total XP', _formatNumber(totalXPCurrent)),
+                          _row('Current total XP',
+                              _formatNumber(totalXPCurrent)),
                           _row('Target total XP', _formatNumber(totalXPTarget)),
                           _row('Growth rate', _formatName(_growthRate)),
                           if (_selectedPokemon != null)
@@ -169,7 +208,8 @@ class _XPCalculatorScreenState extends State<XPCalculatorScreen> {
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
                     onPressed: () => setState(() => _showTable = !_showTable),
-                    icon: Icon(_showTable ? Icons.expand_less : Icons.expand_more),
+                    icon: Icon(
+                        _showTable ? Icons.expand_less : Icons.expand_more),
                     label: Text(_showTable ? 'Hide XP Table' : 'Show XP Table'),
                   ),
                   if (_showTable) ...[
@@ -187,7 +227,10 @@ class _XPCalculatorScreenState extends State<XPCalculatorScreen> {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [Text(label), Text(value, style: const TextStyle(fontWeight: FontWeight.bold))],
+        children: [
+          Text(label),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold))
+        ],
       ),
     );
   }
@@ -199,20 +242,31 @@ class _XPCalculatorScreenState extends State<XPCalculatorScreen> {
         child: DataTable(
           columnSpacing: 16,
           columns: const [
-            DataColumn(label: Text('Lv', style: TextStyle(fontWeight: FontWeight.bold))),
-            DataColumn(label: Text('Total XP', style: TextStyle(fontWeight: FontWeight.bold))),
-            DataColumn(label: Text('To Next', style: TextStyle(fontWeight: FontWeight.bold))),
+            DataColumn(
+                label:
+                    Text('Lv', style: TextStyle(fontWeight: FontWeight.bold))),
+            DataColumn(
+                label: Text('Total XP',
+                    style: TextStyle(fontWeight: FontWeight.bold))),
+            DataColumn(
+                label: Text('To Next',
+                    style: TextStyle(fontWeight: FontWeight.bold))),
           ],
-          rows: table.where((r) => r['level'] % 5 == 0 || r['level'] == 1).map((r) =>
-            DataRow(
-              color: r['level'] >= _currentLevel && r['level'] <= _targetLevel
-                ? WidgetStateProperty.all(Colors.blue.withValues(alpha: 0.1)) : null,
-              cells: [
-                DataCell(Text('${r['level']}')),
-                DataCell(Text(_formatNumber(r['totalXP']))),
-                DataCell(Text(_formatNumber(r['xpToNext']))),
-              ],
-            )).toList(),
+          rows: table
+              .where((r) => r['level'] % 5 == 0 || r['level'] == 1)
+              .map((r) => DataRow(
+                    color: r['level'] >= _currentLevel &&
+                            r['level'] <= _targetLevel
+                        ? WidgetStateProperty.all(
+                            Colors.blue.withValues(alpha: 0.1))
+                        : null,
+                    cells: [
+                      DataCell(Text('${r['level']}')),
+                      DataCell(Text(_formatNumber(r['totalXP']))),
+                      DataCell(Text(_formatNumber(r['xpToNext']))),
+                    ],
+                  ))
+              .toList(),
         ),
       ),
     );

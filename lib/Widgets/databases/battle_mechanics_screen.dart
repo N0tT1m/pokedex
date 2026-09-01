@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 
 class BattleMechanicsScreen extends StatelessWidget {
-  const BattleMechanicsScreen({Key? key}) : super(key: key);
+  const BattleMechanicsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -40,29 +40,144 @@ class _MegaEvolutionTab extends StatelessWidget {
   const _MegaEvolutionTab();
 
   static const _megaEvolutions = [
-    {'pokemon': 'Venusaur', 'type': 'Grass, Poison', 'ability': 'Thick Fat', 'stone': 'Venusaurite'},
-    {'pokemon': 'Charizard X', 'type': 'Fire, Dragon', 'ability': 'Tough Claws', 'stone': 'Charizardite X'},
-    {'pokemon': 'Charizard Y', 'type': 'Fire, Flying', 'ability': 'Drought', 'stone': 'Charizardite Y'},
-    {'pokemon': 'Blastoise', 'type': 'Water', 'ability': 'Mega Launcher', 'stone': 'Blastoisinite'},
-    {'pokemon': 'Alakazam', 'type': 'Psychic', 'ability': 'Trace', 'stone': 'Alakazite'},
-    {'pokemon': 'Gengar', 'type': 'Ghost, Poison', 'ability': 'Shadow Tag', 'stone': 'Gengarite'},
-    {'pokemon': 'Kangaskhan', 'type': 'Normal', 'ability': 'Parental Bond', 'stone': 'Kangaskhanite'},
-    {'pokemon': 'Pinsir', 'type': 'Bug, Flying', 'ability': 'Aerilate', 'stone': 'Pinsirite'},
-    {'pokemon': 'Gyarados', 'type': 'Water, Dark', 'ability': 'Mold Breaker', 'stone': 'Gyaradosite'},
-    {'pokemon': 'Scizor', 'type': 'Bug, Steel', 'ability': 'Technician', 'stone': 'Scizorite'},
-    {'pokemon': 'Tyranitar', 'type': 'Rock, Dark', 'ability': 'Sand Stream', 'stone': 'Tyranitarite'},
-    {'pokemon': 'Blaziken', 'type': 'Fire, Fighting', 'ability': 'Speed Boost', 'stone': 'Blazikenite'},
-    {'pokemon': 'Gardevoir', 'type': 'Psychic, Fairy', 'ability': 'Pixilate', 'stone': 'Gardevoirite'},
-    {'pokemon': 'Mawile', 'type': 'Steel, Fairy', 'ability': 'Huge Power', 'stone': 'Mawilite'},
-    {'pokemon': 'Aggron', 'type': 'Steel', 'ability': 'Filter', 'stone': 'Aggronite'},
-    {'pokemon': 'Medicham', 'type': 'Fighting, Psychic', 'ability': 'Pure Power', 'stone': 'Medichamite'},
-    {'pokemon': 'Manectric', 'type': 'Electric', 'ability': 'Intimidate', 'stone': 'Manectite'},
-    {'pokemon': 'Garchomp', 'type': 'Dragon, Ground', 'ability': 'Sand Force', 'stone': 'Garchompite'},
-    {'pokemon': 'Lucario', 'type': 'Fighting, Steel', 'ability': 'Adaptability', 'stone': 'Lucarionite'},
-    {'pokemon': 'Metagross', 'type': 'Steel, Psychic', 'ability': 'Tough Claws', 'stone': 'Metagrossite'},
-    {'pokemon': 'Rayquaza', 'type': 'Dragon, Flying', 'ability': 'Delta Stream', 'stone': 'Dragon Ascent'},
-    {'pokemon': 'Lopunny', 'type': 'Normal, Fighting', 'ability': 'Scrappy', 'stone': 'Lopunnite'},
-    {'pokemon': 'Salamence', 'type': 'Dragon, Flying', 'ability': 'Aerilate', 'stone': 'Salamencite'},
+    {
+      'pokemon': 'Venusaur',
+      'type': 'Grass, Poison',
+      'ability': 'Thick Fat',
+      'stone': 'Venusaurite'
+    },
+    {
+      'pokemon': 'Charizard X',
+      'type': 'Fire, Dragon',
+      'ability': 'Tough Claws',
+      'stone': 'Charizardite X'
+    },
+    {
+      'pokemon': 'Charizard Y',
+      'type': 'Fire, Flying',
+      'ability': 'Drought',
+      'stone': 'Charizardite Y'
+    },
+    {
+      'pokemon': 'Blastoise',
+      'type': 'Water',
+      'ability': 'Mega Launcher',
+      'stone': 'Blastoisinite'
+    },
+    {
+      'pokemon': 'Alakazam',
+      'type': 'Psychic',
+      'ability': 'Trace',
+      'stone': 'Alakazite'
+    },
+    {
+      'pokemon': 'Gengar',
+      'type': 'Ghost, Poison',
+      'ability': 'Shadow Tag',
+      'stone': 'Gengarite'
+    },
+    {
+      'pokemon': 'Kangaskhan',
+      'type': 'Normal',
+      'ability': 'Parental Bond',
+      'stone': 'Kangaskhanite'
+    },
+    {
+      'pokemon': 'Pinsir',
+      'type': 'Bug, Flying',
+      'ability': 'Aerilate',
+      'stone': 'Pinsirite'
+    },
+    {
+      'pokemon': 'Gyarados',
+      'type': 'Water, Dark',
+      'ability': 'Mold Breaker',
+      'stone': 'Gyaradosite'
+    },
+    {
+      'pokemon': 'Scizor',
+      'type': 'Bug, Steel',
+      'ability': 'Technician',
+      'stone': 'Scizorite'
+    },
+    {
+      'pokemon': 'Tyranitar',
+      'type': 'Rock, Dark',
+      'ability': 'Sand Stream',
+      'stone': 'Tyranitarite'
+    },
+    {
+      'pokemon': 'Blaziken',
+      'type': 'Fire, Fighting',
+      'ability': 'Speed Boost',
+      'stone': 'Blazikenite'
+    },
+    {
+      'pokemon': 'Gardevoir',
+      'type': 'Psychic, Fairy',
+      'ability': 'Pixilate',
+      'stone': 'Gardevoirite'
+    },
+    {
+      'pokemon': 'Mawile',
+      'type': 'Steel, Fairy',
+      'ability': 'Huge Power',
+      'stone': 'Mawilite'
+    },
+    {
+      'pokemon': 'Aggron',
+      'type': 'Steel',
+      'ability': 'Filter',
+      'stone': 'Aggronite'
+    },
+    {
+      'pokemon': 'Medicham',
+      'type': 'Fighting, Psychic',
+      'ability': 'Pure Power',
+      'stone': 'Medichamite'
+    },
+    {
+      'pokemon': 'Manectric',
+      'type': 'Electric',
+      'ability': 'Intimidate',
+      'stone': 'Manectite'
+    },
+    {
+      'pokemon': 'Garchomp',
+      'type': 'Dragon, Ground',
+      'ability': 'Sand Force',
+      'stone': 'Garchompite'
+    },
+    {
+      'pokemon': 'Lucario',
+      'type': 'Fighting, Steel',
+      'ability': 'Adaptability',
+      'stone': 'Lucarionite'
+    },
+    {
+      'pokemon': 'Metagross',
+      'type': 'Steel, Psychic',
+      'ability': 'Tough Claws',
+      'stone': 'Metagrossite'
+    },
+    {
+      'pokemon': 'Rayquaza',
+      'type': 'Dragon, Flying',
+      'ability': 'Delta Stream',
+      'stone': 'Dragon Ascent'
+    },
+    {
+      'pokemon': 'Lopunny',
+      'type': 'Normal, Fighting',
+      'ability': 'Scrappy',
+      'stone': 'Lopunnite'
+    },
+    {
+      'pokemon': 'Salamence',
+      'type': 'Dragon, Flying',
+      'ability': 'Aerilate',
+      'stone': 'Salamencite'
+    },
   ];
 
   @override
@@ -74,13 +189,15 @@ class _MegaEvolutionTab extends StatelessWidget {
         final mega = _megaEvolutions[index];
         return Card(
           child: ListTile(
-            title: Text('Mega ${mega['pokemon']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+            title: Text('Mega ${mega['pokemon']}',
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Type: ${mega['type']}'),
                 Text('Ability: ${mega['ability']}'),
-                Text('Item: ${mega['stone']}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                Text('Item: ${mega['stone']}',
+                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
               ],
             ),
           ),
@@ -121,23 +238,31 @@ class _ZMoveTab extends StatelessWidget {
       children: [
         const Padding(
           padding: EdgeInsets.all(12),
-          child: Text('Z-Moves are powered-up moves from Gen VII (Sun/Moon).\n'
+          child: Text(
+              'Z-Moves are powered-up moves from Gen VII (Sun/Moon).\n'
               'Requires a Z-Crystal matching the move type.\nPower scales with base move power.',
               style: TextStyle(fontStyle: FontStyle.italic)),
         ),
         ..._zMoves.map((z) => Card(
-          child: ListTile(
-            leading: Container(
-              width: 40, height: 40, alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: AppTheme.typeColors[z['type']], borderRadius: BorderRadius.circular(8)),
-              child: Text(z['type']!.substring(0, 3),
-                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-            ),
-            title: Text(z['name']!, style: const TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('Power: ${z['power']}'),
-          ),
-        )),
+              child: ListTile(
+                leading: Container(
+                  width: 40,
+                  height: 40,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: AppTheme.typeColors[z['type']],
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Text(z['type']!.substring(0, 3),
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold)),
+                ),
+                title: Text(z['name']!,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text('Power: ${z['power']}'),
+              ),
+            )),
       ],
     );
   }
@@ -159,7 +284,9 @@ class _DynamaxTab extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Dynamax', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                  Text('Dynamax',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                   SizedBox(height: 8),
                   Text('Available in Sword & Shield only.\n\n'
                       '- Pokemon grows giant for 3 turns\n'
@@ -172,14 +299,16 @@ class _DynamaxTab extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Text('Gigantamax Pokemon', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          const Text('Gigantamax Pokemon',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           const SizedBox(height: 8),
           ..._gigantamaxPokemon.map((p) => Card(
-            child: ListTile(
-              title: Text(p['pokemon']!, style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text('G-Max Move: ${p['move']} (${p['type']})'),
-            ),
-          )),
+                child: ListTile(
+                  title: Text(p['pokemon']!,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text('G-Max Move: ${p['move']} (${p['type']})'),
+                ),
+              )),
         ],
       ),
     );
@@ -228,7 +357,9 @@ class _TerastallizeTab extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Terastallize', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                  Text('Terastallize',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                   SizedBox(height: 8),
                   Text('Available in Scarlet & Violet.\n\n'
                       '- Changes Pokemon to its Tera Type\n'
@@ -242,20 +373,27 @@ class _TerastallizeTab extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Text('All 18 Tera Types Available', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          const Text('All 18 Tera Types Available',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: AppTheme.typeColors.entries.map((e) => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: e.value,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white, width: 2),
-              ),
-              child: Text(e.key, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            )).toList(),
+            children: AppTheme.typeColors.entries
+                .map((e) => Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: e.value,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                      child: Text(e.key,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold)),
+                    ))
+                .toList(),
           ),
           const SizedBox(height: 16),
           const Card(
@@ -264,7 +402,9 @@ class _TerastallizeTab extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('STAB Calculation', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text('STAB Calculation',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   SizedBox(height: 8),
                   Text('Same Tera + Original type: 2.0x'),
                   Text('Same Tera + Not original: 1.5x'),

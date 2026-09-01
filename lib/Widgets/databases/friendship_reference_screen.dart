@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class FriendshipReferenceScreen extends StatelessWidget {
-  const FriendshipReferenceScreen({Key? key}) : super(key: key);
+  const FriendshipReferenceScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Friendship & Pokerus'), backgroundColor: Colors.red),
+      appBar: AppBar(
+          title: const Text('Friendship & Pokerus'),
+          backgroundColor: Colors.red),
       body: ListView(
         padding: const EdgeInsets.all(12),
         children: [
@@ -98,7 +100,8 @@ class FriendshipReferenceScreen extends StatelessWidget {
   Widget _buildTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+      child: Text(title,
+          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
     );
   }
 
@@ -110,24 +113,34 @@ class FriendshipReferenceScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(title,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             const SizedBox(height: 8),
             ...items.map((item) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: item.isEmpty
-                ? const SizedBox(height: 4)
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (!item.startsWith('  ')) const Text('• ', style: TextStyle(color: Colors.grey)),
-                      Expanded(child: Text(item, style: TextStyle(
-                        fontSize: 13,
-                        color: item.startsWith('  ') ? Colors.blue.shade700 : null,
-                        fontFamily: item.startsWith('  ') ? 'monospace' : null,
-                      ))),
-                    ],
-                  ),
-            )),
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: item.isEmpty
+                      ? const SizedBox(height: 4)
+                      : Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (!item.startsWith('  '))
+                              const Text('• ',
+                                  style: TextStyle(color: Colors.grey)),
+                            Expanded(
+                                child: Text(item,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: item.startsWith('  ')
+                                          ? Colors.blue.shade700
+                                          : null,
+                                      fontFamily: item.startsWith('  ')
+                                          ? 'monospace'
+                                          : null,
+                                    ))),
+                          ],
+                        ),
+                )),
           ],
         ),
       ),

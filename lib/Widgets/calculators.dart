@@ -4,13 +4,14 @@ import 'iv_ev_calculator.dart';
 
 /// Combined widget for all calculators
 class Calculators extends StatefulWidget {
-  const Calculators({Key? key}) : super(key: key);
+  const Calculators({super.key});
 
   @override
   State<Calculators> createState() => _CalculatorsState();
 }
 
-class _CalculatorsState extends State<Calculators> with SingleTickerProviderStateMixin {
+class _CalculatorsState extends State<Calculators>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override

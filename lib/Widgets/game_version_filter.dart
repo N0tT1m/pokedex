@@ -5,7 +5,7 @@ import '../services/pokemondb_service.dart';
 
 /// Widget for browsing the Pokedex by game version
 class GameVersionFilter extends StatefulWidget {
-  const GameVersionFilter({Key? key}) : super(key: key);
+  const GameVersionFilter({super.key});
 
   @override
   State<GameVersionFilter> createState() => _GameVersionFilterState();
@@ -38,74 +38,190 @@ class _GameVersionFilterState extends State<GameVersionFilter>
     {
       'generation': 'Generation I',
       'games': [
-        {'key': 'red-blue', 'name': 'Red / Blue', 'color': Colors.red, 'nationalDexMax': 151},
-        {'key': 'yellow', 'name': 'Yellow', 'color': Colors.amber, 'nationalDexMax': 151},
+        {
+          'key': 'red-blue',
+          'name': 'Red / Blue',
+          'color': Colors.red,
+          'nationalDexMax': 151
+        },
+        {
+          'key': 'yellow',
+          'name': 'Yellow',
+          'color': Colors.amber,
+          'nationalDexMax': 151
+        },
       ],
     },
     {
       'generation': 'Generation II',
       'games': [
-        {'key': 'gold-silver', 'name': 'Gold / Silver', 'color': Colors.orange, 'nationalDexMax': 251},
-        {'key': 'crystal', 'name': 'Crystal', 'color': Colors.cyan, 'nationalDexMax': 251},
+        {
+          'key': 'gold-silver',
+          'name': 'Gold / Silver',
+          'color': Colors.orange,
+          'nationalDexMax': 251
+        },
+        {
+          'key': 'crystal',
+          'name': 'Crystal',
+          'color': Colors.cyan,
+          'nationalDexMax': 251
+        },
       ],
     },
     {
       'generation': 'Generation III',
       'games': [
-        {'key': 'ruby-sapphire', 'name': 'Ruby / Sapphire', 'color': Colors.redAccent, 'nationalDexMax': 386},
-        {'key': 'emerald', 'name': 'Emerald', 'color': Colors.green, 'nationalDexMax': 386},
-        {'key': 'firered-leafgreen', 'name': 'FireRed / LeafGreen', 'color': Colors.deepOrange, 'nationalDexMax': 386},
+        {
+          'key': 'ruby-sapphire',
+          'name': 'Ruby / Sapphire',
+          'color': Colors.redAccent,
+          'nationalDexMax': 386
+        },
+        {
+          'key': 'emerald',
+          'name': 'Emerald',
+          'color': Colors.green,
+          'nationalDexMax': 386
+        },
+        {
+          'key': 'firered-leafgreen',
+          'name': 'FireRed / LeafGreen',
+          'color': Colors.deepOrange,
+          'nationalDexMax': 386
+        },
       ],
     },
     {
       'generation': 'Generation IV',
       'games': [
-        {'key': 'diamond-pearl', 'name': 'Diamond / Pearl', 'color': Colors.blueAccent, 'nationalDexMax': 493},
-        {'key': 'platinum', 'name': 'Platinum', 'color': Colors.grey, 'nationalDexMax': 493},
-        {'key': 'heartgold-soulsilver', 'name': 'HeartGold / SoulSilver', 'color': Colors.amber, 'nationalDexMax': 493},
+        {
+          'key': 'diamond-pearl',
+          'name': 'Diamond / Pearl',
+          'color': Colors.blueAccent,
+          'nationalDexMax': 493
+        },
+        {
+          'key': 'platinum',
+          'name': 'Platinum',
+          'color': Colors.grey,
+          'nationalDexMax': 493
+        },
+        {
+          'key': 'heartgold-soulsilver',
+          'name': 'HeartGold / SoulSilver',
+          'color': Colors.amber,
+          'nationalDexMax': 493
+        },
       ],
     },
     {
       'generation': 'Generation V',
       'games': [
-        {'key': 'black-white', 'name': 'Black / White', 'color': Colors.blueGrey, 'nationalDexMax': 649},
-        {'key': 'black-2-white-2', 'name': 'Black 2 / White 2', 'color': Colors.blueGrey, 'nationalDexMax': 649},
+        {
+          'key': 'black-white',
+          'name': 'Black / White',
+          'color': Colors.blueGrey,
+          'nationalDexMax': 649
+        },
+        {
+          'key': 'black-2-white-2',
+          'name': 'Black 2 / White 2',
+          'color': Colors.blueGrey,
+          'nationalDexMax': 649
+        },
       ],
     },
     {
       'generation': 'Generation VI',
       'games': [
-        {'key': 'x-y', 'name': 'X / Y', 'color': Colors.indigo, 'nationalDexMax': 721},
-        {'key': 'omega-ruby-alpha-sapphire', 'name': 'Omega Ruby / Alpha Sapphire', 'color': Colors.redAccent, 'nationalDexMax': 721},
+        {
+          'key': 'x-y',
+          'name': 'X / Y',
+          'color': Colors.indigo,
+          'nationalDexMax': 721
+        },
+        {
+          'key': 'omega-ruby-alpha-sapphire',
+          'name': 'Omega Ruby / Alpha Sapphire',
+          'color': Colors.redAccent,
+          'nationalDexMax': 721
+        },
       ],
     },
     {
       'generation': 'Generation VII',
       'games': [
-        {'key': 'sun-moon', 'name': 'Sun / Moon', 'color': Colors.orange, 'nationalDexMax': 802},
-        {'key': 'ultra-sun-ultra-moon', 'name': 'Ultra Sun / Ultra Moon', 'color': Colors.deepOrange, 'nationalDexMax': 807},
-        {'key': 'lets-go-pikachu-lets-go-eevee', 'name': "Let's Go Pikachu / Eevee", 'color': Colors.yellow, 'nationalDexMax': 809},
+        {
+          'key': 'sun-moon',
+          'name': 'Sun / Moon',
+          'color': Colors.orange,
+          'nationalDexMax': 802
+        },
+        {
+          'key': 'ultra-sun-ultra-moon',
+          'name': 'Ultra Sun / Ultra Moon',
+          'color': Colors.deepOrange,
+          'nationalDexMax': 807
+        },
+        {
+          'key': 'lets-go-pikachu-lets-go-eevee',
+          'name': "Let's Go Pikachu / Eevee",
+          'color': Colors.yellow,
+          'nationalDexMax': 809
+        },
       ],
     },
     {
       'generation': 'Generation VIII',
       'games': [
-        {'key': 'sword-shield', 'name': 'Sword / Shield', 'color': Colors.blue, 'nationalDexMax': 898},
-        {'key': 'brilliant-diamond-shining-pearl', 'name': 'Brilliant Diamond / Shining Pearl', 'color': Colors.lightBlue, 'nationalDexMax': 493},
-        {'key': 'legends-arceus', 'name': 'Legends: Arceus', 'color': Colors.teal, 'nationalDexMax': 905},
+        {
+          'key': 'sword-shield',
+          'name': 'Sword / Shield',
+          'color': Colors.blue,
+          'nationalDexMax': 898
+        },
+        {
+          'key': 'brilliant-diamond-shining-pearl',
+          'name': 'Brilliant Diamond / Shining Pearl',
+          'color': Colors.lightBlue,
+          'nationalDexMax': 493
+        },
+        {
+          'key': 'legends-arceus',
+          'name': 'Legends: Arceus',
+          'color': Colors.teal,
+          'nationalDexMax': 905
+        },
       ],
     },
     {
       'generation': 'Generation IX',
       'games': [
-        {'key': 'scarlet-violet', 'name': 'Scarlet / Violet', 'color': Colors.deepPurple, 'nationalDexMax': 1025},
-        {'key': 'the-teal-mask', 'name': 'The Teal Mask (DLC)', 'color': Colors.teal, 'nationalDexMax': 1025},
-        {'key': 'the-indigo-disk', 'name': 'The Indigo Disk (DLC)', 'color': Colors.indigo, 'nationalDexMax': 1025},
+        {
+          'key': 'scarlet-violet',
+          'name': 'Scarlet / Violet',
+          'color': Colors.deepPurple,
+          'nationalDexMax': 1025
+        },
+        {
+          'key': 'the-teal-mask',
+          'name': 'The Teal Mask (DLC)',
+          'color': Colors.teal,
+          'nationalDexMax': 1025
+        },
+        {
+          'key': 'the-indigo-disk',
+          'name': 'The Indigo Disk (DLC)',
+          'color': Colors.indigo,
+          'nationalDexMax': 1025
+        },
       ],
     },
   ];
 
-  Future<void> _loadGamePokedex(String versionKey, String versionName, {int? nationalDexMax}) async {
+  Future<void> _loadGamePokedex(String versionKey, String versionName,
+      {int? nationalDexMax}) async {
     setState(() {
       _selectedVersionKey = versionKey;
       _selectedVersionName = versionName;
@@ -140,16 +256,22 @@ class _GameVersionFilterState extends State<GameVersionFilter>
           }
 
           final pokedexData = await PokeApiService.getPokedex(pokedexId);
-          final List<dynamic> pokemonSpecies = pokedexData['pokemon_entries'] ?? [];
+          final List<dynamic> pokemonSpecies =
+              pokedexData['pokemon_entries'] ?? [];
           final dexName = PokemonDataFormatter.capitalize(
-            (pokedexData['name'] ?? pokedexName ?? 'Unknown').toString().replaceAll('-', ' '),
+            (pokedexData['name'] ?? pokedexName ?? 'Unknown')
+                .toString()
+                .replaceAll('-', ' '),
           );
 
           List<Map<String, dynamic>> entries = [];
           for (var entry in pokemonSpecies) {
             final entryNumber = entry['entry_number'];
             // Filter national dex by generation limit if applicable
-            if (isNational && nationalDexMax != null && entryNumber is int && entryNumber > nationalDexMax) {
+            if (isNational &&
+                nationalDexMax != null &&
+                entryNumber is int &&
+                entryNumber > nationalDexMax) {
               continue;
             }
             final speciesName = entry['pokemon_species']['name'];
@@ -168,7 +290,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
             });
           }
 
-          entries.sort((a, b) => (a['entry_number'] as int).compareTo(b['entry_number'] as int));
+          entries.sort((a, b) =>
+              (a['entry_number'] as int).compareTo(b['entry_number'] as int));
           names.add(dexName);
           groups[dexName] = entries;
         }
@@ -177,7 +300,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
       // Add filtered national dex if none was provided by the API
       if (!hasNational && nationalDexMax != null) {
         final nationalData = await PokeApiService.getPokedex(1);
-        final List<dynamic> nationalSpecies = nationalData['pokemon_entries'] ?? [];
+        final List<dynamic> nationalSpecies =
+            nationalData['pokemon_entries'] ?? [];
 
         List<Map<String, dynamic>> nationalEntries = [];
         for (var entry in nationalSpecies) {
@@ -200,7 +324,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
           });
         }
 
-        nationalEntries.sort((a, b) => (a['entry_number'] as int).compareTo(b['entry_number'] as int));
+        nationalEntries.sort((a, b) =>
+            (a['entry_number'] as int).compareTo(b['entry_number'] as int));
         names.add('National');
         groups['National'] = nationalEntries;
       }
@@ -279,7 +404,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
 
       // Fetch encounter locations
       try {
-        final encounterData = await PokemonDBService.getEncounterLocations(apiName);
+        final encounterData =
+            await PokemonDBService.getEncounterLocations(apiName);
         List<String> locations = [];
         for (var entry in encounterData.entries) {
           if (entry.value.isNotEmpty) {
@@ -347,13 +473,12 @@ class _GameVersionFilterState extends State<GameVersionFilter>
     return _selectedPokemonData![key] ?? [];
   }
 
-  Widget _buildEvolutionNode(Map<String, dynamic> node, {bool showInfo = false}) {
+  Widget _buildEvolutionNode(Map<String, dynamic> node,
+      {bool showInfo = false}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (showInfo &&
-            node['info'] != null &&
-            node['info'] != node['name'])
+        if (showInfo && node['info'] != null && node['info'] != node['name'])
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
             child: Text(
@@ -366,7 +491,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
           Image.network(
             node['img'],
             height: 80,
-            errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+            errorBuilder: (context, error, stackTrace) =>
+                const Icon(Icons.error),
           ),
         const SizedBox(height: 4),
         if (node['name'] != null)
@@ -392,7 +518,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
             child: Icon(Icons.arrow_downward),
           ),
           if (evolvesTo.length == 1)
-            _buildEvolutionTree(evolvesTo[0] as Map<String, dynamic>, isRoot: false)
+            _buildEvolutionTree(evolvesTo[0] as Map<String, dynamic>,
+                isRoot: false)
           else
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -403,7 +530,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
                   for (var child in evolvesTo)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: _buildEvolutionTree(child as Map<String, dynamic>, isRoot: false),
+                      child: _buildEvolutionTree(child as Map<String, dynamic>,
+                          isRoot: false),
                     ),
                 ],
               ),
@@ -445,7 +573,9 @@ class _GameVersionFilterState extends State<GameVersionFilter>
                   ),
                 ),
               ),
-              if (_selectedVersionKey != null && _selectedPokemonData == null && _pokedexNames.isNotEmpty)
+              if (_selectedVersionKey != null &&
+                  _selectedPokemonData == null &&
+                  _pokedexNames.isNotEmpty)
                 Text(
                   '${_pokedexNames.length} ${_pokedexNames.length == 1 ? "Dex" : "Dexes"}',
                   style: const TextStyle(color: Colors.white70, fontSize: 14),
@@ -503,7 +633,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _loadGamePokedex(game['key'], game['name'], nationalDexMax: game['nationalDexMax'] as int?),
+                  onTap: () => _loadGamePokedex(game['key'], game['name'],
+                      nationalDexMax: game['nationalDexMax'] as int?),
                 ),
               );
             }),
@@ -536,10 +667,14 @@ class _GameVersionFilterState extends State<GameVersionFilter>
           children: [
             const Icon(Icons.error_outline, size: 48, color: Colors.red),
             const SizedBox(height: 16),
-            Text(_errorMessage!, style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
+            Text(_errorMessage!,
+                style: const TextStyle(color: Colors.red),
+                textAlign: TextAlign.center),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () => _loadGamePokedex(_selectedVersionKey!, _selectedVersionName!, nationalDexMax: _selectedNationalDexMax),
+              onPressed: () => _loadGamePokedex(
+                  _selectedVersionKey!, _selectedVersionName!,
+                  nationalDexMax: _selectedNationalDexMax),
               child: const Text('Retry'),
             ),
           ],
@@ -554,7 +689,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
           children: [
             Icon(Icons.search_off, size: 48, color: Colors.grey),
             SizedBox(height: 16),
-            Text('No Pokedex data available for this game', style: TextStyle(color: Colors.grey)),
+            Text('No Pokedex data available for this game',
+                style: TextStyle(color: Colors.grey)),
           ],
         ),
       );
@@ -573,7 +709,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
               indicatorWeight: 3,
               labelColor: Colors.white,
               unselectedLabelColor: Colors.white60,
-              labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+              labelStyle:
+                  const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
               unselectedLabelStyle: const TextStyle(fontSize: 13),
               tabs: _pokedexNames.map((name) {
                 final count = _pokedexGroups[name]?.length ?? 0;
@@ -586,7 +723,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           child: Row(
             children: [
-              Icon(Icons.catching_pokemon, size: 16, color: Colors.grey.shade600),
+              Icon(Icons.catching_pokemon,
+                  size: 16, color: Colors.grey.shade600),
               const SizedBox(width: 4),
               Text(
                 '${_currentEntries.length} Pokemon',
@@ -620,7 +758,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
   Widget _buildEntryList(List<Map<String, dynamic>> entries) {
     if (entries.isEmpty) {
       return const Center(
-        child: Text('No Pokemon in this Pokedex', style: TextStyle(color: Colors.grey)),
+        child: Text('No Pokemon in this Pokedex',
+            style: TextStyle(color: Colors.grey)),
       );
     }
 
@@ -763,12 +902,10 @@ class _GameVersionFilterState extends State<GameVersionFilter>
         ),
 
         // Type Defenses
-        if (_typeDefenses.isNotEmpty)
-          _buildTypeDefensesSection(),
+        if (_typeDefenses.isNotEmpty) _buildTypeDefensesSection(),
 
         // Moves
-        if (_moveLearnset.isNotEmpty)
-          _buildMovesSection(),
+        if (_moveLearnset.isNotEmpty) _buildMovesSection(),
 
         // Evolution
         Container(
@@ -787,7 +924,10 @@ class _GameVersionFilterState extends State<GameVersionFilter>
                   ),
                   const SizedBox(height: 8),
                   if (evolution == null ||
-                      (evolution is Map && (evolution.isEmpty || (evolution['evolves_to'] as List?)?.isEmpty == true)))
+                      (evolution is Map &&
+                          (evolution.isEmpty ||
+                              (evolution['evolves_to'] as List?)?.isEmpty ==
+                                  true)))
                     const Text('This Pokemon does not evolve.')
                   else
                     _buildEvolutionTree(evolution as Map<String, dynamic>),
@@ -829,27 +969,47 @@ class _GameVersionFilterState extends State<GameVersionFilter>
   }
 
   Widget _buildTypeDefensesSection() {
-    final weaknesses = _typeDefenses.where((t) => (t['multiplier'] as num) > 1).toList();
-    final resistances = _typeDefenses.where((t) => (t['multiplier'] as num) < 1 && (t['multiplier'] as num) > 0).toList();
-    final immunities = _typeDefenses.where((t) => (t['multiplier'] as num) == 0).toList();
+    final weaknesses =
+        _typeDefenses.where((t) => (t['multiplier'] as num) > 1).toList();
+    final resistances = _typeDefenses
+        .where(
+            (t) => (t['multiplier'] as num) < 1 && (t['multiplier'] as num) > 0)
+        .toList();
+    final immunities =
+        _typeDefenses.where((t) => (t['multiplier'] as num) == 0).toList();
 
-    Widget buildRow(String label, List<Map<String, dynamic>> items, Color bgColor, Color textColor, {bool showMultiplier = true}) {
+    Widget buildRow(String label, List<Map<String, dynamic>> items,
+        Color bgColor, Color textColor,
+        {bool showMultiplier = true}) {
       if (items.isEmpty) return const SizedBox.shrink();
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: textColor)),
+          Text(label,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 13, color: textColor)),
           const SizedBox(height: 4),
           Wrap(
-            spacing: 6, runSpacing: 4,
-            children: items.map((t) => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(12)),
-              child: Text(
-                showMultiplier ? '${t['type_name']} ${t['multiplier']}x' : '${t['type_name']}',
-                style: TextStyle(fontSize: 12, color: textColor, fontWeight: FontWeight.bold),
-              ),
-            )).toList(),
+            spacing: 6,
+            runSpacing: 4,
+            children: items
+                .map((t) => Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(12)),
+                      child: Text(
+                        showMultiplier
+                            ? '${t['type_name']} ${t['multiplier']}x'
+                            : '${t['type_name']}',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: textColor,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ))
+                .toList(),
           ),
           const SizedBox(height: 8),
         ],
@@ -867,11 +1027,16 @@ class _GameVersionFilterState extends State<GameVersionFilter>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Type Defenses', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Type Defenses',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              buildRow('Weak to:', weaknesses, Colors.red.shade100, Colors.red.shade800),
-              buildRow('Resists:', resistances, Colors.green.shade100, Colors.green.shade800),
-              buildRow('Immune to:', immunities, Colors.blue.shade100, Colors.blue.shade800, showMultiplier: false),
+              buildRow('Weak to:', weaknesses, Colors.red.shade100,
+                  Colors.red.shade800),
+              buildRow('Resists:', resistances, Colors.green.shade100,
+                  Colors.green.shade800),
+              buildRow('Immune to:', immunities, Colors.blue.shade100,
+                  Colors.blue.shade800,
+                  showMultiplier: false),
             ],
           ),
         ),
@@ -885,9 +1050,12 @@ class _GameVersionFilterState extends State<GameVersionFilter>
       return moves.where((m) => seen.add(m['name']?.toString() ?? '')).toList();
     }
 
-    final levelUp = dedup(_moveLearnset.where((m) => m['learn_method'] == 'level-up').toList());
-    final tm = dedup(_moveLearnset.where((m) => m['learn_method'] == 'tm').toList());
-    final egg = dedup(_moveLearnset.where((m) => m['learn_method'] == 'egg').toList());
+    final levelUp = dedup(
+        _moveLearnset.where((m) => m['learn_method'] == 'level-up').toList());
+    final tm =
+        dedup(_moveLearnset.where((m) => m['learn_method'] == 'tm').toList());
+    final egg =
+        dedup(_moveLearnset.where((m) => m['learn_method'] == 'egg').toList());
 
     levelUp.sort((a, b) {
       final aNum = int.tryParse(a['level_or_tm']?.toString() ?? '0') ?? 0;
@@ -895,7 +1063,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
       return aNum.compareTo(bNum);
     });
 
-    Widget buildSection(String title, List<Map<String, dynamic>> moves, IconData icon, Color color) {
+    Widget buildSection(String title, List<Map<String, dynamic>> moves,
+        IconData icon, Color color) {
       if (moves.isEmpty) return const SizedBox.shrink();
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -903,17 +1072,24 @@ class _GameVersionFilterState extends State<GameVersionFilter>
           Row(children: [
             Icon(icon, size: 16, color: color),
             const SizedBox(width: 4),
-            Text('$title (${moves.length})', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: color)),
+            Text('$title (${moves.length})',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 13, color: color)),
           ]),
           const SizedBox(height: 4),
           ...moves.map((m) {
             final level = m['level_or_tm']?.toString() ?? '';
             final power = m['power'];
-            final prefix = level.isNotEmpty && level != '\u2014' && level != 'null' ? 'Lv.$level ' : '';
+            final prefix =
+                level.isNotEmpty && level != '\u2014' && level != 'null'
+                    ? 'Lv.$level '
+                    : '';
             final suffix = power != null ? ' | Pow:$power' : '';
             return Padding(
               padding: const EdgeInsets.only(bottom: 2),
-              child: Text('$prefix${m['name']} (${m['type']}, ${m['category']})$suffix', style: const TextStyle(fontSize: 12)),
+              child: Text(
+                  '$prefix${m['name']} (${m['type']}, ${m['category']})$suffix',
+                  style: const TextStyle(fontSize: 12)),
             );
           }),
           const SizedBox(height: 8),
@@ -932,7 +1108,8 @@ class _GameVersionFilterState extends State<GameVersionFilter>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Moves (${_moveLearnset.length})', style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text('Moves (${_moveLearnset.length})',
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxHeight: 400),
@@ -940,9 +1117,12 @@ class _GameVersionFilterState extends State<GameVersionFilter>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      buildSection('Level Up', levelUp, Icons.arrow_upward, Colors.blue.shade700),
-                      buildSection('TM/HM', tm, Icons.album, Colors.purple.shade700),
-                      buildSection('Egg Moves', egg, Icons.egg, Colors.orange.shade700),
+                      buildSection('Level Up', levelUp, Icons.arrow_upward,
+                          Colors.blue.shade700),
+                      buildSection(
+                          'TM/HM', tm, Icons.album, Colors.purple.shade700),
+                      buildSection(
+                          'Egg Moves', egg, Icons.egg, Colors.orange.shade700),
                     ],
                   ),
                 ),

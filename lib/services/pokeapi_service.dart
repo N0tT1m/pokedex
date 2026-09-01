@@ -76,7 +76,8 @@ class PokeApiService {
   /// Fetches Pokemon species data including evolution chain, flavor text, etc.
   /// [identifier] - Pokemon species name or ID
   /// Returns species data including evolution chain URL, genera, flavor text
-  static Future<Map<String, dynamic>> getPokemonSpecies(String identifier) async {
+  static Future<Map<String, dynamic>> getPokemonSpecies(
+      String identifier) async {
     final cacheKey = 'species_$identifier';
 
     if (_cache.containsKey(cacheKey)) {
@@ -118,7 +119,8 @@ class PokeApiService {
         _cache[cacheKey] = data;
         return data;
       } else {
-        throw Exception('Failed to load evolution chain: ${response.statusCode}');
+        throw Exception(
+            'Failed to load evolution chain: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Error fetching evolution chain: $e');
@@ -233,7 +235,8 @@ class PokeApiService {
 
   /// Fetches the move learnset for a specific Pokemon
   /// Returns a list of moves with learn_method, type, category, power, accuracy
-  static Future<List<Map<String, dynamic>>> getPokemonMoves(String identifier) async {
+  static Future<List<Map<String, dynamic>>> getPokemonMoves(
+      String identifier) async {
     final cacheKey = 'moves_$identifier';
 
     if (_cache.containsKey(cacheKey)) {
@@ -259,7 +262,8 @@ class PokeApiService {
 
   /// Fetches type defense matchups for a specific Pokemon
   /// Returns a list of {type_name, multiplier} entries
-  static Future<List<Map<String, dynamic>>> getPokemonTypeDefenses(String identifier) async {
+  static Future<List<Map<String, dynamic>>> getPokemonTypeDefenses(
+      String identifier) async {
     final cacheKey = 'typedefenses_$identifier';
 
     if (_cache.containsKey(cacheKey)) {
@@ -455,7 +459,8 @@ class PokeApiService {
   }
 
   /// Fetches flavor text / Pokedex entries for a Pokemon across game versions
-  static Future<List<Map<String, dynamic>>> getPokemonFlavorText(String identifier) async {
+  static Future<List<Map<String, dynamic>>> getPokemonFlavorText(
+      String identifier) async {
     final cacheKey = 'flavor_text_$identifier';
 
     if (_cache.containsKey(cacheKey)) {
@@ -480,7 +485,8 @@ class PokeApiService {
   }
 
   /// Fetches localized names for a Pokemon (multi-language)
-  static Future<List<Map<String, dynamic>>> getPokemonNames(String identifier) async {
+  static Future<List<Map<String, dynamic>>> getPokemonNames(
+      String identifier) async {
     final cacheKey = 'names_$identifier';
 
     if (_cache.containsKey(cacheKey)) {
@@ -505,7 +511,8 @@ class PokeApiService {
   }
 
   /// Fetches all sprites for a Pokemon across generations
-  static Future<List<Map<String, dynamic>>> getPokemonAllSprites(String identifier) async {
+  static Future<List<Map<String, dynamic>>> getPokemonAllSprites(
+      String identifier) async {
     final cacheKey = 'sprites_all_$identifier';
 
     if (_cache.containsKey(cacheKey)) {

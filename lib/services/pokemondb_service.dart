@@ -116,15 +116,18 @@ class PokemonDBService {
         final key = '$region - $route';
         final details = <String>[];
         if (games.isNotEmpty) {
-          final expandedGames = games
-              .map((g) => _expandGame(g, region))
-              .toList();
+          final expandedGames =
+              games.map((g) => _expandGame(g, region)).toList();
           details.add(expandedGames.join(', '));
         }
         if (method.isNotEmpty) details.add(method);
-        if (levelRange.isNotEmpty && levelRange != '—') details.add('Lv.$levelRange');
+        if (levelRange.isNotEmpty && levelRange != '—') {
+          details.add('Lv.$levelRange');
+        }
         if (rarity.isNotEmpty) details.add(rarity);
-        if (timeOfDay.isNotEmpty && timeOfDay != 'Day, Night') details.add(timeOfDay);
+        if (timeOfDay.isNotEmpty && timeOfDay != 'Day, Night') {
+          details.add(timeOfDay);
+        }
 
         result.putIfAbsent(key, () => []);
         result[key]!.add(details.join(' | '));
@@ -166,7 +169,8 @@ class PokemonDBService {
   }
 
   /// Format encounter data as a readable string
-  static String formatEncountersForDisplay(Map<String, List<String>> encounters) {
+  static String formatEncountersForDisplay(
+      Map<String, List<String>> encounters) {
     if (encounters.isEmpty) {
       return 'No encounter data available';
     }
@@ -223,8 +227,8 @@ class PokemonDBService {
 
   /// Fetch counters for a specific raid Pokemon.
   /// Pass [teraType] to filter to a specific tera type when applicable.
-  static Future<List<Map<String, dynamic>>> getRaidCounters(
-      String pokemonName, {String? teraType}) async {
+  static Future<List<Map<String, dynamic>>> getRaidCounters(String pokemonName,
+      {String? teraType}) async {
     try {
       var url = '$_apiBaseUrl/news/raids/${pokemonName.toLowerCase()}';
       if (teraType != null && teraType.isNotEmpty) {

@@ -3,7 +3,7 @@ import '../pokemon/pokemon_detail_sheet.dart';
 import '../../data/grand_underground_data.dart';
 
 class GrandUndergroundScreen extends StatefulWidget {
-  const GrandUndergroundScreen({Key? key}) : super(key: key);
+  const GrandUndergroundScreen({super.key});
 
   @override
   State<GrandUndergroundScreen> createState() => _GrandUndergroundScreenState();
@@ -78,7 +78,8 @@ class _GrandUndergroundScreenState extends State<GrandUndergroundScreen>
             decoration: InputDecoration(
               hintText: 'Search hideaways or Pokemon...',
               prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               isDense: true,
             ),
             onChanged: (v) => setState(() => _searchQuery = v.toLowerCase()),
@@ -89,7 +90,8 @@ class _GrandUndergroundScreenState extends State<GrandUndergroundScreen>
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Row(
             children: [
-              const Text('Version: ', style: TextStyle(fontSize: 12, color: Colors.grey)),
+              const Text('Version: ',
+                  style: TextStyle(fontSize: 12, color: Colors.grey)),
               _versionChip('Both', 'both'),
               const SizedBox(width: 4),
               _versionChip('Diamond', 'BD'),
@@ -117,13 +119,15 @@ class _GrandUndergroundScreenState extends State<GrandUndergroundScreen>
                     backgroundColor: color,
                     child: Icon(icon, color: Colors.white, size: 20),
                   ),
-                  title: Text(hideaway.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  title: Text(hideaway.name,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: Text(
                     '${hideaway.biome}  |  ${hideaway.size}  |  $count Pokemon',
                     style: const TextStyle(fontSize: 12),
                   ),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => setState(() => _selectedHideaway = hideaway.name),
+                  onTap: () =>
+                      setState(() => _selectedHideaway = hideaway.name),
                 ),
               );
             },
@@ -145,7 +149,9 @@ class _GrandUndergroundScreenState extends State<GrandUndergroundScreen>
 
   List<UndergroundPokemon> _getFilteredPokemon(Hideaway hideaway) {
     return hideaway.pokemon.where((p) {
-      if (_versionFilter != 'both' && p.version != 'both' && p.version != _versionFilter) {
+      if (_versionFilter != 'both' &&
+          p.version != 'both' &&
+          p.version != _versionFilter) {
         return false;
       }
       return true;
@@ -155,7 +161,9 @@ class _GrandUndergroundScreenState extends State<GrandUndergroundScreen>
   Widget _versionChip(String label, String value) {
     final selected = _versionFilter == value;
     return ChoiceChip(
-      label: Text(label, style: TextStyle(fontSize: 11, color: selected ? Colors.white : null)),
+      label: Text(label,
+          style:
+              TextStyle(fontSize: 11, color: selected ? Colors.white : null)),
       selected: selected,
       selectedColor: value == 'BD'
           ? Colors.blue
@@ -172,7 +180,8 @@ class _GrandUndergroundScreenState extends State<GrandUndergroundScreen>
   // HIDEAWAY DETAIL
   // ===========================================================
   Widget _buildHideawayDetail(String hideawayName) {
-    final hideaway = grandUndergroundHideaways.firstWhere((h) => h.name == hideawayName);
+    final hideaway =
+        grandUndergroundHideaways.firstWhere((h) => h.name == hideawayName);
     final allPokemon = _getFilteredPokemon(hideaway);
     final color = _biomeColor(hideaway.biome);
 
@@ -283,7 +292,8 @@ class _GrandUndergroundScreenState extends State<GrandUndergroundScreen>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                   decoration: BoxDecoration(
-                    color: p.version == 'BD' ? Colors.blue[50] : Colors.pink[50],
+                    color:
+                        p.version == 'BD' ? Colors.blue[50] : Colors.pink[50],
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
@@ -350,12 +360,20 @@ class _GrandUndergroundScreenState extends State<GrandUndergroundScreen>
                 leading: CircleAvatar(
                   backgroundColor: Colors.blueGrey,
                   child: Text(
-                    entry.key.startsWith('Post') ? 'E4' : entry.key.replaceAll(RegExp(r'[^0-9]'), ''),
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                    entry.key.startsWith('Post')
+                        ? 'E4'
+                        : entry.key.replaceAll(RegExp(r'[^0-9]'), ''),
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13),
                   ),
                 ),
-                title: Text(entry.key, style: const TextStyle(fontWeight: FontWeight.bold)),
-                trailing: Text(entry.value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                title: Text(entry.key,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                trailing: Text(entry.value,
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.bold)),
               ),
             );
           }),
@@ -369,15 +387,19 @@ class _GrandUndergroundScreenState extends State<GrandUndergroundScreen>
                 children: [
                   Text('Tips', style: TextStyle(fontWeight: FontWeight.bold)),
                   SizedBox(height: 8),
-                  Text('- Place Pokemon Statues in your Secret Base to change which Pokemon appear in hideaways.',
+                  Text(
+                      '- Place Pokemon Statues in your Secret Base to change which Pokemon appear in hideaways.',
                       style: TextStyle(fontSize: 12)),
-                  Text('- Statues of a specific type increase spawn rates for that type.',
+                  Text(
+                      '- Statues of a specific type increase spawn rates for that type.',
                       style: TextStyle(fontSize: 12)),
-                  Text('- Shiny Statues have a stronger effect than regular ones.',
+                  Text(
+                      '- Shiny Statues have a stronger effect than regular ones.',
                       style: TextStyle(fontSize: 12)),
                   Text('- Rare/Legendary statues give the biggest type bonus.',
                       style: TextStyle(fontSize: 12)),
-                  Text('- National Dex Pokemon only appear after obtaining the National Pokedex from Prof. Oak.',
+                  Text(
+                      '- National Dex Pokemon only appear after obtaining the National Pokedex from Prof. Oak.',
                       style: TextStyle(fontSize: 12)),
                 ],
               ),
@@ -435,5 +457,4 @@ class _GrandUndergroundScreenState extends State<GrandUndergroundScreen>
         return Colors.grey;
     }
   }
-
 }

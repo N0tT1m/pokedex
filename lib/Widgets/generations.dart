@@ -3,7 +3,7 @@ import '../services/pokeapi_service.dart';
 import '../services/pokemon_data_formatter.dart';
 
 class Generations extends StatefulWidget {
-  const Generations({Key? key}) : super(key: key);
+  const Generations({super.key});
 
   @override
   State<Generations> createState() => _GenerationsState();
@@ -31,7 +31,7 @@ class _GenerationsState extends State<Generations> {
           isLoading = false;
         });
       }
-      print('Error loading Pokemon: $error');
+      debugPrint('Error loading Pokemon: $error');
     });
   }
 
@@ -45,18 +45,21 @@ class _GenerationsState extends State<Generations> {
       // Format basic list without fetching individual Pokemon details
       // This is faster for initial display
       for (int i = 0; i < pokemonListData.length; i++) {
-        final pokemonId = PokeApiService.extractIdFromUrl(pokemonListData[i]['url']) ?? (i + 1);
+        final pokemonId =
+            PokeApiService.extractIdFromUrl(pokemonListData[i]['url']) ??
+                (i + 1);
         formattedPokemon.add({
           'id': pokemonId,
           'name': PokemonDataFormatter.capitalize(pokemonListData[i]['name']),
           'types': [],
-          'image': 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$pokemonId.png',
+          'image':
+              'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$pokemonId.png',
         });
       }
 
       return formattedPokemon;
     } catch (e) {
-      print('Error fetching Pokemon data: $e');
+      debugPrint('Error fetching Pokemon data: $e');
       return [];
     }
   }

@@ -3,15 +3,16 @@ import '../../services/type_effectiveness_service.dart';
 import '../../theme/app_theme.dart';
 
 class TypeChartScreen extends StatefulWidget {
-  const TypeChartScreen({Key? key}) : super(key: key);
+  const TypeChartScreen({super.key});
 
   @override
   State<TypeChartScreen> createState() => _TypeChartScreenState();
 }
 
-class _TypeChartScreenState extends State<TypeChartScreen> with SingleTickerProviderStateMixin {
+class _TypeChartScreenState extends State<TypeChartScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  List<String> _selectedDefenseTypes = [];
+  final List<String> _selectedDefenseTypes = [];
 
   @override
   void initState() {
@@ -62,7 +63,9 @@ class _TypeChartScreenState extends State<TypeChartScreen> with SingleTickerProv
             children: [
               const Padding(
                 padding: EdgeInsets.all(8),
-                child: Text('ATK \\ DEF', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                child: Text('ATK \\ DEF',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
               ),
               Row(
                 children: [
@@ -71,14 +74,15 @@ class _TypeChartScreenState extends State<TypeChartScreen> with SingleTickerProv
                 ],
               ),
               ...types.map((atkType) => Row(
-                children: [
-                  _typeLabel(atkType),
-                  ...types.map((defType) {
-                    final eff = TypeEffectivenessService.getEffectiveness(atkType, defType);
-                    return _effectivenessCell(eff);
-                  }),
-                ],
-              )),
+                    children: [
+                      _typeLabel(atkType),
+                      ...types.map((defType) {
+                        final eff = TypeEffectivenessService.getEffectiveness(
+                            atkType, defType);
+                        return _effectivenessCell(eff);
+                      }),
+                    ],
+                  )),
             ],
           ),
         ),
@@ -98,7 +102,8 @@ class _TypeChartScreenState extends State<TypeChartScreen> with SingleTickerProv
       ),
       child: Text(
         type.substring(0, 3),
-        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+        style: const TextStyle(
+            color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -115,7 +120,8 @@ class _TypeChartScreenState extends State<TypeChartScreen> with SingleTickerProv
       ),
       child: Text(
         type.length > 6 ? type.substring(0, 6) : type,
-        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+        style: const TextStyle(
+            color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -173,7 +179,8 @@ class _TypeChartScreenState extends State<TypeChartScreen> with SingleTickerProv
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Select Defending Type(s):', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          const Text('Select Defending Type(s):',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           const SizedBox(height: 8),
           Wrap(
             spacing: 6,
@@ -181,9 +188,12 @@ class _TypeChartScreenState extends State<TypeChartScreen> with SingleTickerProv
             children: TypeEffectivenessService.allTypes.map((type) {
               final isSelected = _selectedDefenseTypes.contains(type);
               return FilterChip(
-                label: Text(type, style: TextStyle(color: isSelected ? Colors.white : null, fontSize: 12)),
+                label: Text(type,
+                    style: TextStyle(
+                        color: isSelected ? Colors.white : null, fontSize: 12)),
                 selected: isSelected,
-                backgroundColor: AppTheme.typeColors[type]?.withValues(alpha: 0.3),
+                backgroundColor:
+                    AppTheme.typeColors[type]?.withValues(alpha: 0.3),
                 selectedColor: AppTheme.typeColors[type],
                 onSelected: (selected) {
                   setState(() {
@@ -204,35 +214,45 @@ class _TypeChartScreenState extends State<TypeChartScreen> with SingleTickerProv
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             const SizedBox(height: 16),
-            _buildMatchupSection('Super Effective (Weak to)', matchups, (e) => e > 1.0, Colors.red),
-            _buildMatchupSection('Not Very Effective (Resists)', matchups, (e) => e > 0 && e < 1.0, Colors.green),
-            _buildMatchupSection('No Effect (Immune)', matchups, (e) => e == 0, Colors.grey),
+            _buildMatchupSection('Super Effective (Weak to)', matchups,
+                (e) => e > 1.0, Colors.red),
+            _buildMatchupSection('Not Very Effective (Resists)', matchups,
+                (e) => e > 0 && e < 1.0, Colors.green),
+            _buildMatchupSection(
+                'No Effect (Immune)', matchups, (e) => e == 0, Colors.grey),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildMatchupSection(String title, Map<String, double> matchups, bool Function(double) filter, Color color) {
+  Widget _buildMatchupSection(String title, Map<String, double> matchups,
+      bool Function(double) filter, Color color) {
     final filtered = matchups.entries.where((e) => filter(e.value)).toList();
     if (filtered.isEmpty) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: color, fontSize: 14)),
+        Text(title,
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: color, fontSize: 14)),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: filtered.map((entry) => Chip(
-            avatar: CircleAvatar(
-              backgroundColor: AppTheme.typeColors[entry.key],
-              child: Text('${entry.value}x', style: const TextStyle(fontSize: 8, color: Colors.white)),
-            ),
-            label: Text(entry.key),
-            backgroundColor: color.withValues(alpha: 0.1),
-          )).toList(),
+          children: filtered
+              .map((entry) => Chip(
+                    avatar: CircleAvatar(
+                      backgroundColor: AppTheme.typeColors[entry.key],
+                      child: Text('${entry.value}x',
+                          style: const TextStyle(
+                              fontSize: 8, color: Colors.white)),
+                    ),
+                    label: Text(entry.key),
+                    backgroundColor: color.withValues(alpha: 0.1),
+                  ))
+              .toList(),
         ),
         const SizedBox(height: 16),
       ],

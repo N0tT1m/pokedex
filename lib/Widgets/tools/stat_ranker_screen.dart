@@ -4,7 +4,7 @@ import '../../theme/app_theme.dart';
 import '../pokemon/pokemon_detail_sheet.dart';
 
 class StatRankerScreen extends StatefulWidget {
-  const StatRankerScreen({Key? key}) : super(key: key);
+  const StatRankerScreen({super.key});
 
   @override
   State<StatRankerScreen> createState() => _StatRankerScreenState();
@@ -20,9 +20,13 @@ class _StatRankerScreenState extends State<StatRankerScreen> {
   bool _loadingDetails = false;
 
   static const _statKeys = {
-    'HP': 'hp', 'Attack': 'attack', 'Defense': 'defense',
-    'Sp. Atk': 'special-attack', 'Sp. Def': 'special-defense',
-    'Speed': 'speed', 'BST': 'bst',
+    'HP': 'hp',
+    'Attack': 'attack',
+    'Defense': 'defense',
+    'Sp. Atk': 'special-attack',
+    'Sp. Def': 'special-defense',
+    'Speed': 'speed',
+    'BST': 'bst',
   };
 
   @override
@@ -34,7 +38,6 @@ class _StatRankerScreenState extends State<StatRankerScreen> {
   Future<void> _loadPokemon() async {
     setState(() => _loadingDetails = true);
     try {
-
       // Load stats for first 200 Pokemon as a starter set
       final pokemon = <Map<String, dynamic>>[];
       for (int i = 1; i <= 1025; i++) {
@@ -83,7 +86,10 @@ class _StatRankerScreenState extends State<StatRankerScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() { _isLoading = false; _loadingDetails = false; });
+      setState(() {
+        _isLoading = false;
+        _loadingDetails = false;
+      });
     }
   }
 
@@ -91,7 +97,9 @@ class _StatRankerScreenState extends State<StatRankerScreen> {
     var filtered = List<Map<String, dynamic>>.from(_allPokemon);
 
     if (_filterType != null) {
-      filtered = filtered.where((p) => (p['types'] as List).contains(_filterType)).toList();
+      filtered = filtered
+          .where((p) => (p['types'] as List).contains(_filterType))
+          .toList();
     }
 
     if (_minStat > 0) {
@@ -116,13 +124,17 @@ class _StatRankerScreenState extends State<StatRankerScreen> {
   }
 
   String _formatName(String name) {
-    return name.split('-').map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1)).join(' ');
+    return name
+        .split('-')
+        .map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1))
+        .join(' ');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Stat Ranker'), backgroundColor: Colors.red),
+      appBar:
+          AppBar(title: const Text('Stat Ranker'), backgroundColor: Colors.red),
       body: Column(
         children: [
           // Filters
@@ -132,22 +144,28 @@ class _StatRankerScreenState extends State<StatRankerScreen> {
               children: [
                 Row(
                   children: [
-                    const Text('Sort by: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text('Sort by: ',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     Expanded(
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
-                          children: _statKeys.keys.map((stat) =>
-                            Padding(
-                              padding: const EdgeInsets.only(right: 4),
-                              child: ChoiceChip(
-                                label: Text(stat, style: const TextStyle(fontSize: 12)),
-                                selected: _sortBy == stat,
-                                onSelected: (v) {
-                                  setState(() { _sortBy = stat; _applyFilters(); });
-                                },
-                              ),
-                            )).toList(),
+                          children: _statKeys.keys
+                              .map((stat) => Padding(
+                                    padding: const EdgeInsets.only(right: 4),
+                                    child: ChoiceChip(
+                                      label: Text(stat,
+                                          style: const TextStyle(fontSize: 12)),
+                                      selected: _sortBy == stat,
+                                      onSelected: (v) {
+                                        setState(() {
+                                          _sortBy = stat;
+                                          _applyFilters();
+                                        });
+                                      },
+                                    ),
+                                  ))
+                              .toList(),
                         ),
                       ),
                     ),
@@ -156,7 +174,8 @@ class _StatRankerScreenState extends State<StatRankerScreen> {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Text('Type: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text('Type: ',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     Expanded(
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
@@ -165,27 +184,52 @@ class _StatRankerScreenState extends State<StatRankerScreen> {
                             Padding(
                               padding: const EdgeInsets.only(right: 4),
                               child: ChoiceChip(
-                                label: const Text('All', style: TextStyle(fontSize: 11)),
+                                label: const Text('All',
+                                    style: TextStyle(fontSize: 11)),
                                 selected: _filterType == null,
                                 onSelected: (v) {
-                                  setState(() { _filterType = null; _applyFilters(); });
+                                  setState(() {
+                                    _filterType = null;
+                                    _applyFilters();
+                                  });
                                 },
                               ),
                             ),
-                            ...['Fire', 'Water', 'Grass', 'Electric', 'Dragon', 'Steel',
-                                'Fairy', 'Dark', 'Psychic', 'Fighting', 'Ghost', 'Ice',
-                                'Rock', 'Ground', 'Flying', 'Poison', 'Bug', 'Normal']
-                              .map((t) => Padding(
-                                padding: const EdgeInsets.only(right: 4),
-                                child: ChoiceChip(
-                                  label: Text(t, style: const TextStyle(fontSize: 11)),
-                                  selected: _filterType == t,
-                                  backgroundColor: AppTheme.typeColors[t]?.withValues(alpha: 0.2),
-                                  onSelected: (v) {
-                                    setState(() { _filterType = v ? t : null; _applyFilters(); });
-                                  },
-                                ),
-                              )),
+                            ...[
+                              'Fire',
+                              'Water',
+                              'Grass',
+                              'Electric',
+                              'Dragon',
+                              'Steel',
+                              'Fairy',
+                              'Dark',
+                              'Psychic',
+                              'Fighting',
+                              'Ghost',
+                              'Ice',
+                              'Rock',
+                              'Ground',
+                              'Flying',
+                              'Poison',
+                              'Bug',
+                              'Normal'
+                            ].map((t) => Padding(
+                                  padding: const EdgeInsets.only(right: 4),
+                                  child: ChoiceChip(
+                                    label: Text(t,
+                                        style: const TextStyle(fontSize: 11)),
+                                    selected: _filterType == t,
+                                    backgroundColor: AppTheme.typeColors[t]
+                                        ?.withValues(alpha: 0.2),
+                                    onSelected: (v) {
+                                      setState(() {
+                                        _filterType = v ? t : null;
+                                        _applyFilters();
+                                      });
+                                    },
+                                  ),
+                                )),
                           ],
                         ),
                       ),
@@ -194,12 +238,18 @@ class _StatRankerScreenState extends State<StatRankerScreen> {
                 ),
                 Row(
                   children: [
-                    Text('Min ${_sortBy}: $_minStat', style: const TextStyle(fontSize: 12)),
+                    Text('Min $_sortBy: $_minStat',
+                        style: const TextStyle(fontSize: 12)),
                     Expanded(
                       child: Slider(
-                        value: _minStat.toDouble(), min: 0, max: 255,
+                        value: _minStat.toDouble(),
+                        min: 0,
+                        max: 255,
                         divisions: 51,
-                        onChanged: (v) => setState(() { _minStat = v.toInt(); _applyFilters(); }),
+                        onChanged: (v) => setState(() {
+                          _minStat = v.toInt();
+                          _applyFilters();
+                        }),
                       ),
                     ),
                   ],
@@ -214,11 +264,16 @@ class _StatRankerScreenState extends State<StatRankerScreen> {
             child: Row(
               children: [
                 Text('${_filteredPokemon.length} Pokemon',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 13)),
                 if (_loadingDetails) ...[
                   const SizedBox(width: 8),
-                  const SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2)),
-                  const Text(' loading...', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                  const SizedBox(
+                      width: 12,
+                      height: 12,
+                      child: CircularProgressIndicator(strokeWidth: 2)),
+                  const Text(' loading...',
+                      style: TextStyle(fontSize: 11, color: Colors.grey)),
                 ],
               ],
             ),
@@ -231,7 +286,8 @@ class _StatRankerScreenState extends State<StatRankerScreen> {
                 final stats = p['stats'] as Map<String, int>;
                 final types = p['types'] as List;
                 final statKey = _statKeys[_sortBy] ?? 'bst';
-                final displayStat = statKey == 'bst' ? p['bst'] : stats[statKey] ?? 0;
+                final displayStat =
+                    statKey == 'bst' ? p['bst'] : stats[statKey] ?? 0;
 
                 return ListTile(
                   onTap: () => showPokemonDetailSheet(context, p['name']),
@@ -240,33 +296,46 @@ class _StatRankerScreenState extends State<StatRankerScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('#${index + 1}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                        Text('#${index + 1}',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 12)),
                         Image.network(
                           'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p['id']}.png',
-                          width: 28, height: 28,
+                          width: 28,
+                          height: 28,
                           errorBuilder: (_, __, ___) => const SizedBox(),
                         ),
                       ],
                     ),
                   ),
-                  title: Text('#${p['id']} ${_formatName(p['name'])}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  title: Text('#${p['id']} ${_formatName(p['name'])}',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 14)),
                   subtitle: Row(
                     children: [
                       ...types.map((t) => Container(
-                        margin: const EdgeInsets.only(right: 4),
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                        decoration: BoxDecoration(
-                          color: AppTheme.typeColors[t], borderRadius: BorderRadius.circular(6)),
-                        child: Text(t, style: const TextStyle(color: Colors.white, fontSize: 10)),
-                      )),
+                            margin: const EdgeInsets.only(right: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 1),
+                            decoration: BoxDecoration(
+                                color: AppTheme.typeColors[t],
+                                borderRadius: BorderRadius.circular(6)),
+                            child: Text(t,
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 10)),
+                          )),
                     ],
                   ),
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('$displayStat', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                      Text(_sortBy, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                      Text('$displayStat',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18)),
+                      Text(_sortBy,
+                          style: const TextStyle(
+                              fontSize: 10, color: Colors.grey)),
                     ],
                   ),
                   dense: true,

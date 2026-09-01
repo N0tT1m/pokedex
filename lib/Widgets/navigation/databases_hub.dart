@@ -23,7 +23,7 @@ import '../databases/version_exclusives_screen.dart';
 import '../databases/trainer_teams_screen.dart';
 
 class DatabasesHub extends StatelessWidget {
-  const DatabasesHub({Key? key}) : super(key: key);
+  const DatabasesHub({super.key});
 
   static const _items = [
     {'title': 'Type Chart', 'icon': Icons.grid_on, 'color': Colors.orange},
@@ -31,22 +31,66 @@ class DatabasesHub extends StatelessWidget {
     {'title': 'Moves', 'icon': Icons.flash_on, 'color': Colors.blue},
     {'title': 'Abilities', 'icon': Icons.auto_awesome, 'color': Colors.purple},
     {'title': 'Items', 'icon': Icons.backpack, 'color': Colors.teal},
-    {'title': 'Item Locations', 'icon': Icons.location_on, 'color': Colors.deepOrange},
-    {'title': 'TM / HM Finder', 'icon': Icons.disc_full, 'color': Colors.indigo},
+    {
+      'title': 'Item Locations',
+      'icon': Icons.location_on,
+      'color': Colors.deepOrange
+    },
+    {
+      'title': 'TM / HM Finder',
+      'icon': Icons.disc_full,
+      'color': Colors.indigo
+    },
     {'title': 'Berry Guide', 'icon': Icons.eco, 'color': Colors.lightGreen},
     {'title': 'Locations', 'icon': Icons.map, 'color': Colors.brown},
-    {'title': 'Battle Mechanics', 'icon': Icons.sports_mma, 'color': Colors.red},
+    {
+      'title': 'Battle Mechanics',
+      'icon': Icons.sports_mma,
+      'color': Colors.red
+    },
     {'title': 'Field Effects', 'icon': Icons.landscape, 'color': Colors.cyan},
-    {'title': 'Friendship & Pokerus', 'icon': Icons.favorite, 'color': Colors.pink},
-    {'title': 'Legendary Pokemon', 'icon': Icons.star, 'color': Colors.blueAccent},
-    {'title': 'Grand Underground', 'icon': Icons.layers, 'color': Colors.blueGrey},
+    {
+      'title': 'Friendship & Pokerus',
+      'icon': Icons.favorite,
+      'color': Colors.pink
+    },
+    {
+      'title': 'Legendary Pokemon',
+      'icon': Icons.star,
+      'color': Colors.blueAccent
+    },
+    {
+      'title': 'Grand Underground',
+      'icon': Icons.layers,
+      'color': Colors.blueGrey
+    },
     {'title': 'Z-Moves', 'icon': Icons.bolt, 'color': Colors.deepPurple},
-    {'title': 'In-Game Trades', 'icon': Icons.swap_horiz, 'color': Colors.amber},
-    {'title': 'Event Pokemon', 'icon': Icons.celebration, 'color': Colors.pinkAccent},
-    {'title': 'Mass Outbreaks', 'icon': Icons.groups, 'color': Colors.deepOrange},
-    {'title': 'Battle Facilities', 'icon': Icons.emoji_events, 'color': Colors.yellow},
+    {
+      'title': 'In-Game Trades',
+      'icon': Icons.swap_horiz,
+      'color': Colors.amber
+    },
+    {
+      'title': 'Event Pokemon',
+      'icon': Icons.celebration,
+      'color': Colors.pinkAccent
+    },
+    {
+      'title': 'Mass Outbreaks',
+      'icon': Icons.groups,
+      'color': Colors.deepOrange
+    },
+    {
+      'title': 'Battle Facilities',
+      'icon': Icons.emoji_events,
+      'color': Colors.yellow
+    },
     {'title': 'Move Tutors', 'icon': Icons.school, 'color': Colors.teal},
-    {'title': 'Version Exclusives', 'icon': Icons.compare, 'color': Colors.indigo},
+    {
+      'title': 'Version Exclusives',
+      'icon': Icons.compare,
+      'color': Colors.indigo
+    },
     {'title': 'Trainer Teams', 'icon': Icons.people, 'color': Colors.brown},
   ];
 
@@ -81,7 +125,8 @@ class DatabasesHub extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Database'), backgroundColor: Colors.red),
+      appBar:
+          AppBar(title: const Text('Database'), backgroundColor: Colors.red),
       body: ListView.builder(
         padding: const EdgeInsets.all(8),
         itemCount: _items.length,
@@ -93,7 +138,8 @@ class DatabasesHub extends StatelessWidget {
                 backgroundColor: item['color'] as Color,
                 child: Icon(item['icon'] as IconData, color: Colors.white),
               ),
-              title: Text(item['title'] as String, style: const TextStyle(fontWeight: FontWeight.bold)),
+              title: Text(item['title'] as String,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => _navigate(context, index),
             ),

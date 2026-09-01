@@ -1,10 +1,12 @@
 /// Complete Pokemon data for all 18 Grand Underground Hideaways
 /// in Pokemon Brilliant Diamond & Shining Pearl.
+library;
 
 class UndergroundPokemon {
   final String name;
   final int id;
-  final String availability; // 'start', 'defog', 'strength', '7badges', 'waterfall', 'national'
+  final String
+      availability; // 'start', 'defog', 'strength', '7badges', 'waterfall', 'national'
   final String version; // 'both', 'BD', 'SP'
 
   const UndergroundPokemon({
@@ -17,7 +19,11 @@ class UndergroundPokemon {
   String get spriteUrl =>
       'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png';
 
-  String get apiName => name.toLowerCase().replaceAll('. ', '-').replaceAll("'", '').replaceAll(' ', '-');
+  String get apiName => name
+      .toLowerCase()
+      .replaceAll('. ', '-')
+      .replaceAll("'", '')
+      .replaceAll(' ', '-');
 }
 
 class Hideaway {
@@ -59,7 +65,7 @@ const List<Map<String, String>> availabilityTiers = [
 
 const _d = 'defog';
 const _str = 'strength';
-const _7b = '7badges';
+const _sevenBadges = '7badges';
 const _wf = 'waterfall';
 const _n = 'national';
 
@@ -95,16 +101,20 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Wingull', id: 278, availability: _d),
       UndergroundPokemon(name: 'Aipom', id: 190, availability: _d),
       UndergroundPokemon(name: 'Munchlax', id: 446, availability: _d),
-      UndergroundPokemon(name: 'Purugly', id: 432, availability: _d, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Purugly', id: 432, availability: _d, version: 'SP'),
       UndergroundPokemon(name: 'Golbat', id: 42, availability: _str),
       UndergroundPokemon(name: 'Hoothoot', id: 163, availability: _str),
       UndergroundPokemon(name: 'Bibarel', id: 400, availability: _str),
       UndergroundPokemon(name: 'Chingling', id: 433, availability: _str),
-      UndergroundPokemon(name: 'Stunky', id: 434, availability: _str, version: 'BD'),
-      UndergroundPokemon(name: 'Skuntank', id: 435, availability: _str, version: 'BD'),
-      UndergroundPokemon(name: 'Pelipper', id: 279, availability: _7b),
-      UndergroundPokemon(name: 'Luxio', id: 404, availability: _7b),
-      UndergroundPokemon(name: 'Glameow', id: 431, availability: _7b, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Stunky', id: 434, availability: _str, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Skuntank', id: 435, availability: _str, version: 'BD'),
+      UndergroundPokemon(name: 'Pelipper', id: 279, availability: _sevenBadges),
+      UndergroundPokemon(name: 'Luxio', id: 404, availability: _sevenBadges),
+      UndergroundPokemon(
+          name: 'Glameow', id: 431, availability: _sevenBadges, version: 'SP'),
       UndergroundPokemon(name: 'Mantyke', id: 458, availability: _wf),
       UndergroundPokemon(name: 'Rattata', id: 19, availability: _n),
       UndergroundPokemon(name: 'Raticate', id: 20, availability: _n),
@@ -131,15 +141,24 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Skitty', id: 300, availability: _n),
       UndergroundPokemon(name: 'Corphish', id: 341, availability: _n),
       UndergroundPokemon(name: 'Crawdaunt', id: 342, availability: _n),
-      UndergroundPokemon(name: 'Caterpie', id: 10, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Growlithe', id: 58, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Weedle', id: 13, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Sandshrew', id: 27, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Sandslash', id: 28, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Vulpix', id: 37, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Slowpoke', id: 79, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Bagon', id: 371, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Shelgon', id: 372, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Caterpie', id: 10, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Growlithe', id: 58, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Weedle', id: 13, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Sandshrew', id: 27, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Sandslash', id: 28, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Vulpix', id: 37, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Slowpoke', id: 79, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Bagon', id: 371, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Shelgon', id: 372, availability: _n, version: 'SP'),
     ],
   ),
 
@@ -170,14 +189,18 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Pinsir', id: 127, version: 'SP'),
       UndergroundPokemon(name: 'Machoke', id: 67, availability: _d),
       UndergroundPokemon(name: 'Munchlax', id: 446, availability: _d),
-      UndergroundPokemon(name: 'Purugly', id: 432, availability: _d, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Purugly', id: 432, availability: _d, version: 'SP'),
       UndergroundPokemon(name: 'Golbat', id: 42, availability: _str),
       UndergroundPokemon(name: 'Hoothoot', id: 163, availability: _str),
       UndergroundPokemon(name: 'Bibarel', id: 400, availability: _str),
-      UndergroundPokemon(name: 'Stunky', id: 434, availability: _str, version: 'BD'),
-      UndergroundPokemon(name: 'Skuntank', id: 435, availability: _str, version: 'BD'),
-      UndergroundPokemon(name: 'Luxio', id: 404, availability: _7b),
-      UndergroundPokemon(name: 'Glameow', id: 431, availability: _7b, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Stunky', id: 434, availability: _str, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Skuntank', id: 435, availability: _str, version: 'BD'),
+      UndergroundPokemon(name: 'Luxio', id: 404, availability: _sevenBadges),
+      UndergroundPokemon(
+          name: 'Glameow', id: 431, availability: _sevenBadges, version: 'SP'),
       UndergroundPokemon(name: 'Bulbasaur', id: 1, availability: _n),
       UndergroundPokemon(name: 'Rattata', id: 19, availability: _n),
       UndergroundPokemon(name: 'Raticate', id: 20, availability: _n),
@@ -220,18 +243,30 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Cacturne', id: 332, availability: _n),
       UndergroundPokemon(name: 'Tropius', id: 357, availability: _n),
       UndergroundPokemon(name: 'Turtwig', id: 387, availability: _n),
-      UndergroundPokemon(name: 'Caterpie', id: 10, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Ekans', id: 23, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Seedot', id: 273, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Nuzleaf', id: 274, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Zangoose', id: 335, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Kecleon', id: 352, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Weedle', id: 13, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Slowpoke', id: 79, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Teddiursa', id: 216, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Lotad', id: 270, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Lombre', id: 271, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Seviper', id: 336, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Caterpie', id: 10, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Ekans', id: 23, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Seedot', id: 273, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Nuzleaf', id: 274, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Zangoose', id: 335, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Kecleon', id: 352, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Weedle', id: 13, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Slowpoke', id: 79, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Teddiursa', id: 216, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Lotad', id: 270, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Lombre', id: 271, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Seviper', id: 336, availability: _n, version: 'SP'),
     ],
   ),
 
@@ -258,10 +293,11 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Hoothoot', id: 163, availability: _str),
       UndergroundPokemon(name: 'Barboach', id: 339, availability: _str),
       UndergroundPokemon(name: 'Bibarel', id: 400, availability: _str),
-      UndergroundPokemon(name: 'Tentacool', id: 72, availability: _7b),
-      UndergroundPokemon(name: 'Tentacruel', id: 73, availability: _7b),
-      UndergroundPokemon(name: 'Pelipper', id: 279, availability: _7b),
-      UndergroundPokemon(name: 'Gible', id: 443, availability: _7b),
+      UndergroundPokemon(name: 'Tentacool', id: 72, availability: _sevenBadges),
+      UndergroundPokemon(
+          name: 'Tentacruel', id: 73, availability: _sevenBadges),
+      UndergroundPokemon(name: 'Pelipper', id: 279, availability: _sevenBadges),
+      UndergroundPokemon(name: 'Gible', id: 443, availability: _sevenBadges),
       UndergroundPokemon(name: 'Octillery', id: 224, availability: _wf),
       UndergroundPokemon(name: 'Whiscash', id: 340, availability: _wf),
       UndergroundPokemon(name: 'Gabite', id: 444, availability: _wf),
@@ -289,10 +325,14 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Clamperl', id: 366, availability: _n),
       UndergroundPokemon(name: 'Piplup', id: 393, availability: _n),
       UndergroundPokemon(name: 'Seel', id: 86, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Dewgong', id: 87, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Slowpoke', id: 79, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Lotad', id: 270, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Lombre', id: 271, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Dewgong', id: 87, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Slowpoke', id: 79, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Lotad', id: 270, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Lombre', id: 271, availability: _n, version: 'SP'),
     ],
   ),
 
@@ -330,11 +370,16 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Cacturne', id: 332, availability: _n),
       UndergroundPokemon(name: 'Baltoy', id: 343, availability: _n),
       UndergroundPokemon(name: 'Beldum', id: 374, availability: _n),
-      UndergroundPokemon(name: 'Sandshrew', id: 27, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Sandslash', id: 28, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Teddiursa', id: 216, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Larvitar', id: 246, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Pupitar', id: 247, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Sandshrew', id: 27, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Sandslash', id: 28, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Teddiursa', id: 216, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Larvitar', id: 246, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Pupitar', id: 247, availability: _n, version: 'BD'),
     ],
   ),
 
@@ -364,8 +409,10 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Camerupt', id: 323, availability: _n),
       UndergroundPokemon(name: 'Torkoal', id: 324, availability: _n),
       UndergroundPokemon(name: 'Chimchar', id: 390, availability: _n),
-      UndergroundPokemon(name: 'Growlithe', id: 58, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Vulpix', id: 37, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Growlithe', id: 58, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Vulpix', id: 37, availability: _n, version: 'SP'),
     ],
   ),
 
@@ -388,8 +435,9 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Quagsire', id: 195, availability: _d),
       UndergroundPokemon(name: 'Golbat', id: 42, availability: _str),
       UndergroundPokemon(name: 'Barboach', id: 339, availability: _str),
-      UndergroundPokemon(name: 'Tentacool', id: 72, availability: _7b),
-      UndergroundPokemon(name: 'Tentacruel', id: 73, availability: _7b),
+      UndergroundPokemon(name: 'Tentacool', id: 72, availability: _sevenBadges),
+      UndergroundPokemon(
+          name: 'Tentacruel', id: 73, availability: _sevenBadges),
       UndergroundPokemon(name: 'Whiscash', id: 340, availability: _wf),
       UndergroundPokemon(name: 'Bulbasaur', id: 1, availability: _n),
       UndergroundPokemon(name: 'Nidoran F', id: 29, availability: _n),
@@ -414,11 +462,16 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Cacturne', id: 332, availability: _n),
       UndergroundPokemon(name: 'Tropius', id: 357, availability: _n),
       UndergroundPokemon(name: 'Tangrowth', id: 465, availability: _n),
-      UndergroundPokemon(name: 'Caterpie', id: 10, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Ekans', id: 23, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Zangoose', id: 335, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Weedle', id: 13, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Seviper', id: 336, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Caterpie', id: 10, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Ekans', id: 23, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Zangoose', id: 335, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Weedle', id: 13, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Seviper', id: 336, availability: _n, version: 'SP'),
     ],
   ),
 
@@ -444,7 +497,7 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Meditite', id: 307, availability: _str),
       UndergroundPokemon(name: 'Chingling', id: 433, availability: _str),
       UndergroundPokemon(name: 'Bronzor', id: 436, availability: _str),
-      UndergroundPokemon(name: 'Mr. Mime', id: 122, availability: _7b),
+      UndergroundPokemon(name: 'Mr. Mime', id: 122, availability: _sevenBadges),
       UndergroundPokemon(name: 'Nidoran F', id: 29, availability: _n),
       UndergroundPokemon(name: 'Nidorina', id: 30, availability: _n),
       UndergroundPokemon(name: 'Nidoran M', id: 32, availability: _n),
@@ -466,15 +519,24 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Baltoy', id: 343, availability: _n),
       UndergroundPokemon(name: 'Banette', id: 354, availability: _n),
       UndergroundPokemon(name: 'Dusclops', id: 356, availability: _n),
-      UndergroundPokemon(name: 'Mawile', id: 303, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Zangoose', id: 335, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Solrock', id: 338, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Slowpoke', id: 79, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Sableye', id: 302, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Seviper', id: 336, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Lunatone', id: 337, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Bagon', id: 371, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Shelgon', id: 372, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Mawile', id: 303, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Zangoose', id: 335, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Solrock', id: 338, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Slowpoke', id: 79, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Sableye', id: 302, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Seviper', id: 336, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Lunatone', id: 337, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Bagon', id: 371, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Shelgon', id: 372, availability: _n, version: 'SP'),
     ],
   ),
 
@@ -500,10 +562,10 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Machoke', id: 67, availability: _d),
       UndergroundPokemon(name: 'Munchlax', id: 446, availability: _d),
       UndergroundPokemon(name: 'Meditite', id: 307, availability: _str),
-      UndergroundPokemon(name: 'Mr. Mime', id: 122, availability: _7b),
-      UndergroundPokemon(name: 'Sneasel', id: 215, availability: _7b),
-      UndergroundPokemon(name: 'Luxio', id: 404, availability: _7b),
-      UndergroundPokemon(name: 'Snover', id: 459, availability: _7b),
+      UndergroundPokemon(name: 'Mr. Mime', id: 122, availability: _sevenBadges),
+      UndergroundPokemon(name: 'Sneasel', id: 215, availability: _sevenBadges),
+      UndergroundPokemon(name: 'Luxio', id: 404, availability: _sevenBadges),
+      UndergroundPokemon(name: 'Snover', id: 459, availability: _sevenBadges),
       UndergroundPokemon(name: 'Tauros', id: 128, availability: _n),
       UndergroundPokemon(name: 'Sentret', id: 161, availability: _n),
       UndergroundPokemon(name: 'Furret', id: 162, availability: _n),
@@ -516,9 +578,12 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Walrein', id: 365, availability: _n),
       UndergroundPokemon(name: 'Beldum', id: 374, availability: _n),
       UndergroundPokemon(name: 'Seel', id: 86, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Dewgong', id: 87, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Spheal', id: 363, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Sealeo', id: 364, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Dewgong', id: 87, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Spheal', id: 363, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Sealeo', id: 364, availability: _n, version: 'SP'),
     ],
   ),
 
@@ -539,9 +604,9 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Buneary', id: 427),
       UndergroundPokemon(name: 'Teddiursa', id: 216, version: 'SP'),
       UndergroundPokemon(name: 'Bronzor', id: 436, availability: _str),
-      UndergroundPokemon(name: 'Mr. Mime', id: 122, availability: _7b),
-      UndergroundPokemon(name: 'Sneasel', id: 215, availability: _7b),
-      UndergroundPokemon(name: 'Snover', id: 459, availability: _7b),
+      UndergroundPokemon(name: 'Mr. Mime', id: 122, availability: _sevenBadges),
+      UndergroundPokemon(name: 'Sneasel', id: 215, availability: _sevenBadges),
+      UndergroundPokemon(name: 'Snover', id: 459, availability: _sevenBadges),
       UndergroundPokemon(name: 'Staryu', id: 120, availability: _n),
       UndergroundPokemon(name: 'Tauros', id: 128, availability: _n),
       UndergroundPokemon(name: 'Chinchou', id: 170, availability: _n),
@@ -554,9 +619,12 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Walrein', id: 365, availability: _n),
       UndergroundPokemon(name: 'Beldum', id: 374, availability: _n),
       UndergroundPokemon(name: 'Seel', id: 86, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Dewgong', id: 87, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Spheal', id: 363, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Sealeo', id: 364, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Dewgong', id: 87, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Spheal', id: 363, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Sealeo', id: 364, availability: _n, version: 'SP'),
     ],
   ),
 
@@ -584,17 +652,22 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Cascoon', id: 268, version: 'SP'),
       UndergroundPokemon(name: 'Wingull', id: 278, availability: _d),
       UndergroundPokemon(name: 'Munchlax', id: 446, availability: _d),
-      UndergroundPokemon(name: 'Purugly', id: 432, availability: _d, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Purugly', id: 432, availability: _d, version: 'SP'),
       UndergroundPokemon(name: 'Hoothoot', id: 163, availability: _str),
       UndergroundPokemon(name: 'Barboach', id: 339, availability: _str),
       UndergroundPokemon(name: 'Bibarel', id: 400, availability: _str),
-      UndergroundPokemon(name: 'Stunky', id: 434, availability: _str, version: 'BD'),
-      UndergroundPokemon(name: 'Skuntank', id: 435, availability: _str, version: 'BD'),
-      UndergroundPokemon(name: 'Tentacool', id: 72, availability: _7b),
-      UndergroundPokemon(name: 'Tentacruel', id: 73, availability: _7b),
-      UndergroundPokemon(name: 'Pelipper', id: 279, availability: _7b),
-      UndergroundPokemon(name: 'Gible', id: 443, availability: _7b),
-      UndergroundPokemon(name: 'Glameow', id: 431, availability: _7b, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Stunky', id: 434, availability: _str, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Skuntank', id: 435, availability: _str, version: 'BD'),
+      UndergroundPokemon(name: 'Tentacool', id: 72, availability: _sevenBadges),
+      UndergroundPokemon(
+          name: 'Tentacruel', id: 73, availability: _sevenBadges),
+      UndergroundPokemon(name: 'Pelipper', id: 279, availability: _sevenBadges),
+      UndergroundPokemon(name: 'Gible', id: 443, availability: _sevenBadges),
+      UndergroundPokemon(
+          name: 'Glameow', id: 431, availability: _sevenBadges, version: 'SP'),
       UndergroundPokemon(name: 'Octillery', id: 224, availability: _wf),
       UndergroundPokemon(name: 'Whiscash', id: 340, availability: _wf),
       UndergroundPokemon(name: 'Gabite', id: 444, availability: _wf),
@@ -637,16 +710,26 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Clamperl', id: 366, availability: _n),
       UndergroundPokemon(name: 'Turtwig', id: 387, availability: _n),
       UndergroundPokemon(name: 'Piplup', id: 393, availability: _n),
-      UndergroundPokemon(name: 'Ekans', id: 23, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Seedot', id: 273, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Nuzleaf', id: 274, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Solrock', id: 338, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Kecleon', id: 352, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Weedle', id: 13, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Slowpoke', id: 79, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Lotad', id: 270, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Lombre', id: 271, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Lunatone', id: 337, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Ekans', id: 23, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Seedot', id: 273, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Nuzleaf', id: 274, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Solrock', id: 338, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Kecleon', id: 352, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Weedle', id: 13, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Slowpoke', id: 79, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Lotad', id: 270, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Lombre', id: 271, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Lunatone', id: 337, availability: _n, version: 'SP'),
     ],
   ),
 
@@ -674,17 +757,22 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Cascoon', id: 268, version: 'SP'),
       UndergroundPokemon(name: 'Wingull', id: 278, availability: _d),
       UndergroundPokemon(name: 'Munchlax', id: 446, availability: _d),
-      UndergroundPokemon(name: 'Purugly', id: 432, availability: _d, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Purugly', id: 432, availability: _d, version: 'SP'),
       UndergroundPokemon(name: 'Hoothoot', id: 163, availability: _str),
       UndergroundPokemon(name: 'Barboach', id: 339, availability: _str),
       UndergroundPokemon(name: 'Bibarel', id: 400, availability: _str),
-      UndergroundPokemon(name: 'Stunky', id: 434, availability: _str, version: 'BD'),
-      UndergroundPokemon(name: 'Skuntank', id: 435, availability: _str, version: 'BD'),
-      UndergroundPokemon(name: 'Tentacool', id: 72, availability: _7b),
-      UndergroundPokemon(name: 'Tentacruel', id: 73, availability: _7b),
-      UndergroundPokemon(name: 'Pelipper', id: 279, availability: _7b),
-      UndergroundPokemon(name: 'Gible', id: 443, availability: _7b),
-      UndergroundPokemon(name: 'Glameow', id: 431, availability: _7b, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Stunky', id: 434, availability: _str, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Skuntank', id: 435, availability: _str, version: 'BD'),
+      UndergroundPokemon(name: 'Tentacool', id: 72, availability: _sevenBadges),
+      UndergroundPokemon(
+          name: 'Tentacruel', id: 73, availability: _sevenBadges),
+      UndergroundPokemon(name: 'Pelipper', id: 279, availability: _sevenBadges),
+      UndergroundPokemon(name: 'Gible', id: 443, availability: _sevenBadges),
+      UndergroundPokemon(
+          name: 'Glameow', id: 431, availability: _sevenBadges, version: 'SP'),
       UndergroundPokemon(name: 'Octillery', id: 224, availability: _wf),
       UndergroundPokemon(name: 'Whiscash', id: 340, availability: _wf),
       UndergroundPokemon(name: 'Gabite', id: 444, availability: _wf),
@@ -727,17 +815,28 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Clamperl', id: 366, availability: _n),
       UndergroundPokemon(name: 'Turtwig', id: 387, availability: _n),
       UndergroundPokemon(name: 'Piplup', id: 393, availability: _n),
-      UndergroundPokemon(name: 'Caterpie', id: 10, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Ekans', id: 23, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Seedot', id: 273, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Nuzleaf', id: 274, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Solrock', id: 338, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Kecleon', id: 352, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Weedle', id: 13, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Slowpoke', id: 79, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Lotad', id: 270, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Lombre', id: 271, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Lunatone', id: 337, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Caterpie', id: 10, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Ekans', id: 23, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Seedot', id: 273, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Nuzleaf', id: 274, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Solrock', id: 338, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Kecleon', id: 352, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Weedle', id: 13, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Slowpoke', id: 79, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Lotad', id: 270, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Lombre', id: 271, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Lunatone', id: 337, availability: _n, version: 'SP'),
     ],
   ),
 
@@ -769,14 +868,18 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Teddiursa', id: 216, version: 'SP'),
       UndergroundPokemon(name: 'Machoke', id: 67, availability: _d),
       UndergroundPokemon(name: 'Munchlax', id: 446, availability: _d),
-      UndergroundPokemon(name: 'Purugly', id: 432, availability: _d, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Purugly', id: 432, availability: _d, version: 'SP'),
       UndergroundPokemon(name: 'Golbat', id: 42, availability: _str),
       UndergroundPokemon(name: 'Hoothoot', id: 163, availability: _str),
       UndergroundPokemon(name: 'Bibarel', id: 400, availability: _str),
-      UndergroundPokemon(name: 'Stunky', id: 434, availability: _str, version: 'BD'),
-      UndergroundPokemon(name: 'Skuntank', id: 435, availability: _str, version: 'BD'),
-      UndergroundPokemon(name: 'Luxio', id: 404, availability: _7b),
-      UndergroundPokemon(name: 'Glameow', id: 431, availability: _7b, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Stunky', id: 434, availability: _str, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Skuntank', id: 435, availability: _str, version: 'BD'),
+      UndergroundPokemon(name: 'Luxio', id: 404, availability: _sevenBadges),
+      UndergroundPokemon(
+          name: 'Glameow', id: 431, availability: _sevenBadges, version: 'SP'),
       UndergroundPokemon(name: 'Bulbasaur', id: 1, availability: _n),
       UndergroundPokemon(name: 'Rattata', id: 19, availability: _n),
       UndergroundPokemon(name: 'Raticate', id: 20, availability: _n),
@@ -819,19 +922,32 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Cacturne', id: 332, availability: _n),
       UndergroundPokemon(name: 'Tropius', id: 357, availability: _n),
       UndergroundPokemon(name: 'Turtwig', id: 387, availability: _n),
-      UndergroundPokemon(name: 'Caterpie', id: 10, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Ekans', id: 23, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Scyther', id: 123, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Seedot', id: 273, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Nuzleaf', id: 274, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Zangoose', id: 335, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Kecleon', id: 352, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Weedle', id: 13, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Slowpoke', id: 79, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Pinsir', id: 127, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Lotad', id: 270, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Lombre', id: 271, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Seviper', id: 336, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Caterpie', id: 10, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Ekans', id: 23, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Scyther', id: 123, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Seedot', id: 273, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Nuzleaf', id: 274, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Zangoose', id: 335, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Kecleon', id: 352, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Weedle', id: 13, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Slowpoke', id: 79, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Pinsir', id: 127, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Lotad', id: 270, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Lombre', id: 271, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Seviper', id: 336, availability: _n, version: 'SP'),
     ],
   ),
 
@@ -872,10 +988,14 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Cacturne', id: 332, availability: _n),
       UndergroundPokemon(name: 'Baltoy', id: 343, availability: _n),
       UndergroundPokemon(name: 'Beldum', id: 374, availability: _n),
-      UndergroundPokemon(name: 'Sandshrew', id: 27, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Sandslash', id: 28, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Larvitar', id: 246, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Pupitar', id: 247, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Sandshrew', id: 27, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Sandslash', id: 28, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Larvitar', id: 246, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Pupitar', id: 247, availability: _n, version: 'BD'),
     ],
   ),
 
@@ -900,7 +1020,7 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Meditite', id: 307, availability: _str),
       UndergroundPokemon(name: 'Chingling', id: 433, availability: _str),
       UndergroundPokemon(name: 'Bronzor', id: 436, availability: _str),
-      UndergroundPokemon(name: 'Mr. Mime', id: 122, availability: _7b),
+      UndergroundPokemon(name: 'Mr. Mime', id: 122, availability: _sevenBadges),
       UndergroundPokemon(name: 'Nidoran F', id: 29, availability: _n),
       UndergroundPokemon(name: 'Nidorina', id: 30, availability: _n),
       UndergroundPokemon(name: 'Nidoran M', id: 32, availability: _n),
@@ -923,15 +1043,24 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Banette', id: 354, availability: _n),
       UndergroundPokemon(name: 'Duskull', id: 355, availability: _n),
       UndergroundPokemon(name: 'Dusclops', id: 356, availability: _n),
-      UndergroundPokemon(name: 'Mawile', id: 303, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Zangoose', id: 335, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Solrock', id: 338, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Slowpoke', id: 79, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Sableye', id: 302, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Seviper', id: 336, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Lunatone', id: 337, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Bagon', id: 371, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Shelgon', id: 372, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Mawile', id: 303, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Zangoose', id: 335, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Solrock', id: 338, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Slowpoke', id: 79, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Sableye', id: 302, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Seviper', id: 336, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Lunatone', id: 337, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Bagon', id: 371, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Shelgon', id: 372, availability: _n, version: 'SP'),
     ],
   ),
 
@@ -953,9 +1082,9 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Teddiursa', id: 216, version: 'SP'),
       UndergroundPokemon(name: 'Elekid', id: 239, version: 'BD'),
       UndergroundPokemon(name: 'Bronzor', id: 436, availability: _str),
-      UndergroundPokemon(name: 'Mr. Mime', id: 122, availability: _7b),
-      UndergroundPokemon(name: 'Sneasel', id: 215, availability: _7b),
-      UndergroundPokemon(name: 'Snover', id: 459, availability: _7b),
+      UndergroundPokemon(name: 'Mr. Mime', id: 122, availability: _sevenBadges),
+      UndergroundPokemon(name: 'Sneasel', id: 215, availability: _sevenBadges),
+      UndergroundPokemon(name: 'Snover', id: 459, availability: _sevenBadges),
       UndergroundPokemon(name: 'Staryu', id: 120, availability: _n),
       UndergroundPokemon(name: 'Tauros', id: 128, availability: _n),
       UndergroundPokemon(name: 'Chinchou', id: 170, availability: _n),
@@ -968,9 +1097,12 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Walrein', id: 365, availability: _n),
       UndergroundPokemon(name: 'Beldum', id: 374, availability: _n),
       UndergroundPokemon(name: 'Seel', id: 86, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Dewgong', id: 87, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Spheal', id: 363, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Sealeo', id: 364, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Dewgong', id: 87, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Spheal', id: 363, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Sealeo', id: 364, availability: _n, version: 'SP'),
     ],
   ),
 
@@ -1001,8 +1133,10 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Camerupt', id: 323, availability: _n),
       UndergroundPokemon(name: 'Torkoal', id: 324, availability: _n),
       UndergroundPokemon(name: 'Chimchar', id: 390, availability: _n),
-      UndergroundPokemon(name: 'Growlithe', id: 58, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Vulpix', id: 37, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Growlithe', id: 58, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Vulpix', id: 37, availability: _n, version: 'SP'),
     ],
   ),
 
@@ -1032,10 +1166,14 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Trapinch', id: 328, availability: _n),
       UndergroundPokemon(name: 'Chimchar', id: 390, availability: _n),
       UndergroundPokemon(name: 'Rhydon', id: 112, availability: _n),
-      UndergroundPokemon(name: 'Growlithe', id: 58, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Sandshrew', id: 27, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Sandslash', id: 28, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Vulpix', id: 37, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Growlithe', id: 58, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Sandshrew', id: 27, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Sandslash', id: 28, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Vulpix', id: 37, availability: _n, version: 'SP'),
     ],
   ),
 
@@ -1058,8 +1196,9 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Quagsire', id: 195, availability: _d),
       UndergroundPokemon(name: 'Golbat', id: 42, availability: _str),
       UndergroundPokemon(name: 'Barboach', id: 339, availability: _str),
-      UndergroundPokemon(name: 'Tentacool', id: 72, availability: _7b),
-      UndergroundPokemon(name: 'Tentacruel', id: 73, availability: _7b),
+      UndergroundPokemon(name: 'Tentacool', id: 72, availability: _sevenBadges),
+      UndergroundPokemon(
+          name: 'Tentacruel', id: 73, availability: _sevenBadges),
       UndergroundPokemon(name: 'Whiscash', id: 340, availability: _wf),
       UndergroundPokemon(name: 'Bulbasaur', id: 1, availability: _n),
       UndergroundPokemon(name: 'Nidoran F', id: 29, availability: _n),
@@ -1084,11 +1223,16 @@ final List<Hideaway> grandUndergroundHideaways = [
       UndergroundPokemon(name: 'Cacturne', id: 332, availability: _n),
       UndergroundPokemon(name: 'Tropius', id: 357, availability: _n),
       UndergroundPokemon(name: 'Tangrowth', id: 465, availability: _n),
-      UndergroundPokemon(name: 'Caterpie', id: 10, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Ekans', id: 23, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Zangoose', id: 335, availability: _n, version: 'BD'),
-      UndergroundPokemon(name: 'Weedle', id: 13, availability: _n, version: 'SP'),
-      UndergroundPokemon(name: 'Seviper', id: 336, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Caterpie', id: 10, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Ekans', id: 23, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Zangoose', id: 335, availability: _n, version: 'BD'),
+      UndergroundPokemon(
+          name: 'Weedle', id: 13, availability: _n, version: 'SP'),
+      UndergroundPokemon(
+          name: 'Seviper', id: 336, availability: _n, version: 'SP'),
     ],
   ),
 ];

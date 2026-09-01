@@ -4,7 +4,7 @@ import '../../services/pokeapi_service.dart';
 import '../../theme/app_theme.dart';
 
 class MoveDatabaseScreen extends StatefulWidget {
-  const MoveDatabaseScreen({Key? key}) : super(key: key);
+  const MoveDatabaseScreen({super.key});
 
   @override
   State<MoveDatabaseScreen> createState() => _MoveDatabaseScreenState();
@@ -27,7 +27,8 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
 
   Future<void> _loadMoves() async {
     try {
-      final response = await Requests.get('${PokeApiService.baseUrl}/move?limit=1000');
+      final response =
+          await Requests.get('${PokeApiService.baseUrl}/move?limit=1000');
       if (response.statusCode == 200) {
         final data = response.json();
         final results = List<Map<String, dynamic>>.from(data['results']);
@@ -36,7 +37,10 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
             final name = m['name'] as String;
             return {
               'name': name,
-              'displayName': name.split('-').map((w) => w[0].toUpperCase() + w.substring(1)).join(' '),
+              'displayName': name
+                  .split('-')
+                  .map((w) => w[0].toUpperCase() + w.substring(1))
+                  .join(' '),
               'url': m['url'],
             };
           }).toList();
@@ -44,17 +48,24 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
           _isLoading = false;
         });
       } else {
-        setState(() { _error = 'Server returned ${response.statusCode}'; _isLoading = false; });
+        setState(() {
+          _error = 'Server returned ${response.statusCode}';
+          _isLoading = false;
+        });
       }
     } catch (e) {
-      setState(() { _error = 'Could not load moves'; _isLoading = false; });
+      setState(() {
+        _error = 'Could not load moves';
+        _isLoading = false;
+      });
     }
   }
 
   Future<void> _loadMoveDetail(String name) async {
     setState(() => _isLoadingDetail = true);
     try {
-      final response = await Requests.get('${PokeApiService.baseUrl}/move/$name');
+      final response =
+          await Requests.get('${PokeApiService.baseUrl}/move/$name');
       if (response.statusCode == 200) {
         setState(() {
           _selectedMove = response.json();
@@ -72,7 +83,8 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
     setState(() {
       _filteredMoves = _allMoves.where((m) {
         final name = m['displayName'] as String;
-        if (_searchQuery.isNotEmpty && !name.toLowerCase().contains(_searchQuery.toLowerCase())) {
+        if (_searchQuery.isNotEmpty &&
+            !name.toLowerCase().contains(_searchQuery.toLowerCase())) {
           return false;
         }
         return true;
@@ -96,7 +108,9 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
       ),
       body: _isLoadingDetail
           ? const Center(child: CircularProgressIndicator())
-          : _selectedMove != null ? _buildMoveDetail() : _buildMoveList(),
+          : _selectedMove != null
+              ? _buildMoveDetail()
+              : _buildMoveList(),
     );
   }
 
@@ -114,7 +128,15 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
             const SizedBox(height: 16),
             Text(_error!, style: const TextStyle(color: Colors.red)),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: () { setState(() { _isLoading = true; _error = null; }); _loadMoves(); }, child: const Text('Retry')),
+            ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _isLoading = true;
+                    _error = null;
+                  });
+                  _loadMoves();
+                },
+                child: const Text('Retry')),
           ],
         ),
       );
@@ -128,7 +150,8 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
             decoration: InputDecoration(
               hintText: 'Search moves...',
               prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               filled: true,
               fillColor: Colors.white,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -141,7 +164,8 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Text('${_filteredMoves.length} moves', style: TextStyle(color: Colors.grey.shade600)),
+          child: Text('${_filteredMoves.length} moves',
+              style: TextStyle(color: Colors.grey.shade600)),
         ),
         Expanded(
           child: ListView.builder(
@@ -166,7 +190,10 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
 
   Widget _buildMoveDetail() {
     final move = _selectedMove!;
-    final name = (move['name'] as String).split('-').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ');
+    final name = (move['name'] as String)
+        .split('-')
+        .map((w) => w[0].toUpperCase() + w.substring(1))
+        .join(' ');
     final type = move['type']?['name'] ?? 'unknown';
     final typeCap = type[0].toUpperCase() + type.substring(1);
     final category = move['damage_class']?['name'] ?? 'status';
@@ -191,7 +218,8 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
     String flavorText = '';
     for (var entry in flavorEntries.reversed) {
       if (entry['language']?['name'] == 'en') {
-        flavorText = ((entry['flavor_text'] as String?) ?? '').replaceAll('\n', ' ');
+        flavorText =
+            ((entry['flavor_text'] as String?) ?? '').replaceAll('\n', ' ');
         break;
       }
     }
@@ -213,29 +241,41 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  Text(name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  Text(name,
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
                           color: AppTheme.typeColors[typeCap] ?? Colors.grey,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(typeCap, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        child: Text(typeCap,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
                       ),
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
-                          color: category == 'physical' ? Colors.orange : category == 'special' ? Colors.blue : Colors.grey,
+                          color: category == 'physical'
+                              ? Colors.orange
+                              : category == 'special'
+                                  ? Colors.blue
+                                  : Colors.grey,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           category[0].toUpperCase() + category.substring(1),
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
@@ -245,9 +285,11 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       _statColumn('Power', power?.toString() ?? '-'),
-                      _statColumn('Accuracy', accuracy != null ? '$accuracy%' : '-'),
+                      _statColumn(
+                          'Accuracy', accuracy != null ? '$accuracy%' : '-'),
                       _statColumn('PP', pp?.toString() ?? '-'),
-                      _statColumn('Priority', move['priority']?.toString() ?? '0'),
+                      _statColumn(
+                          'Priority', move['priority']?.toString() ?? '0'),
                     ],
                   ),
                 ],
@@ -263,12 +305,16 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Effect', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const Text('Effect',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16)),
                     const SizedBox(height: 8),
                     Text(effect),
                     if (flavorText.isNotEmpty) ...[
                       const SizedBox(height: 8),
-                      Text(flavorText, style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
+                      Text(flavorText,
+                          style: const TextStyle(
+                              fontStyle: FontStyle.italic, color: Colors.grey)),
                     ],
                   ],
                 ),
@@ -282,16 +328,19 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('TM/HM', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const Text('TM/HM',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16)),
                     const SizedBox(height: 8),
                     ...machines.take(10).map((m) {
                       final version = m['version_group']?['name'] ?? '';
                       return Text(
-                        '${_formatName(version)}',
+                        _formatName(version),
                         style: const TextStyle(fontSize: 12),
                       );
                     }),
-                    if (machines.length > 10) Text('...and ${machines.length - 10} more'),
+                    if (machines.length > 10)
+                      Text('...and ${machines.length - 10} more'),
                   ],
                 ),
               ),
@@ -303,22 +352,28 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Learned by ${learnedBy.length} Pokemon', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text('Learned by ${learnedBy.length} Pokemon',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16)),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 6,
                     runSpacing: 4,
                     children: learnedBy.take(50).map((p) {
-                      final rawName = (p['name'] as String?) ?? (p['pokemon']?['name'] as String?) ?? '';
+                      final rawName = (p['name'] as String?) ??
+                          (p['pokemon']?['name'] as String?) ??
+                          '';
                       final pName = _formatName(rawName);
                       return Chip(
-                        label: Text(pName, style: const TextStyle(fontSize: 11)),
+                        label:
+                            Text(pName, style: const TextStyle(fontSize: 11)),
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         padding: EdgeInsets.zero,
                       );
                     }).toList(),
                   ),
-                  if (learnedBy.length > 50) Text('...and ${learnedBy.length - 50} more'),
+                  if (learnedBy.length > 50)
+                    Text('...and ${learnedBy.length - 50} more'),
                 ],
               ),
             ),
@@ -333,12 +388,16 @@ class _MoveDatabaseScreenState extends State<MoveDatabaseScreen> {
       children: [
         Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(value,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
       ],
     );
   }
 
   String _formatName(String name) {
-    return name.split('-').map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w).join(' ');
+    return name
+        .split('-')
+        .map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w)
+        .join(' ');
   }
 }

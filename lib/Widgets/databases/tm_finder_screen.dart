@@ -17,7 +17,7 @@ const _kFallbackGames = [
 ];
 
 class TMFinderScreen extends StatefulWidget {
-  const TMFinderScreen({Key? key}) : super(key: key);
+  const TMFinderScreen({super.key});
 
   @override
   State<TMFinderScreen> createState() => _TMFinderScreenState();
@@ -92,12 +92,15 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
           final items = List<Map<String, dynamic>>.from(rawList).map((m) {
             // Strip any leading letters from tm_number to get a clean padded key e.g. "TM001"
             final rawNum = (m['tm_number'] as String? ?? '');
-            final prefix = rawNum.replaceAll(RegExp(r'[0-9]'), '');  // "TM" or "HM"
+            final prefix =
+                rawNum.replaceAll(RegExp(r'[0-9]'), ''); // "TM" or "HM"
             final digits = rawNum.replaceAll(RegExp(r'[^0-9]'), '');
-            final tmKey = '${prefix}${digits.padLeft(3, '0')}';
+            final tmKey = '$prefix${digits.padLeft(3, '0')}';
 
             // Backend move_name is often empty — fall back to static lookup
-            var moveName = (m['move_name'] as String? ?? '').toLowerCase().replaceAll(' ', '-');
+            var moveName = (m['move_name'] as String? ?? '')
+                .toLowerCase()
+                .replaceAll(' ', '-');
             if (moveName.isEmpty) {
               moveName = gameData[tmKey] ?? '';
             }
@@ -105,7 +108,8 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
             return {
               'tmNumber': tmKey,
               'moveName': moveName,
-              'displayName': moveName.isNotEmpty ? _formatName(moveName) : tmKey,
+              'displayName':
+                  moveName.isNotEmpty ? _formatName(moveName) : tmKey,
               'game': m['game'] ?? _selectedGame,
               'location': m['location'] ?? '',
               'url': '${PokeApiService.baseUrl}/move/$moveName',
@@ -129,7 +133,8 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
 
   Future<void> _loadMoveFallback() async {
     try {
-      final response = await Requests.get('${PokeApiService.baseUrl}/move?limit=1000');
+      final response =
+          await Requests.get('${PokeApiService.baseUrl}/move?limit=1000');
       if (response.statusCode == 200) {
         final data = response.json();
         final results = List<Map<String, dynamic>>.from(data['results']);
@@ -167,7 +172,8 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
   Future<void> _loadMoveDetail(String name) async {
     setState(() => _isLoadingDetail = true);
     try {
-      final response = await Requests.get('${PokeApiService.baseUrl}/move/$name');
+      final response =
+          await Requests.get('${PokeApiService.baseUrl}/move/$name');
       if (response.statusCode == 200) {
         setState(() {
           _selectedMove = response.json();
@@ -244,7 +250,8 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
               hintText: 'Search by move name or location...',
               hintStyle: const TextStyle(color: Colors.black45),
               prefixIcon: const Icon(Icons.search, color: Colors.black45),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               filled: true,
               fillColor: Colors.white,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -266,8 +273,10 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
                 if (_usingFallback) ...[
                   const SizedBox(width: 6),
                   Tooltip(
-                    message: 'TM data unavailable for this game — showing all moves',
-                    child: Icon(Icons.info_outline, size: 14, color: Colors.grey.shade500),
+                    message:
+                        'TM data unavailable for this game — showing all moves',
+                    child: Icon(Icons.info_outline,
+                        size: 14, color: Colors.grey.shade500),
                   ),
                 ],
               ],
@@ -288,7 +297,8 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
           labelText: 'Game',
           labelStyle: const TextStyle(color: Colors.black54),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           filled: true,
           fillColor: Colors.white,
         ),
@@ -300,7 +310,10 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
             style: const TextStyle(color: Colors.black87, fontSize: 14),
             dropdownColor: Colors.white,
             items: _games
-                .map((g) => DropdownMenuItem(value: g, child: Text(_formatName(g), style: const TextStyle(color: Colors.black87))))
+                .map((g) => DropdownMenuItem(
+                    value: g,
+                    child: Text(_formatName(g),
+                        style: const TextStyle(color: Colors.black87))))
                 .toList(),
             onChanged: (value) {
               if (value != null && value != _selectedGame) {
@@ -454,23 +467,29 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  Text(name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  Text(name,
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
                           color: AppTheme.typeColors[typeCap] ?? Colors.grey,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(typeCap,
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
                       ),
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
                           color: category == 'physical'
                               ? Colors.orange
@@ -481,7 +500,8 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
                         ),
                         child: Text(
                           category[0].toUpperCase() + category.substring(1),
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
@@ -491,9 +511,11 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       _statColumn('Power', power?.toString() ?? '-'),
-                      _statColumn('Accuracy', accuracy != null ? '$accuracy%' : '-'),
+                      _statColumn(
+                          'Accuracy', accuracy != null ? '$accuracy%' : '-'),
                       _statColumn('PP', pp?.toString() ?? '-'),
-                      _statColumn('Priority', move['priority']?.toString() ?? '0'),
+                      _statColumn(
+                          'Priority', move['priority']?.toString() ?? '0'),
                     ],
                   ),
                 ],
@@ -510,7 +532,8 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text('Effect',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16)),
                     const SizedBox(height: 8),
                     Text(effect),
                     if (flavorText.isNotEmpty) ...[
@@ -532,7 +555,8 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text('TM/HM',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16)),
                     const SizedBox(height: 8),
                     ...machines.take(10).map((m) {
                       final version = m['version_group']?['name'] ?? '';
@@ -541,7 +565,8 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
                         style: const TextStyle(fontSize: 12),
                       );
                     }),
-                    if (machines.length > 10) Text('...and ${machines.length - 10} more'),
+                    if (machines.length > 10)
+                      Text('...and ${machines.length - 10} more'),
                   ],
                 ),
               ),
@@ -554,16 +579,19 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Learned by ${learnedBy.length} Pokemon',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16)),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 6,
                     runSpacing: 4,
                     children: learnedBy.map((p) {
-                      final rawName = (p['pokemon']?['name'] ?? p['name'] ?? '') as String;
+                      final rawName =
+                          (p['pokemon']?['name'] ?? p['name'] ?? '') as String;
                       final pName = _formatName(rawName);
                       return Chip(
-                        label: Text(pName, style: const TextStyle(fontSize: 11)),
+                        label:
+                            Text(pName, style: const TextStyle(fontSize: 11)),
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         padding: EdgeInsets.zero,
                       );
@@ -583,7 +611,8 @@ class _TMFinderScreenState extends State<TMFinderScreen> {
       children: [
         Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(value,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
       ],
     );
   }

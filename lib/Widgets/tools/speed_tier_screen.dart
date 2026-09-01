@@ -5,7 +5,7 @@ import '../../theme/app_theme.dart';
 import '../pokemon/pokemon_detail_sheet.dart';
 
 class SpeedTierScreen extends StatefulWidget {
-  const SpeedTierScreen({Key? key}) : super(key: key);
+  const SpeedTierScreen({super.key});
 
   @override
   State<SpeedTierScreen> createState() => _SpeedTierScreenState();
@@ -57,7 +57,8 @@ class _SpeedTierScreenState extends State<SpeedTierScreen> {
                 'baseSpeed': baseSpeed,
                 'types': types,
                 'id': id,
-                'image': 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png',
+                'image':
+                    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png',
               };
             } catch (_) {
               return null;
@@ -67,7 +68,8 @@ class _SpeedTierScreenState extends State<SpeedTierScreen> {
         speeds.addAll(results.whereType<Map<String, dynamic>>());
       }
 
-      speeds.sort((a, b) => (b['baseSpeed'] as int).compareTo(a['baseSpeed'] as int));
+      speeds.sort(
+          (a, b) => (b['baseSpeed'] as int).compareTo(a['baseSpeed'] as int));
 
       if (mounted) {
         setState(() {
@@ -96,7 +98,8 @@ class _SpeedTierScreenState extends State<SpeedTierScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Speed Tiers'), backgroundColor: Colors.red),
+      appBar:
+          AppBar(title: const Text('Speed Tiers'), backgroundColor: Colors.red),
       body: _isLoading
           ? Center(
               child: Column(
@@ -104,7 +107,8 @@ class _SpeedTierScreenState extends State<SpeedTierScreen> {
                 children: const [
                   CircularProgressIndicator(),
                   SizedBox(height: 16),
-                  Text('Loading speed data...', style: TextStyle(color: Colors.white70)),
+                  Text('Loading speed data...',
+                      style: TextStyle(color: Colors.white70)),
                 ],
               ),
             )
@@ -117,23 +121,49 @@ class _SpeedTierScreenState extends State<SpeedTierScreen> {
                     children: [
                       Expanded(
                         child: DropdownButtonFormField<int>(
-                          value: _showLevel,
+                          initialValue: _showLevel,
                           decoration: const InputDecoration(
-                            labelText: 'Level', border: OutlineInputBorder(), isDense: true),
-                          items: [1, 5, 10, 25, 50, 100].map((l) =>
-                              DropdownMenuItem(value: l, child: Text('Lv. $l'))).toList(),
+                              labelText: 'Level',
+                              border: OutlineInputBorder(),
+                              isDense: true),
+                          items: [1, 5, 10, 25, 50, 100]
+                              .map((l) => DropdownMenuItem(
+                                  value: l, child: Text('Lv. $l')))
+                              .toList(),
                           onChanged: (v) => setState(() => _showLevel = v!),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: DropdownButtonFormField<String?>(
-                          value: _filterType,
+                          initialValue: _filterType,
                           decoration: const InputDecoration(
-                            labelText: 'Type', border: OutlineInputBorder(), isDense: true),
+                              labelText: 'Type',
+                              border: OutlineInputBorder(),
+                              isDense: true),
                           items: [
-                            const DropdownMenuItem(value: null, child: Text('All')),
-                            ...['Fire', 'Water', 'Grass', 'Electric', 'Dragon', 'Psychic', 'Dark', 'Steel', 'Fairy', 'Fighting', 'Flying', 'Ghost', 'Ice', 'Ground', 'Rock', 'Bug', 'Poison', 'Normal'].map((t) =>
+                            const DropdownMenuItem(
+                                value: null, child: Text('All')),
+                            ...[
+                              'Fire',
+                              'Water',
+                              'Grass',
+                              'Electric',
+                              'Dragon',
+                              'Psychic',
+                              'Dark',
+                              'Steel',
+                              'Fairy',
+                              'Fighting',
+                              'Flying',
+                              'Ghost',
+                              'Ice',
+                              'Ground',
+                              'Rock',
+                              'Bug',
+                              'Poison',
+                              'Normal'
+                            ].map((t) =>
                                 DropdownMenuItem(value: t, child: Text(t))),
                           ],
                           onChanged: (v) {
@@ -147,7 +177,8 @@ class _SpeedTierScreenState extends State<SpeedTierScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Text('${_filtered.length} Pokemon', style: const TextStyle(color: Colors.white70)),
+                  child: Text('${_filtered.length} Pokemon',
+                      style: const TextStyle(color: Colors.white70)),
                 ),
                 Expanded(
                   child: ListView.builder(
@@ -159,9 +190,19 @@ class _SpeedTierScreenState extends State<SpeedTierScreen> {
 
                       // Calculate actual speed at level with 0 EVs and 252 EVs
                       final minSpeed = IVCalculatorService.calculateSingleStat(
-                          baseStat: baseSpeed, iv: 31, ev: 0, level: _showLevel, natureModifier: 1.0, isHP: false);
+                          baseStat: baseSpeed,
+                          iv: 31,
+                          ev: 0,
+                          level: _showLevel,
+                          natureModifier: 1.0,
+                          isHP: false);
                       final maxSpeed = IVCalculatorService.calculateSingleStat(
-                          baseStat: baseSpeed, iv: 31, ev: 252, level: _showLevel, natureModifier: 1.1, isHP: false);
+                          baseStat: baseSpeed,
+                          iv: 31,
+                          ev: 252,
+                          level: _showLevel,
+                          natureModifier: 1.1,
+                          isHP: false);
 
                       return ListTile(
                         onTap: () => showPokemonDetailSheet(context, p['name']),
@@ -171,24 +212,37 @@ class _SpeedTierScreenState extends State<SpeedTierScreen> {
                         ),
                         title: Row(
                           children: [
-                            Text('#${p['id']} ${p['name']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                            Text('#${p['id']} ${p['name']}',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 14)),
                             const SizedBox(width: 4),
                             ...types.map((t) => Container(
-                              margin: const EdgeInsets.only(left: 2),
-                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                              decoration: BoxDecoration(color: AppTheme.typeColors[t], borderRadius: BorderRadius.circular(4)),
-                              child: Text(t, style: const TextStyle(color: Colors.white, fontSize: 8)),
-                            )),
+                                  margin: const EdgeInsets.only(left: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 4, vertical: 1),
+                                  decoration: BoxDecoration(
+                                      color: AppTheme.typeColors[t],
+                                      borderRadius: BorderRadius.circular(4)),
+                                  child: Text(t,
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 8)),
+                                )),
                           ],
                         ),
-                        subtitle: Text('Base: $baseSpeed | Lv.$_showLevel: $minSpeed-$maxSpeed', style: const TextStyle(fontSize: 12)),
+                        subtitle: Text(
+                            'Base: $baseSpeed | Lv.$_showLevel: $minSpeed-$maxSpeed',
+                            style: const TextStyle(fontSize: 12)),
                         trailing: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: _getSpeedColor(baseSpeed),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Text('$baseSpeed', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          child: Text('$baseSpeed',
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
                         ),
                       );
                     },
@@ -207,5 +261,6 @@ class _SpeedTierScreenState extends State<SpeedTierScreen> {
     return Colors.red;
   }
 
-  String _capitalize(String s) => s.split('-').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ');
+  String _capitalize(String s) =>
+      s.split('-').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ');
 }

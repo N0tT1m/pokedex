@@ -9,7 +9,7 @@ import '../services/pokemondb_service.dart';
 import '../models/saved_pokemon.dart';
 
 class ReverseIVCalculator extends StatefulWidget {
-  const ReverseIVCalculator({Key? key}) : super(key: key);
+  const ReverseIVCalculator({super.key});
 
   @override
   State<ReverseIVCalculator> createState() => _ReverseIVCalculatorState();
@@ -552,7 +552,7 @@ class _ReverseIVCalculatorState extends State<ReverseIVCalculator> {
                   ),
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -589,7 +589,7 @@ class _ReverseIVCalculatorState extends State<ReverseIVCalculator> {
                   ),
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -652,7 +652,7 @@ class _ReverseIVCalculatorState extends State<ReverseIVCalculator> {
                   ],
                 ),
               );
-            }).toList(),
+            }),
             const Divider(),
             _buildTotalIVs(),
           ],
@@ -850,7 +850,7 @@ class _ReverseIVCalculatorState extends State<ReverseIVCalculator> {
                   ],
                 ),
               );
-            }).toList(),
+            }),
             const Divider(),
             Text(
               'Tip: Select your game version below to filter locations',

@@ -3,13 +3,14 @@ import '../../services/pokeapi_service.dart';
 
 class LearnsetScreen extends StatefulWidget {
   final String? pokemonName;
-  const LearnsetScreen({Key? key, this.pokemonName}) : super(key: key);
+  const LearnsetScreen({super.key, this.pokemonName});
 
   @override
   State<LearnsetScreen> createState() => _LearnsetScreenState();
 }
 
-class _LearnsetScreenState extends State<LearnsetScreen> with SingleTickerProviderStateMixin {
+class _LearnsetScreenState extends State<LearnsetScreen>
+    with SingleTickerProviderStateMixin {
   Map<String, List<Map<String, dynamic>>> _movesByMethod = {};
   bool _isLoading = false;
   TabController? _tabController;
@@ -45,10 +46,14 @@ class _LearnsetScreenState extends State<LearnsetScreen> with SingleTickerProvid
 
   // Maps API learn_method values (both DB-stored lowercase and display-capitalized) to tab keys
   static const _methodKeyMap = {
-    'Level Up': 'level-up', 'level-up': 'level-up',
-    'TM': 'machine',        'tm': 'machine',
-    'Egg': 'egg',           'egg': 'egg',
-    'Tutor': 'tutor',       'tutor': 'tutor',
+    'Level Up': 'level-up',
+    'level-up': 'level-up',
+    'TM': 'machine',
+    'tm': 'machine',
+    'Egg': 'egg',
+    'egg': 'egg',
+    'Tutor': 'tutor',
+    'tutor': 'tutor',
   };
 
   Future<void> _loadMoves(String name) async {
@@ -91,7 +96,8 @@ class _LearnsetScreenState extends State<LearnsetScreen> with SingleTickerProvid
         });
       }
 
-      byMethod['level-up']!.sort((a, b) => (a['level'] as int).compareTo(b['level'] as int));
+      byMethod['level-up']!
+          .sort((a, b) => (a['level'] as int).compareTo(b['level'] as int));
 
       if (!mounted) return;
       setState(() {
@@ -121,7 +127,9 @@ class _LearnsetScreenState extends State<LearnsetScreen> with SingleTickerProvid
         title: Text('${_capitalize(_currentPokemon!)} Moves'),
         backgroundColor: Colors.red,
         leading: widget.pokemonName == null
-            ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => setState(() => _currentPokemon = null))
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => setState(() => _currentPokemon = null))
             : null,
         bottom: TabBar(
           controller: _tabController,
@@ -151,13 +159,15 @@ class _LearnsetScreenState extends State<LearnsetScreen> with SingleTickerProvid
 
   Widget _buildSearchView() {
     return Scaffold(
-      appBar: AppBar(title: const Text('Learnsets'), backgroundColor: Colors.red),
+      appBar:
+          AppBar(title: const Text('Learnsets'), backgroundColor: Colors.red),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Search a Pokemon to view its learnset', style: TextStyle(fontSize: 16)),
+            const Text('Search a Pokemon to view its learnset',
+                style: TextStyle(fontSize: 16)),
             const SizedBox(height: 12),
             if (_isLoadingNames)
               const Center(child: CircularProgressIndicator())
@@ -165,7 +175,9 @@ class _LearnsetScreenState extends State<LearnsetScreen> with SingleTickerProvid
               Autocomplete<String>(
                 optionsBuilder: (v) {
                   if (v.text.isEmpty) return const Iterable.empty();
-                  return _pokemonNames.where((n) => n.contains(v.text.toLowerCase())).take(10);
+                  return _pokemonNames
+                      .where((n) => n.contains(v.text.toLowerCase()))
+                      .take(10);
                 },
                 onSelected: (name) => _loadMoves(name),
                 fieldViewBuilder: (ctx, ctrl, focus, submit) => TextField(
@@ -174,7 +186,8 @@ class _LearnsetScreenState extends State<LearnsetScreen> with SingleTickerProvid
                   decoration: InputDecoration(
                     hintText: 'Search Pokemon...',
                     prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
               ),
@@ -197,24 +210,34 @@ class _LearnsetScreenState extends State<LearnsetScreen> with SingleTickerProvid
         final subtitleParts = <String>[];
         if (move['type'] != null) subtitleParts.add(move['type']);
         if (move['power'] != null) subtitleParts.add('Pow: ${move['power']}');
-        if (move['accuracy'] != null) subtitleParts.add('Acc: ${move['accuracy']}');
-        final subtitle = subtitleParts.isNotEmpty ? subtitleParts.join(' · ') : null;
+        if (move['accuracy'] != null) {
+          subtitleParts.add('Acc: ${move['accuracy']}');
+        }
+        final subtitle =
+            subtitleParts.isNotEmpty ? subtitleParts.join(' · ') : null;
 
         return ListTile(
           leading: showLevel
               ? CircleAvatar(
                   backgroundColor: Colors.red,
                   radius: 16,
-                  child: Text('${move['level']}', style: const TextStyle(color: Colors.white, fontSize: 11)),
+                  child: Text('${move['level']}',
+                      style:
+                          const TextStyle(color: Colors.white, fontSize: 11)),
                 )
               : null,
           title: Text(move['name']),
-          subtitle: subtitle != null ? Text(subtitle, style: const TextStyle(fontSize: 12)) : null,
+          subtitle: subtitle != null
+              ? Text(subtitle, style: const TextStyle(fontSize: 12))
+              : null,
           dense: true,
         );
       },
     );
   }
 
-  String _capitalize(String s) => s.split('-').map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w).join(' ');
+  String _capitalize(String s) => s
+      .split('-')
+      .map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : w)
+      .join(' ');
 }

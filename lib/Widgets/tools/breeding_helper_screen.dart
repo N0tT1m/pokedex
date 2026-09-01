@@ -3,7 +3,7 @@ import '../../services/pokeapi_service.dart';
 import '../../services/breeding_service.dart';
 
 class BreedingHelperScreen extends StatefulWidget {
-  const BreedingHelperScreen({Key? key}) : super(key: key);
+  const BreedingHelperScreen({super.key});
 
   @override
   State<BreedingHelperScreen> createState() => _BreedingHelperScreenState();
@@ -95,8 +95,10 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
           .map((m) => m['name'] as String)
           .toSet();
 
-      final passableTo1 = moves1.where((m) => nativeMoves2.contains(m['apiName'])).toList();
-      final passableTo2 = moves2.where((m) => nativeMoves1.contains(m['apiName'])).toList();
+      final passableTo1 =
+          moves1.where((m) => nativeMoves2.contains(m['apiName'])).toList();
+      final passableTo2 =
+          moves2.where((m) => nativeMoves1.contains(m['apiName'])).toList();
 
       if (!mounted) return;
       setState(() {
@@ -120,8 +122,13 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
       if (!mounted) return;
       final err = {'compatible': false, 'reason': 'Error: $e'};
       setState(() {
-        if (sv) { _svResult = err; _svChecking = false; }
-        else { _result = err; _isChecking = false; }
+        if (sv) {
+          _svResult = err;
+          _svChecking = false;
+        } else {
+          _result = err;
+          _isChecking = false;
+        }
       });
     }
   }
@@ -178,7 +185,8 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
             checking: _isChecking,
             onCheck: () => _checkCompatibility(),
             label: 'Standard Compatibility Check',
-            sublabel: 'Applies to Gen 2 – 9. Select two Pokémon to see if they can breed.',
+            sublabel:
+                'Applies to Gen 2 – 9. Select two Pokémon to see if they can breed.',
             buttonColor: Colors.blue,
           ),
           if (_result != null) ...[
@@ -187,17 +195,16 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
             _buildSpeciesInfoCards(_result!, _pokemon1!, _pokemon2!),
             _buildBreedingStrategyCard(_result!, _pokemon1!, _pokemon2!),
           ],
-          if (_result != null && (_eggMoves1.isNotEmpty || _eggMoves2.isNotEmpty)) ...[
+          if (_result != null &&
+              (_eggMoves1.isNotEmpty || _eggMoves2.isNotEmpty)) ...[
             const SizedBox(height: 12),
             if (_eggMoves1.isNotEmpty)
-              _buildFullEggMovesCard(
-                _cap(_pokemon1!), _cap(_pokemon2!),
-                _eggMoves1, _passableTo1, Colors.green),
+              _buildFullEggMovesCard(_cap(_pokemon1!), _cap(_pokemon2!),
+                  _eggMoves1, _passableTo1, Colors.green),
             if (_eggMoves2.isNotEmpty) ...[
               const SizedBox(height: 8),
-              _buildFullEggMovesCard(
-                _cap(_pokemon2!), _cap(_pokemon1!),
-                _eggMoves2, _passableTo2, Colors.blue),
+              _buildFullEggMovesCard(_cap(_pokemon2!), _cap(_pokemon1!),
+                  _eggMoves2, _passableTo2, Colors.blue),
             ],
           ],
         ],
@@ -205,7 +212,8 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
     );
   }
 
-  Widget _buildSpeciesInfoCards(Map<String, dynamic> result, String p1, String p2) {
+  Widget _buildSpeciesInfoCards(
+      Map<String, dynamic> result, String p1, String p2) {
     final s1 = result['species1'] as Map<String, dynamic>?;
     final s2 = result['species2'] as Map<String, dynamic>?;
     if (s1 == null || s2 == null) return const SizedBox.shrink();
@@ -240,10 +248,12 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+        Text(name,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
         const SizedBox(height: 4),
         _detailLine(Icons.female, 'Gender', genderText),
-        _detailLine(Icons.egg, 'Egg Cycles', '$eggCycles cycles ($baseSteps steps)'),
+        _detailLine(
+            Icons.egg, 'Egg Cycles', '$eggCycles cycles ($baseSteps steps)'),
         _detailLine(Icons.directions_walk, 'With Flame Body',
             '$halfSteps steps (halved)'),
       ],
@@ -257,27 +267,31 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
         children: [
           Icon(icon, size: 14, color: Colors.grey),
           const SizedBox(width: 6),
-          Text('$label: ', style: TextStyle(fontSize: 12, color: Colors.grey.shade700)),
+          Text('$label: ',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade700)),
           Expanded(child: Text(value, style: const TextStyle(fontSize: 12))),
         ],
       ),
     );
   }
 
-  Widget _buildBreedingStrategyCard(Map<String, dynamic> result, String p1, String p2) {
+  Widget _buildBreedingStrategyCard(
+      Map<String, dynamic> result, String p1, String p2) {
     if (result['compatible'] != true) return const SizedBox.shrink();
 
     final s1 = result['species1'] as Map<String, dynamic>?;
     final s2 = result['species2'] as Map<String, dynamic>?;
     final g1 = s1?['genderText'] as String? ?? '';
     final g2 = s2?['genderText'] as String? ?? '';
-    final isDitto = (result['eggGroups1'] as List?)?.contains('ditto') == true ||
-        (result['eggGroups2'] as List?)?.contains('ditto') == true;
+    final isDitto =
+        (result['eggGroups1'] as List?)?.contains('ditto') == true ||
+            (result['eggGroups2'] as List?)?.contains('ditto') == true;
 
     final steps = <String>[];
 
     if (isDitto) {
-      final nonDitto = (result['eggGroups1'] as List?)?.contains('ditto') == true ? p2 : p1;
+      final nonDitto =
+          (result['eggGroups1'] as List?)?.contains('ditto') == true ? p2 : p1;
       steps.addAll([
         'Give ${_cap(nonDitto)} an Everstone to pass its Nature to the offspring.',
         'Give Ditto a Destiny Knot to pass 5 of its 12 combined IVs.',
@@ -316,7 +330,11 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
               Row(children: [
                 Icon(Icons.lightbulb, size: 16, color: Colors.amber.shade800),
                 const SizedBox(width: 6),
-                Text('Breeding Strategy', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.amber.shade900)),
+                Text('Breeding Strategy',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Colors.amber.shade900)),
               ]),
               const SizedBox(height: 8),
               ...steps.asMap().entries.map((e) => Padding(
@@ -327,10 +345,17 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
                         SizedBox(
                           width: 22,
                           child: Text('${e.key + 1}.',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.amber.shade900)),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                  color: Colors.amber.shade900)),
                         ),
-                        Expanded(child: Text(e.value,
-                            style: TextStyle(fontSize: 12, color: Colors.grey.shade800, height: 1.4))),
+                        Expanded(
+                            child: Text(e.value,
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey.shade800,
+                                    height: 1.4))),
                       ],
                     ),
                   )),
@@ -359,29 +384,41 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(children: [
-                    Icon(Icons.new_releases, color: Colors.purple.shade700, size: 20),
+                    Icon(Icons.new_releases,
+                        color: Colors.purple.shade700, size: 20),
                     const SizedBox(width: 6),
                     Text('What Changed in Scarlet/Violet',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.purple.shade700)),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.purple.shade700)),
                   ]),
                   const SizedBox(height: 12),
-                  _svItem(Icons.lunch_dining, 'Picnic Breeding',
+                  _svItem(
+                      Icons.lunch_dining,
+                      'Picnic Breeding',
                       'Breeding happens at Picnics instead of a Day Care. Put two compatible '
-                      'Pokémon in your party, start a Picnic, and eggs appear in the basket.'),
+                          'Pokémon in your party, start a Picnic, and eggs appear in the basket.'),
                   _svItem(Icons.swap_horiz, 'Either Parent Passes Egg Moves',
                       'Both the father AND mother can pass egg moves. No more hunting for the right-gender parent.'),
-                  _svItem(Icons.restaurant, 'Egg Power Sandwiches',
+                  _svItem(
+                      Icons.restaurant,
+                      'Egg Power Sandwiches',
                       'Eat a sandwich with Egg Power to increase egg frequency:\n'
-                      '  Lv.1 → more eggs  |  Lv.2 → many more eggs  |  Lv.3 → maximum egg rate.\n'
-                      'Recipes: Great Peanut Butter Sandwich (Lv.2), Jam Sandwich + Herba Mystica (Lv.3).'),
-                  _svItem(Icons.local_florist, 'Mirror Herb (No Breeding Needed)',
+                          '  Lv.1 → more eggs  |  Lv.2 → many more eggs  |  Lv.3 → maximum egg rate.\n'
+                          'Recipes: Great Peanut Butter Sandwich (Lv.2), Jam Sandwich + Herba Mystica (Lv.3).'),
+                  _svItem(
+                      Icons.local_florist,
+                      'Mirror Herb (No Breeding Needed)',
                       'Buy a Mirror Herb from Delibird Presents. Give it to a Pokémon, then '
-                      'Picnic it with a same-species Pokémon that knows the egg move. '
-                      'The Mirror Herb copies the move. Works on any gender. Herb is consumed.'),
-                  _svItem(Icons.directions_walk, 'Hatching Tips',
+                          'Picnic it with a same-species Pokémon that knows the egg move. '
+                          'The Mirror Herb copies the move. Works on any gender. Herb is consumed.'),
+                  _svItem(
+                      Icons.directions_walk,
+                      'Hatching Tips',
                       '• Flame Body / Magma Armor in party still halves steps.\n'
-                      '• Egg Power from a sandwich stacks with Flame Body.\n'
-                      '• Ride Koraidon/Miraidon in circles to rack up steps quickly.'),
+                          '• Egg Power from a sandwich stacks with Flame Body.\n'
+                          '• Ride Koraidon/Miraidon in circles to rack up steps quickly.'),
                 ],
               ),
             ),
@@ -397,19 +434,30 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(children: [
-                    Icon(Icons.format_list_numbered, color: Colors.deepPurple.shade700, size: 20),
+                    Icon(Icons.format_list_numbered,
+                        color: Colors.deepPurple.shade700, size: 20),
                     const SizedBox(width: 6),
                     Text('SV Competitive Breeding Walkthrough',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.deepPurple.shade700)),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.deepPurple.shade700)),
                   ]),
                   const SizedBox(height: 10),
-                  _stepRow(1, 'Get a 6 IV Ditto from 6-star Tera Raid Dens. Give it a Destiny Knot.'),
-                  _stepRow(2, 'Catch a parent of the species you want. If you need a Hidden Ability, use an Ability Patch (from 6-star Raids) or catch one with the HA in the wild.'),
-                  _stepRow(3, 'Give the non-Ditto parent an Everstone to lock in the Nature you want. If you don\'t have the right Nature yet, use a Mint first to confirm what you need, then breed one with the right Nature.'),
-                  _stepRow(4, 'Picnic → eat an Egg Power Lv.2+ sandwich → collect eggs from the basket. ~30 s per egg.'),
-                  _stepRow(5, 'Hatch eggs (Flame Body party lead). Swap in higher-IV offspring as the new parent each batch.'),
-                  _stepRow(6, 'For egg moves: breed with a parent who knows the move, OR use Mirror Herb on a same-species Pokémon that already has it.'),
-                  _stepRow(7, 'Once done, use Bottle Caps or Hyper Training at Lv.50+ to fix the last imperfect IV.'),
+                  _stepRow(1,
+                      'Get a 6 IV Ditto from 6-star Tera Raid Dens. Give it a Destiny Knot.'),
+                  _stepRow(2,
+                      'Catch a parent of the species you want. If you need a Hidden Ability, use an Ability Patch (from 6-star Raids) or catch one with the HA in the wild.'),
+                  _stepRow(3,
+                      'Give the non-Ditto parent an Everstone to lock in the Nature you want. If you don\'t have the right Nature yet, use a Mint first to confirm what you need, then breed one with the right Nature.'),
+                  _stepRow(4,
+                      'Picnic → eat an Egg Power Lv.2+ sandwich → collect eggs from the basket. ~30 s per egg.'),
+                  _stepRow(5,
+                      'Hatch eggs (Flame Body party lead). Swap in higher-IV offspring as the new parent each batch.'),
+                  _stepRow(6,
+                      'For egg moves: breed with a parent who knows the move, OR use Mirror Herb on a same-species Pokémon that already has it.'),
+                  _stepRow(7,
+                      'Once done, use Bottle Caps or Hyper Training at Lv.50+ to fix the last imperfect IV.'),
                 ],
               ),
             ),
@@ -432,26 +480,27 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
             const SizedBox(height: 16),
             _buildResultCard(_svResult!, _svPokemon1, _svPokemon2, sv: true),
           ],
-          if (_svResult != null && (_svEggMoves1.isNotEmpty || _svEggMoves2.isNotEmpty)) ...[
+          if (_svResult != null &&
+              (_svEggMoves1.isNotEmpty || _svEggMoves2.isNotEmpty)) ...[
             const SizedBox(height: 8),
             Card(
               color: Colors.purple.shade50,
               child: Padding(
                 padding: const EdgeInsets.all(10),
-                child: Text('In SV, either parent can pass egg moves — not just the father.',
-                    style: TextStyle(fontSize: 12, color: Colors.purple.shade800)),
+                child: Text(
+                    'In SV, either parent can pass egg moves — not just the father.',
+                    style:
+                        TextStyle(fontSize: 12, color: Colors.purple.shade800)),
               ),
             ),
             const SizedBox(height: 8),
             if (_svEggMoves1.isNotEmpty)
-              _buildFullEggMovesCard(
-                _cap(_svPokemon1!), _cap(_svPokemon2!),
-                _svEggMoves1, _svPassableTo1, Colors.purple),
+              _buildFullEggMovesCard(_cap(_svPokemon1!), _cap(_svPokemon2!),
+                  _svEggMoves1, _svPassableTo1, Colors.purple),
             if (_svEggMoves2.isNotEmpty) ...[
               const SizedBox(height: 8),
-              _buildFullEggMovesCard(
-                _cap(_svPokemon2!), _cap(_svPokemon1!),
-                _svEggMoves2, _svPassableTo2, Colors.indigo),
+              _buildFullEggMovesCard(_cap(_svPokemon2!), _cap(_svPokemon1!),
+                  _svEggMoves2, _svPassableTo2, Colors.indigo),
             ],
             // Mirror Herb hint for same species
             if (_svPokemon1 != null &&
@@ -462,14 +511,19 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
                 color: Colors.green.shade50,
                 child: Padding(
                   padding: const EdgeInsets.all(12),
-                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Icon(Icons.local_florist, color: Colors.green.shade700, size: 18),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text(
-                      'Same species — use a Mirror Herb at a Picnic to copy egg moves without breeding.',
-                      style: TextStyle(fontSize: 12, color: Colors.green.shade800),
-                    )),
-                  ]),
+                  child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.local_florist,
+                            color: Colors.green.shade700, size: 18),
+                        const SizedBox(width: 8),
+                        Expanded(
+                            child: Text(
+                          'Same species — use a Mirror Herb at a Picnic to copy egg moves without breeding.',
+                          style: TextStyle(
+                              fontSize: 12, color: Colors.green.shade800),
+                        )),
+                      ]),
                 ),
               ),
             ],
@@ -485,10 +539,18 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Icon(icon, size: 16, color: Colors.purple.shade600),
         const SizedBox(width: 8),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.purple.shade800)),
+        Expanded(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(title,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Colors.purple.shade800)),
           const SizedBox(height: 2),
-          Text(body, style: TextStyle(fontSize: 12, color: Colors.grey.shade800, height: 1.4)),
+          Text(body,
+              style: TextStyle(
+                  fontSize: 12, color: Colors.grey.shade800, height: 1.4)),
         ])),
       ]),
     );
@@ -501,10 +563,17 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
         CircleAvatar(
           radius: 10,
           backgroundColor: Colors.deepPurple.shade200,
-          child: Text('$n', style: TextStyle(fontSize: 11, color: Colors.deepPurple.shade900, fontWeight: FontWeight.bold)),
+          child: Text('$n',
+              style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.deepPurple.shade900,
+                  fontWeight: FontWeight.bold)),
         ),
         const SizedBox(width: 8),
-        Expanded(child: Text(text, style: TextStyle(fontSize: 12, color: Colors.grey.shade800, height: 1.4))),
+        Expanded(
+            child: Text(text,
+                style: TextStyle(
+                    fontSize: 12, color: Colors.grey.shade800, height: 1.4))),
       ]),
     );
   }
@@ -522,11 +591,11 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
           const Text('How Breeding Differs Across Generations',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
           const SizedBox(height: 4),
-          Text('Each generation changed or added breeding mechanics. '
+          Text(
+              'Each generation changed or added breeding mechanics. '
               'Tap a generation to see what\'s unique.',
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
           const SizedBox(height: 12),
-
           _genCard('Gen 2 (Gold / Silver / Crystal)', Colors.amber, [
             'Breeding introduced! Pokémon breed at the Day Care on Route 34.',
             'Egg moves: father passes moves to the baby.',
@@ -535,8 +604,8 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
             'Shiny breeding: since shininess was DV-based, breeding with a shiny parent increased shiny odds.',
             'Gender is determined by the Attack DV — high Attack DV = male, which means female Pokémon have low Attack.',
           ]),
-
-          _genCard('Gen 3 (Ruby / Sapphire / Emerald / FRLG)', Colors.red.shade300, [
+          _genCard(
+              'Gen 3 (Ruby / Sapphire / Emerald / FRLG)', Colors.red.shade300, [
             'IVs overhauled to the modern 0–31 system. 3 random IVs are inherited from parents.',
             'Everstone: the mother can hold an Everstone for a 50% chance to pass her Nature.',
             'Egg moves: still father-only.',
@@ -544,8 +613,8 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
             'No Destiny Knot for breeding.',
             'Pokéball: offspring is always in a standard Poké Ball.',
           ]),
-
-          _genCard('Gen 4 (Diamond / Pearl / Platinum / HGSS)', Colors.blue.shade300, [
+          _genCard('Gen 4 (Diamond / Pearl / Platinum / HGSS)',
+              Colors.blue.shade300, [
             'Everstone nature passing now works for EITHER parent (not just mother).',
             'Power items (Power Bracer, Belt, etc.): guarantee 1 specific IV is inherited.',
             'Still 3 inherited IVs total (one can be forced by a Power item).',
@@ -553,7 +622,6 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
             'Incense breeding added: hold a specific incense to breed baby Pokémon (e.g., Sea Incense → Azurill).',
             'The Masuda Method was introduced — breeding two Pokémon from different real-world language games increases shiny odds to ~1/1638.',
           ]),
-
           _genCard('Gen 5 (Black / White / B2W2)', Colors.grey.shade400, [
             'Hidden Abilities introduced. Females with HA have a 60% chance to pass it; males/genderless cannot pass HA.',
             'Pokéball inheritance: the mother\'s ball is now passed to offspring.',
@@ -562,7 +630,6 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
             'Egg moves: still father-only.',
             'Masuda Method: shiny odds improved to ~1/1365.',
           ]),
-
           _genCard('Gen 6 (X / Y / ORAS)', Colors.blue.shade700, [
             'Destiny Knot: when held by EITHER parent, 5 IVs are inherited instead of 3. This is the single biggest breeding change — makes competitive IV breeding practical.',
             'Males and genderless Pokémon can now pass Hidden Abilities when breeding with Ditto.',
@@ -571,7 +638,6 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
             'Friend Safari: a popular source for Pokémon with 2 guaranteed perfect IVs.',
             'Masuda + Shiny Charm: odds drop to ~1/512.',
           ]),
-
           _genCard('Gen 7 (Sun / Moon / USUM)', Colors.orange, [
             'Identical to Gen 6 mechanically.',
             'Nursery replaces Day Care in Alola — Pokémon no longer gain EXP while stored.',
@@ -579,7 +645,6 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
             'SOS chaining for Hidden Abilities made wild HA easier to find.',
             'Masuda + Shiny Charm: still ~1/512.',
           ]),
-
           _genCard('Gen 8 (Sword / Shield / BDSP)', Colors.cyan, [
             'Same core mechanics as Gen 6/7.',
             'Max Raid Dens: 5-star Ditto raids guarantee 4+ perfect IVs — easiest 6 IV Ditto ever.',
@@ -588,7 +653,6 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
             'Egg moves can be transferred between Pokémon of the same species: leave both at the Nursery (one empty move slot needed).',
             'Pokéball Plus and Home compatibility for transferring bred Pokémon.',
           ]),
-
           _genCard('Gen 9 (Scarlet / Violet)', Colors.purple, [
             'See the "Scarlet/Violet" tab for full details.',
             'Key differences: Picnic breeding, either parent passes egg moves, Mirror Herb for egg move transfer, Egg Power sandwiches.',
@@ -608,22 +672,37 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
         child: ExpansionTile(
           tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
           leading: Container(
-            width: 8, height: 8,
+            width: 8,
+            height: 8,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
-          title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          title: Text(title,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: points.map((p) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text('• ', style: TextStyle(color: color, fontWeight: FontWeight.bold)),
-                    Expanded(child: Text(p, style: TextStyle(fontSize: 12, color: Colors.grey.shade800, height: 1.4))),
-                  ]),
-                )).toList(),
+                children: points
+                    .map((p) => Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('• ',
+                                    style: TextStyle(
+                                        color: color,
+                                        fontWeight: FontWeight.bold)),
+                                Expanded(
+                                    child: Text(p,
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey.shade800,
+                                            height: 1.4))),
+                              ]),
+                        ))
+                    .toList(),
               ),
             ),
           ],
@@ -656,7 +735,6 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
               'Use a Bottle Cap / Hyper Training at Lv.50+ (Gen 7+) to fix the last imperfect stat.',
             ],
           ),
-
           _strategyCard(
             'Hidden Ability Breeding',
             Colors.purple,
@@ -670,7 +748,6 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
               'Gen 8+: An Ability Patch (from hard raids) changes any Pokémon to its HA, bypassing breeding entirely.',
             ],
           ),
-
           _strategyCard(
             'Egg Move Chains',
             Colors.pink,
@@ -685,7 +762,6 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
               'Gen 9: Mirror Herb — fastest method. Same species, Picnic, no breeding needed.',
             ],
           ),
-
           _strategyCard(
             'Shiny Breeding (Masuda Method)',
             Colors.amber,
@@ -700,7 +776,6 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
               'Average: ~500 eggs with Masuda + Shiny Charm. Can be fewer or many more — it\'s luck.',
             ],
           ),
-
           _strategyCard(
             'Nature & EV Optimisation',
             Colors.green,
@@ -713,7 +788,6 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
               'Power items (Bracer, Belt, Lens, Band, Anklet, Weight): force that stat\'s IV to be inherited. Useful before Gen 6 (before Destiny Knot was available for breeding).',
             ],
           ),
-
           _strategyCard(
             'Quick Reference: Items',
             Colors.teal,
@@ -734,7 +808,8 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
     );
   }
 
-  Widget _strategyCard(String title, Color color, IconData icon, List<String> steps) {
+  Widget _strategyCard(
+      String title, Color color, IconData icon, List<String> steps) {
     return Card(
       margin: const EdgeInsets.only(bottom: 14),
       child: Theme(
@@ -743,19 +818,38 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
           initiallyExpanded: false,
           tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
           leading: Icon(icon, color: color, size: 22),
-          title: Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: color)),
+          title: Text(title,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 14, color: color)),
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: steps.asMap().entries.map((e) => Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
-                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    SizedBox(width: 22, child: Text('${e.key + 1}.', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: color))),
-                    Expanded(child: Text(e.value, style: TextStyle(fontSize: 12, color: Colors.grey.shade800, height: 1.4))),
-                  ]),
-                )).toList(),
+                children: steps
+                    .asMap()
+                    .entries
+                    .map((e) => Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                    width: 22,
+                                    child: Text('${e.key + 1}.',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                            color: color))),
+                                Expanded(
+                                    child: Text(e.value,
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey.shade800,
+                                            height: 1.4))),
+                              ]),
+                        ))
+                    .toList(),
               ),
             ),
           ],
@@ -783,9 +877,12 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          Text(label,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           const SizedBox(height: 4),
-          Text(sublabel, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+          Text(sublabel,
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
           const SizedBox(height: 12),
           const Text('Parent 1'),
           const SizedBox(height: 4),
@@ -801,8 +898,13 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
               onPressed: checking ? null : onCheck,
               style: ElevatedButton.styleFrom(backgroundColor: buttonColor),
               child: checking
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : const Text('Check Compatibility', style: TextStyle(color: Colors.white)),
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2))
+                  : const Text('Check Compatibility',
+                      style: TextStyle(color: Colors.white)),
             ),
           ),
         ]),
@@ -814,40 +916,59 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
     return Autocomplete<String>(
       optionsBuilder: (v) {
         if (v.text.isEmpty) return const Iterable.empty();
-        return _pokemonNames.where((n) => n.contains(v.text.toLowerCase())).take(10);
+        return _pokemonNames
+            .where((n) => n.contains(v.text.toLowerCase()))
+            .take(10);
       },
       onSelected: onSelected,
       fieldViewBuilder: (ctx, ctrl, focus, submit) => TextField(
-        controller: ctrl, focusNode: focus,
-        decoration: const InputDecoration(hintText: 'Search...', border: OutlineInputBorder()),
+        controller: ctrl,
+        focusNode: focus,
+        decoration: const InputDecoration(
+            hintText: 'Search...', border: OutlineInputBorder()),
       ),
     );
   }
 
-  Widget _buildResultCard(Map<String, dynamic> result, String? p1, String? p2, {bool sv = false}) {
+  Widget _buildResultCard(Map<String, dynamic> result, String? p1, String? p2,
+      {bool sv = false}) {
     final ok = result['compatible'] == true;
     return Card(
       color: ok ? Colors.green.shade50 : Colors.red.shade50,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(children: [
-          Icon(ok ? Icons.check_circle : Icons.cancel, color: ok ? Colors.green : Colors.red, size: 48),
+          Icon(ok ? Icons.check_circle : Icons.cancel,
+              color: ok ? Colors.green : Colors.red, size: 48),
           const SizedBox(height: 8),
           Text(ok ? 'Compatible!' : 'Not Compatible',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: ok ? Colors.green : Colors.red)),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: ok ? Colors.green : Colors.red)),
           const SizedBox(height: 8),
           Text(result['reason'] ?? '', textAlign: TextAlign.center),
           if (result['eggGroups1'] != null) ...[
             const SizedBox(height: 8),
-            Text('${_cap(p1 ?? '')}: ${(result['eggGroups1'] as List).map(_fmtEg).join(", ")}', style: const TextStyle(fontSize: 12)),
-            Text('${_cap(p2 ?? '')}: ${(result['eggGroups2'] as List).map(_fmtEg).join(", ")}', style: const TextStyle(fontSize: 12)),
+            Text(
+                '${_cap(p1 ?? '')}: ${(result['eggGroups1'] as List).map(_fmtEg).join(", ")}',
+                style: const TextStyle(fontSize: 12)),
+            Text(
+                '${_cap(p2 ?? '')}: ${(result['eggGroups2'] as List).map(_fmtEg).join(", ")}',
+                style: const TextStyle(fontSize: 12)),
           ],
           if (sv && ok) ...[
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(color: Colors.purple.shade50, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.purple.shade200)),
-              child: Text('Set up a Picnic with both in your party to receive eggs.', style: TextStyle(fontSize: 12, color: Colors.purple.shade800), textAlign: TextAlign.center),
+              decoration: BoxDecoration(
+                  color: Colors.purple.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.purple.shade200)),
+              child: Text(
+                  'Set up a Picnic with both in your party to receive eggs.',
+                  style: TextStyle(fontSize: 12, color: Colors.purple.shade800),
+                  textAlign: TextAlign.center),
             ),
           ],
         ]),
@@ -856,21 +977,27 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
   }
 
   Widget _buildFullEggMovesCard(
-    String baby, String partner,
+    String baby,
+    String partner,
     List<Map<String, dynamic>> allEggMoves,
     List<Map<String, dynamic>> passableMoves,
     Color color,
   ) {
-    final passableNames = passableMoves.map((m) => m['apiName'] as String).toSet();
-    final canPass = allEggMoves.where((m) => passableNames.contains(m['apiName'])).toList();
-    final cantPass = allEggMoves.where((m) => !passableNames.contains(m['apiName'])).toList();
+    final passableNames =
+        passableMoves.map((m) => m['apiName'] as String).toSet();
+    final canPass =
+        allEggMoves.where((m) => passableNames.contains(m['apiName'])).toList();
+    final cantPass = allEggMoves
+        .where((m) => !passableNames.contains(m['apiName']))
+        .toList();
 
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('$baby\'s Egg Moves (${allEggMoves.length})',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: color)),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 15, color: color)),
           const SizedBox(height: 4),
           Text('All moves $baby can learn through breeding.',
               style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
@@ -880,17 +1007,24 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
               Icon(Icons.check_circle, size: 14, color: Colors.green.shade600),
               const SizedBox(width: 4),
               Text('$partner can pass directly (${canPass.length})',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.green.shade700)),
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green.shade700)),
             ]),
             const SizedBox(height: 6),
             Wrap(
-              spacing: 6, runSpacing: 4,
-              children: canPass.map((m) => Chip(
-                label: Text(m['name'], style: const TextStyle(fontSize: 11)),
-                backgroundColor: Colors.green.shade50,
-                side: BorderSide(color: Colors.green.shade200),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              )).toList(),
+              spacing: 6,
+              runSpacing: 4,
+              children: canPass
+                  .map((m) => Chip(
+                        label: Text(m['name'],
+                            style: const TextStyle(fontSize: 11)),
+                        backgroundColor: Colors.green.shade50,
+                        side: BorderSide(color: Colors.green.shade200),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ))
+                  .toList(),
             ),
           ],
           if (cantPass.isNotEmpty) ...[
@@ -899,25 +1033,38 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
               Icon(Icons.link, size: 14, color: Colors.orange.shade700),
               const SizedBox(width: 4),
               Text('Needs a different parent or chain (${cantPass.length})',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.orange.shade700)),
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange.shade700)),
             ]),
             const SizedBox(height: 6),
             Wrap(
-              spacing: 6, runSpacing: 4,
-              children: cantPass.map((m) => Chip(
-                label: Text(m['name'], style: TextStyle(fontSize: 11, color: Colors.grey.shade700)),
-                backgroundColor: Colors.orange.shade50,
-                side: BorderSide(color: Colors.orange.shade200),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              )).toList(),
+              spacing: 6,
+              runSpacing: 4,
+              children: cantPass
+                  .map((m) => Chip(
+                        label: Text(m['name'],
+                            style: TextStyle(
+                                fontSize: 11, color: Colors.grey.shade700)),
+                        backgroundColor: Colors.orange.shade50,
+                        side: BorderSide(color: Colors.orange.shade200),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ))
+                  .toList(),
             ),
             const SizedBox(height: 6),
-            Text('Use the Breeding Chains tool to find parents for these moves.',
-                style: TextStyle(fontSize: 11, color: Colors.grey.shade600, fontStyle: FontStyle.italic)),
+            Text(
+                'Use the Breeding Chains tool to find parents for these moves.',
+                style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey.shade600,
+                    fontStyle: FontStyle.italic)),
           ],
           if (canPass.isEmpty) ...[
             const SizedBox(height: 8),
-            Text('$partner can\'t pass any of these directly — use the Breeding Chains tool to find a parent.',
+            Text(
+                '$partner can\'t pass any of these directly — use the Breeding Chains tool to find a parent.',
                 style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
           ],
         ]),
@@ -925,6 +1072,12 @@ class _BreedingHelperScreenState extends State<BreedingHelperScreen>
     );
   }
 
-  String _cap(String s) => s.split('-').map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1)).join(' ');
-  String _fmtEg(dynamic g) => (g as String).split('-').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ');
+  String _cap(String s) => s
+      .split('-')
+      .map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1))
+      .join(' ');
+  String _fmtEg(dynamic g) => (g as String)
+      .split('-')
+      .map((w) => w[0].toUpperCase() + w.substring(1))
+      .join(' ');
 }

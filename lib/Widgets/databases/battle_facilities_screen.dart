@@ -3,7 +3,7 @@ import 'package:requests/requests.dart';
 import '../../services/pokeapi_service.dart';
 
 class BattleFacilitiesScreen extends StatefulWidget {
-  const BattleFacilitiesScreen({Key? key}) : super(key: key);
+  const BattleFacilitiesScreen({super.key});
 
   @override
   State<BattleFacilitiesScreen> createState() => _BattleFacilitiesScreenState();
@@ -28,9 +28,12 @@ class _BattleFacilitiesScreenState extends State<BattleFacilitiesScreen> {
     try {
       final r = await Requests.get('${PokeApiService.baseUrl}/battle-facility');
       if (r.statusCode == 200) {
-        final results = List<Map<String, dynamic>>.from(r.json()['results'] ?? []);
+        final results =
+            List<Map<String, dynamic>>.from(r.json()['results'] ?? []);
         final gameSet = <String>{'All'};
-        for (final f in results) { gameSet.add(f['game'] as String); }
+        for (final f in results) {
+          gameSet.add(f['game'] as String);
+        }
         setState(() {
           _all = results;
           _filtered = results;
@@ -38,10 +41,16 @@ class _BattleFacilitiesScreenState extends State<BattleFacilitiesScreen> {
           _isLoading = false;
         });
       } else {
-        setState(() { _error = 'Server error ${r.statusCode}'; _isLoading = false; });
+        setState(() {
+          _error = 'Server error ${r.statusCode}';
+          _isLoading = false;
+        });
       }
     } catch (e) {
-      setState(() { _error = 'Could not load facilities'; _isLoading = false; });
+      setState(() {
+        _error = 'Could not load facilities';
+        _isLoading = false;
+      });
     }
   }
 
@@ -49,7 +58,8 @@ class _BattleFacilitiesScreenState extends State<BattleFacilitiesScreen> {
     setState(() {
       _filtered = _all.where((f) {
         final gameMatch = _selectedGame == 'All' || f['game'] == _selectedGame;
-        final queryMatch = _query.isEmpty || (f['name'] as String).toLowerCase().contains(_query);
+        final queryMatch = _query.isEmpty ||
+            (f['name'] as String).toLowerCase().contains(_query);
         return gameMatch && queryMatch;
       }).toList();
     });
@@ -58,11 +68,14 @@ class _BattleFacilitiesScreenState extends State<BattleFacilitiesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Battle Facilities'), backgroundColor: Colors.red),
+      appBar: AppBar(
+          title: const Text('Battle Facilities'), backgroundColor: Colors.red),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
+              ? Center(
+                  child:
+                      Text(_error!, style: const TextStyle(color: Colors.red)))
               : Column(
                   children: [
                     Padding(
@@ -74,27 +87,46 @@ class _BattleFacilitiesScreenState extends State<BattleFacilitiesScreen> {
                               decoration: InputDecoration(
                                 hintText: 'Search facilities...',
                                 prefixIcon: const Icon(Icons.search),
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
-                                filled: true, fillColor: Colors.white,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                filled: true,
+                                fillColor: Colors.white,
+                                contentPadding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
                               ),
-                              onChanged: (v) { _query = v.toLowerCase(); _filter(); },
+                              onChanged: (v) {
+                                _query = v.toLowerCase();
+                                _filter();
+                              },
                             ),
                           ),
                           const SizedBox(width: 8),
                           DropdownButton<String>(
                             value: _selectedGame,
-                            items: _games.map((g) => DropdownMenuItem(value: g, child: Text(g, style: const TextStyle(fontSize: 13)))).toList(),
-                            onChanged: (v) { if (v != null) { _selectedGame = v; _filter(); } },
+                            items: _games
+                                .map((g) => DropdownMenuItem(
+                                    value: g,
+                                    child: Text(g,
+                                        style: const TextStyle(fontSize: 13))))
+                                .toList(),
+                            onChanged: (v) {
+                              if (v != null) {
+                                _selectedGame = v;
+                                _filter();
+                              }
+                            },
                           ),
                         ],
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 2),
                       child: Align(
                         alignment: Alignment.centerLeft,
-                        child: Text('${_filtered.length} facilities', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                        child: Text('${_filtered.length} facilities',
+                            style: TextStyle(
+                                color: Colors.grey.shade600, fontSize: 12)),
                       ),
                     ),
                     Expanded(
@@ -118,11 +150,25 @@ class _BattleFacilitiesScreenState extends State<BattleFacilitiesScreen> {
                                 children: [
                                   Row(
                                     children: [
-                                      Expanded(child: Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15))),
+                                      Expanded(
+                                          child: Text(name,
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15))),
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                        decoration: BoxDecoration(color: Colors.red.shade50, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.red.shade200)),
-                                        child: Text(game, style: TextStyle(fontSize: 11, color: Colors.red.shade700, fontWeight: FontWeight.bold)),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 3),
+                                        decoration: BoxDecoration(
+                                            color: Colors.red.shade50,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            border: Border.all(
+                                                color: Colors.red.shade200)),
+                                        child: Text(game,
+                                            style: TextStyle(
+                                                fontSize: 11,
+                                                color: Colors.red.shade700,
+                                                fontWeight: FontWeight.bold)),
                                       ),
                                     ],
                                   ),
@@ -130,14 +176,27 @@ class _BattleFacilitiesScreenState extends State<BattleFacilitiesScreen> {
                                   Wrap(
                                     spacing: 6,
                                     children: [
-                                      if (region != null) Text(region, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-                                      if (type != null) Text(type, style: TextStyle(fontSize: 12, color: Colors.blue.shade600)),
-                                      if (currency != null) Text('Currency: $currency', style: TextStyle(fontSize: 12, color: Colors.green.shade600)),
+                                      if (region != null)
+                                        Text(region,
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey.shade600)),
+                                      if (type != null)
+                                        Text(type,
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.blue.shade600)),
+                                      if (currency != null)
+                                        Text('Currency: $currency',
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.green.shade600)),
                                     ],
                                   ),
                                   if (desc != null) ...[
                                     const SizedBox(height: 6),
-                                    Text(desc, style: const TextStyle(fontSize: 12)),
+                                    Text(desc,
+                                        style: const TextStyle(fontSize: 12)),
                                   ],
                                 ],
                               ),

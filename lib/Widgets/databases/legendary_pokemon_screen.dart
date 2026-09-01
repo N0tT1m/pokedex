@@ -3,7 +3,7 @@ import '../../theme/app_theme.dart';
 import '../pokemon/pokemon_detail_sheet.dart';
 
 class LegendaryPokemonScreen extends StatefulWidget {
-  const LegendaryPokemonScreen({Key? key}) : super(key: key);
+  const LegendaryPokemonScreen({super.key});
 
   @override
   State<LegendaryPokemonScreen> createState() => _LegendaryPokemonScreenState();
@@ -16,7 +16,8 @@ class _LegendaryPokemonScreenState extends State<LegendaryPokemonScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_selectedGame != null ? _selectedGame! : 'Legendary Pokemon'),
+        title:
+            Text(_selectedGame != null ? _selectedGame! : 'Legendary Pokemon'),
         backgroundColor: Colors.red,
         leading: _selectedGame != null
             ? IconButton(
@@ -56,9 +57,14 @@ class _LegendaryPokemonScreenState extends State<LegendaryPokemonScreen> {
           child: ListTile(
             leading: CircleAvatar(
               backgroundColor: _genColor(game['gen']!),
-              child: Text(game['gen']!, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+              child: Text(game['gen']!,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold)),
             ),
-            title: Text(game['name']!, style: const TextStyle(fontWeight: FontWeight.bold)),
+            title: Text(game['name']!,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => setState(() => _selectedGame = game['name']),
           ),
@@ -101,25 +107,34 @@ class _LegendaryPokemonScreenState extends State<LegendaryPokemonScreen> {
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 3),
           child: ListTile(
-            title: Text(mon['name']!, style: const TextStyle(fontWeight: FontWeight.bold)),
+            title: Text(mon['name']!,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 4),
                 Row(
-                  children: types.map((t) => Container(
-                    margin: const EdgeInsets.only(right: 4),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppTheme.typeColors[t.trim()] ?? Colors.grey,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(t.trim(), style: const TextStyle(color: Colors.white, fontSize: 11)),
-                  )).toList(),
+                  children: types
+                      .map((t) => Container(
+                            margin: const EdgeInsets.only(right: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color:
+                                  AppTheme.typeColors[t.trim()] ?? Colors.grey,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(t.trim(),
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 11)),
+                          ))
+                      .toList(),
                 ),
                 if (location.isNotEmpty) ...[
                   const SizedBox(height: 4),
-                  Text(location, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                  Text(location,
+                      style:
+                          TextStyle(fontSize: 12, color: Colors.grey.shade600)),
                 ],
               ],
             ),
@@ -133,16 +148,26 @@ class _LegendaryPokemonScreenState extends State<LegendaryPokemonScreen> {
 
   Color _genColor(String gen) {
     switch (gen) {
-      case 'I': return Colors.red;
-      case 'II': return Colors.amber.shade700;
-      case 'III': return Colors.green.shade700;
-      case 'IV': return Colors.blue.shade700;
-      case 'V': return Colors.grey.shade700;
-      case 'VI': return Colors.blue;
-      case 'VII': return Colors.orange;
-      case 'VIII': return Colors.indigo;
-      case 'IX': return Colors.purple;
-      default: return Colors.grey;
+      case 'I':
+        return Colors.red;
+      case 'II':
+        return Colors.amber.shade700;
+      case 'III':
+        return Colors.green.shade700;
+      case 'IV':
+        return Colors.blue.shade700;
+      case 'V':
+        return Colors.grey.shade700;
+      case 'VI':
+        return Colors.blue;
+      case 'VII':
+        return Colors.orange;
+      case 'VIII':
+        return Colors.indigo;
+      case 'IX':
+        return Colors.purple;
+      default:
+        return Colors.grey;
     }
   }
 
@@ -182,21 +207,45 @@ class _LegendaryPokemonScreenState extends State<LegendaryPokemonScreen> {
   static const Map<String, List<Map<String, String>>> _legendaryByGame = {
     'Red & Blue': [
       {'name': 'Legendary Birds', 'isHeader': 'true'},
-      {'name': 'Articuno', 'types': 'Ice, Flying', 'location': 'Seafoam Islands'},
-      {'name': 'Zapdos', 'types': 'Electric, Flying', 'location': 'Power Plant'},
+      {
+        'name': 'Articuno',
+        'types': 'Ice, Flying',
+        'location': 'Seafoam Islands'
+      },
+      {
+        'name': 'Zapdos',
+        'types': 'Electric, Flying',
+        'location': 'Power Plant'
+      },
       {'name': 'Moltres', 'types': 'Fire, Flying', 'location': 'Victory Road'},
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
-      {'name': 'Mewtwo', 'types': 'Psychic', 'location': 'Cerulean Cave (post-game)'},
+      {
+        'name': 'Mewtwo',
+        'types': 'Psychic',
+        'location': 'Cerulean Cave (post-game)'
+      },
       {'name': 'Mythical Pokemon', 'isHeader': 'true'},
       {'name': 'Mew', 'types': 'Psychic', 'location': 'Event only'},
     ],
     'Yellow': [
       {'name': 'Legendary Birds', 'isHeader': 'true'},
-      {'name': 'Articuno', 'types': 'Ice, Flying', 'location': 'Seafoam Islands'},
-      {'name': 'Zapdos', 'types': 'Electric, Flying', 'location': 'Power Plant'},
+      {
+        'name': 'Articuno',
+        'types': 'Ice, Flying',
+        'location': 'Seafoam Islands'
+      },
+      {
+        'name': 'Zapdos',
+        'types': 'Electric, Flying',
+        'location': 'Power Plant'
+      },
       {'name': 'Moltres', 'types': 'Fire, Flying', 'location': 'Victory Road'},
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
-      {'name': 'Mewtwo', 'types': 'Psychic', 'location': 'Cerulean Cave (post-game)'},
+      {
+        'name': 'Mewtwo',
+        'types': 'Psychic',
+        'location': 'Cerulean Cave (post-game)'
+      },
       {'name': 'Mythical Pokemon', 'isHeader': 'true'},
       {'name': 'Mew', 'types': 'Psychic', 'location': 'Event only'},
     ],
@@ -206,11 +255,23 @@ class _LegendaryPokemonScreenState extends State<LegendaryPokemonScreen> {
       {'name': 'Entei', 'types': 'Fire', 'location': 'Roaming Johto'},
       {'name': 'Suicune', 'types': 'Water', 'location': 'Roaming Johto'},
       {'name': 'Tower Duo', 'isHeader': 'true'},
-      {'name': 'Lugia', 'types': 'Psychic, Flying', 'location': 'Whirl Islands'},
+      {
+        'name': 'Lugia',
+        'types': 'Psychic, Flying',
+        'location': 'Whirl Islands'
+      },
       {'name': 'Ho-Oh', 'types': 'Fire, Flying', 'location': 'Tin Tower'},
       {'name': 'Legendary Birds (Kanto)', 'isHeader': 'true'},
-      {'name': 'Articuno', 'types': 'Ice, Flying', 'location': 'Seafoam Islands'},
-      {'name': 'Zapdos', 'types': 'Electric, Flying', 'location': 'Power Plant'},
+      {
+        'name': 'Articuno',
+        'types': 'Ice, Flying',
+        'location': 'Seafoam Islands'
+      },
+      {
+        'name': 'Zapdos',
+        'types': 'Electric, Flying',
+        'location': 'Power Plant'
+      },
       {'name': 'Moltres', 'types': 'Fire, Flying', 'location': 'Mt. Silver'},
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
       {'name': 'Mewtwo', 'types': 'Psychic', 'location': 'Cerulean Cave'},
@@ -221,31 +282,67 @@ class _LegendaryPokemonScreenState extends State<LegendaryPokemonScreen> {
       {'name': 'Legendary Beasts', 'isHeader': 'true'},
       {'name': 'Raikou', 'types': 'Electric', 'location': 'Roaming Johto'},
       {'name': 'Entei', 'types': 'Fire', 'location': 'Roaming Johto'},
-      {'name': 'Suicune', 'types': 'Water', 'location': 'Tin Tower (story event)'},
+      {
+        'name': 'Suicune',
+        'types': 'Water',
+        'location': 'Tin Tower (story event)'
+      },
       {'name': 'Tower Duo', 'isHeader': 'true'},
-      {'name': 'Lugia', 'types': 'Psychic, Flying', 'location': 'Whirl Islands'},
+      {
+        'name': 'Lugia',
+        'types': 'Psychic, Flying',
+        'location': 'Whirl Islands'
+      },
       {'name': 'Ho-Oh', 'types': 'Fire, Flying', 'location': 'Tin Tower'},
       {'name': 'Legendary Birds (Kanto)', 'isHeader': 'true'},
-      {'name': 'Articuno', 'types': 'Ice, Flying', 'location': 'Seafoam Islands'},
-      {'name': 'Zapdos', 'types': 'Electric, Flying', 'location': 'Power Plant'},
+      {
+        'name': 'Articuno',
+        'types': 'Ice, Flying',
+        'location': 'Seafoam Islands'
+      },
+      {
+        'name': 'Zapdos',
+        'types': 'Electric, Flying',
+        'location': 'Power Plant'
+      },
       {'name': 'Moltres', 'types': 'Fire, Flying', 'location': 'Mt. Silver'},
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
       {'name': 'Mewtwo', 'types': 'Psychic', 'location': 'Cerulean Cave'},
       {'name': 'Mythical Pokemon', 'isHeader': 'true'},
-      {'name': 'Celebi', 'types': 'Psychic, Grass', 'location': 'Ilex Forest (GS Ball event)'},
+      {
+        'name': 'Celebi',
+        'types': 'Psychic, Grass',
+        'location': 'Ilex Forest (GS Ball event)'
+      },
     ],
     'Ruby & Sapphire': [
       {'name': 'Weather Trio', 'isHeader': 'true'},
-      {'name': 'Groudon', 'types': 'Ground', 'location': 'Cave of Origin (Ruby)'},
-      {'name': 'Kyogre', 'types': 'Water', 'location': 'Cave of Origin (Sapphire)'},
+      {
+        'name': 'Groudon',
+        'types': 'Ground',
+        'location': 'Cave of Origin (Ruby)'
+      },
+      {
+        'name': 'Kyogre',
+        'types': 'Water',
+        'location': 'Cave of Origin (Sapphire)'
+      },
       {'name': 'Rayquaza', 'types': 'Dragon, Flying', 'location': 'Sky Pillar'},
       {'name': 'Legendary Golems', 'isHeader': 'true'},
       {'name': 'Regirock', 'types': 'Rock', 'location': 'Desert Ruins'},
       {'name': 'Regice', 'types': 'Ice', 'location': 'Island Cave'},
       {'name': 'Registeel', 'types': 'Steel', 'location': 'Ancient Tomb'},
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
-      {'name': 'Latias', 'types': 'Dragon, Psychic', 'location': 'Roaming Hoenn (Sapphire)'},
-      {'name': 'Latios', 'types': 'Dragon, Psychic', 'location': 'Roaming Hoenn (Ruby)'},
+      {
+        'name': 'Latias',
+        'types': 'Dragon, Psychic',
+        'location': 'Roaming Hoenn (Sapphire)'
+      },
+      {
+        'name': 'Latios',
+        'types': 'Dragon, Psychic',
+        'location': 'Roaming Hoenn (Ruby)'
+      },
       {'name': 'Mythical Pokemon', 'isHeader': 'true'},
       {'name': 'Jirachi', 'types': 'Steel, Psychic', 'location': 'Event only'},
       {'name': 'Deoxys', 'types': 'Psychic', 'location': 'Event only'},
@@ -260,29 +357,69 @@ class _LegendaryPokemonScreenState extends State<LegendaryPokemonScreen> {
       {'name': 'Regice', 'types': 'Ice', 'location': 'Island Cave'},
       {'name': 'Registeel', 'types': 'Steel', 'location': 'Ancient Tomb'},
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
-      {'name': 'Latias', 'types': 'Dragon, Psychic', 'location': 'Roaming Hoenn'},
-      {'name': 'Latios', 'types': 'Dragon, Psychic', 'location': 'Roaming Hoenn'},
+      {
+        'name': 'Latias',
+        'types': 'Dragon, Psychic',
+        'location': 'Roaming Hoenn'
+      },
+      {
+        'name': 'Latios',
+        'types': 'Dragon, Psychic',
+        'location': 'Roaming Hoenn'
+      },
       {'name': 'Mythical Pokemon', 'isHeader': 'true'},
       {'name': 'Jirachi', 'types': 'Steel, Psychic', 'location': 'Event only'},
       {'name': 'Deoxys', 'types': 'Psychic', 'location': 'Event only'},
     ],
     'FireRed & LeafGreen': [
       {'name': 'Legendary Birds', 'isHeader': 'true'},
-      {'name': 'Articuno', 'types': 'Ice, Flying', 'location': 'Seafoam Islands'},
-      {'name': 'Zapdos', 'types': 'Electric, Flying', 'location': 'Power Plant'},
+      {
+        'name': 'Articuno',
+        'types': 'Ice, Flying',
+        'location': 'Seafoam Islands'
+      },
+      {
+        'name': 'Zapdos',
+        'types': 'Electric, Flying',
+        'location': 'Power Plant'
+      },
       {'name': 'Moltres', 'types': 'Fire, Flying', 'location': 'Mt. Ember'},
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
       {'name': 'Mewtwo', 'types': 'Psychic', 'location': 'Cerulean Cave'},
       {'name': 'Mythical Pokemon', 'isHeader': 'true'},
-      {'name': 'Mew', 'types': 'Psychic', 'location': 'Event only (Faraway Island)'},
-      {'name': 'Deoxys', 'types': 'Psychic', 'location': 'Event only (Birth Island)'},
-      {'name': 'Lugia', 'types': 'Psychic, Flying', 'location': 'Event only (Navel Rock)'},
-      {'name': 'Ho-Oh', 'types': 'Fire, Flying', 'location': 'Event only (Navel Rock)'},
+      {
+        'name': 'Mew',
+        'types': 'Psychic',
+        'location': 'Event only (Faraway Island)'
+      },
+      {
+        'name': 'Deoxys',
+        'types': 'Psychic',
+        'location': 'Event only (Birth Island)'
+      },
+      {
+        'name': 'Lugia',
+        'types': 'Psychic, Flying',
+        'location': 'Event only (Navel Rock)'
+      },
+      {
+        'name': 'Ho-Oh',
+        'types': 'Fire, Flying',
+        'location': 'Event only (Navel Rock)'
+      },
     ],
     'Diamond & Pearl': [
       {'name': 'Creation Trio', 'isHeader': 'true'},
-      {'name': 'Dialga', 'types': 'Steel, Dragon', 'location': 'Spear Pillar (Diamond)'},
-      {'name': 'Palkia', 'types': 'Water, Dragon', 'location': 'Spear Pillar (Pearl)'},
+      {
+        'name': 'Dialga',
+        'types': 'Steel, Dragon',
+        'location': 'Spear Pillar (Diamond)'
+      },
+      {
+        'name': 'Palkia',
+        'types': 'Water, Dragon',
+        'location': 'Spear Pillar (Pearl)'
+      },
       {'name': 'Lake Guardians', 'isHeader': 'true'},
       {'name': 'Uxie', 'types': 'Psychic', 'location': 'Lake Acuity'},
       {'name': 'Mesprit', 'types': 'Psychic', 'location': 'Roaming Sinnoh'},
@@ -290,18 +427,46 @@ class _LegendaryPokemonScreenState extends State<LegendaryPokemonScreen> {
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
       {'name': 'Heatran', 'types': 'Fire, Steel', 'location': 'Stark Mountain'},
       {'name': 'Regigigas', 'types': 'Normal', 'location': 'Snowpoint Temple'},
-      {'name': 'Giratina', 'types': 'Ghost, Dragon', 'location': 'Turnback Cave'},
+      {
+        'name': 'Giratina',
+        'types': 'Ghost, Dragon',
+        'location': 'Turnback Cave'
+      },
       {'name': 'Cresselia', 'types': 'Psychic', 'location': 'Fullmoon Island'},
       {'name': 'Mythical Pokemon', 'isHeader': 'true'},
-      {'name': 'Darkrai', 'types': 'Dark', 'location': 'Event only (Newmoon Island)'},
-      {'name': 'Shaymin', 'types': 'Grass', 'location': 'Event only (Flower Paradise)'},
-      {'name': 'Arceus', 'types': 'Normal', 'location': 'Event only (Hall of Origin)'},
+      {
+        'name': 'Darkrai',
+        'types': 'Dark',
+        'location': 'Event only (Newmoon Island)'
+      },
+      {
+        'name': 'Shaymin',
+        'types': 'Grass',
+        'location': 'Event only (Flower Paradise)'
+      },
+      {
+        'name': 'Arceus',
+        'types': 'Normal',
+        'location': 'Event only (Hall of Origin)'
+      },
     ],
     'Platinum': [
       {'name': 'Creation Trio', 'isHeader': 'true'},
-      {'name': 'Dialga', 'types': 'Steel, Dragon', 'location': 'Spear Pillar (post-game)'},
-      {'name': 'Palkia', 'types': 'Water, Dragon', 'location': 'Spear Pillar (post-game)'},
-      {'name': 'Giratina', 'types': 'Ghost, Dragon', 'location': 'Distortion World (story)'},
+      {
+        'name': 'Dialga',
+        'types': 'Steel, Dragon',
+        'location': 'Spear Pillar (post-game)'
+      },
+      {
+        'name': 'Palkia',
+        'types': 'Water, Dragon',
+        'location': 'Spear Pillar (post-game)'
+      },
+      {
+        'name': 'Giratina',
+        'types': 'Ghost, Dragon',
+        'location': 'Distortion World (story)'
+      },
       {'name': 'Lake Guardians', 'isHeader': 'true'},
       {'name': 'Uxie', 'types': 'Psychic', 'location': 'Lake Acuity'},
       {'name': 'Mesprit', 'types': 'Psychic', 'location': 'Roaming Sinnoh'},
@@ -311,13 +476,37 @@ class _LegendaryPokemonScreenState extends State<LegendaryPokemonScreen> {
       {'name': 'Regigigas', 'types': 'Normal', 'location': 'Snowpoint Temple'},
       {'name': 'Cresselia', 'types': 'Psychic', 'location': 'Fullmoon Island'},
       {'name': 'Legendary Birds', 'isHeader': 'true'},
-      {'name': 'Articuno', 'types': 'Ice, Flying', 'location': 'Roaming Sinnoh'},
-      {'name': 'Zapdos', 'types': 'Electric, Flying', 'location': 'Roaming Sinnoh'},
-      {'name': 'Moltres', 'types': 'Fire, Flying', 'location': 'Roaming Sinnoh'},
+      {
+        'name': 'Articuno',
+        'types': 'Ice, Flying',
+        'location': 'Roaming Sinnoh'
+      },
+      {
+        'name': 'Zapdos',
+        'types': 'Electric, Flying',
+        'location': 'Roaming Sinnoh'
+      },
+      {
+        'name': 'Moltres',
+        'types': 'Fire, Flying',
+        'location': 'Roaming Sinnoh'
+      },
       {'name': 'Mythical Pokemon', 'isHeader': 'true'},
-      {'name': 'Darkrai', 'types': 'Dark', 'location': 'Event only (Newmoon Island)'},
-      {'name': 'Shaymin', 'types': 'Grass', 'location': 'Event only (Flower Paradise)'},
-      {'name': 'Arceus', 'types': 'Normal', 'location': 'Event only (Hall of Origin)'},
+      {
+        'name': 'Darkrai',
+        'types': 'Dark',
+        'location': 'Event only (Newmoon Island)'
+      },
+      {
+        'name': 'Shaymin',
+        'types': 'Grass',
+        'location': 'Event only (Flower Paradise)'
+      },
+      {
+        'name': 'Arceus',
+        'types': 'Normal',
+        'location': 'Event only (Hall of Origin)'
+      },
     ],
     'HeartGold & SoulSilver': [
       {'name': 'Legendary Beasts', 'isHeader': 'true'},
@@ -325,61 +514,165 @@ class _LegendaryPokemonScreenState extends State<LegendaryPokemonScreen> {
       {'name': 'Entei', 'types': 'Fire', 'location': 'Roaming Johto'},
       {'name': 'Suicune', 'types': 'Water', 'location': 'Route 25 (story)'},
       {'name': 'Tower Duo', 'isHeader': 'true'},
-      {'name': 'Lugia', 'types': 'Psychic, Flying', 'location': 'Whirl Islands'},
+      {
+        'name': 'Lugia',
+        'types': 'Psychic, Flying',
+        'location': 'Whirl Islands'
+      },
       {'name': 'Ho-Oh', 'types': 'Fire, Flying', 'location': 'Bell Tower'},
       {'name': 'Legendary Birds', 'isHeader': 'true'},
-      {'name': 'Articuno', 'types': 'Ice, Flying', 'location': 'Seafoam Islands'},
+      {
+        'name': 'Articuno',
+        'types': 'Ice, Flying',
+        'location': 'Seafoam Islands'
+      },
       {'name': 'Zapdos', 'types': 'Electric, Flying', 'location': 'Route 10'},
       {'name': 'Moltres', 'types': 'Fire, Flying', 'location': 'Mt. Silver'},
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
       {'name': 'Mewtwo', 'types': 'Psychic', 'location': 'Cerulean Cave'},
-      {'name': 'Latias', 'types': 'Dragon, Psychic', 'location': 'Roaming Kanto (SS) / Pewter City event (HG)'},
-      {'name': 'Latios', 'types': 'Dragon, Psychic', 'location': 'Roaming Kanto (HG) / Pewter City event (SS)'},
-      {'name': 'Groudon', 'types': 'Ground', 'location': 'Embedded Tower (SoulSilver)'},
-      {'name': 'Kyogre', 'types': 'Water', 'location': 'Embedded Tower (HeartGold)'},
-      {'name': 'Rayquaza', 'types': 'Dragon, Flying', 'location': 'Embedded Tower (with Groudon + Kyogre)'},
+      {
+        'name': 'Latias',
+        'types': 'Dragon, Psychic',
+        'location': 'Roaming Kanto (SS) / Pewter City event (HG)'
+      },
+      {
+        'name': 'Latios',
+        'types': 'Dragon, Psychic',
+        'location': 'Roaming Kanto (HG) / Pewter City event (SS)'
+      },
+      {
+        'name': 'Groudon',
+        'types': 'Ground',
+        'location': 'Embedded Tower (SoulSilver)'
+      },
+      {
+        'name': 'Kyogre',
+        'types': 'Water',
+        'location': 'Embedded Tower (HeartGold)'
+      },
+      {
+        'name': 'Rayquaza',
+        'types': 'Dragon, Flying',
+        'location': 'Embedded Tower (with Groudon + Kyogre)'
+      },
       {'name': 'Mythical Pokemon', 'isHeader': 'true'},
       {'name': 'Celebi', 'types': 'Psychic, Grass', 'location': 'Event only'},
     ],
     'Black & White': [
       {'name': 'Tao Trio', 'isHeader': 'true'},
-      {'name': 'Reshiram', 'types': 'Dragon, Fire', 'location': "N's Castle (Black)"},
-      {'name': 'Zekrom', 'types': 'Dragon, Electric', 'location': "N's Castle (White)"},
+      {
+        'name': 'Reshiram',
+        'types': 'Dragon, Fire',
+        'location': "N's Castle (Black)"
+      },
+      {
+        'name': 'Zekrom',
+        'types': 'Dragon, Electric',
+        'location': "N's Castle (White)"
+      },
       {'name': 'Kyurem', 'types': 'Dragon, Ice', 'location': 'Giant Chasm'},
       {'name': 'Swords of Justice', 'isHeader': 'true'},
-      {'name': 'Cobalion', 'types': 'Steel, Fighting', 'location': 'Mistralton Cave'},
-      {'name': 'Terrakion', 'types': 'Rock, Fighting', 'location': 'Victory Road'},
-      {'name': 'Virizion', 'types': 'Grass, Fighting', 'location': 'Pinwheel Forest'},
+      {
+        'name': 'Cobalion',
+        'types': 'Steel, Fighting',
+        'location': 'Mistralton Cave'
+      },
+      {
+        'name': 'Terrakion',
+        'types': 'Rock, Fighting',
+        'location': 'Victory Road'
+      },
+      {
+        'name': 'Virizion',
+        'types': 'Grass, Fighting',
+        'location': 'Pinwheel Forest'
+      },
       {'name': 'Forces of Nature', 'isHeader': 'true'},
-      {'name': 'Tornadus', 'types': 'Flying', 'location': 'Roaming Unova (Black)'},
-      {'name': 'Thundurus', 'types': 'Electric, Flying', 'location': 'Roaming Unova (White)'},
-      {'name': 'Landorus', 'types': 'Ground, Flying', 'location': 'Abundant Shrine (with Tornadus + Thundurus)'},
+      {
+        'name': 'Tornadus',
+        'types': 'Flying',
+        'location': 'Roaming Unova (Black)'
+      },
+      {
+        'name': 'Thundurus',
+        'types': 'Electric, Flying',
+        'location': 'Roaming Unova (White)'
+      },
+      {
+        'name': 'Landorus',
+        'types': 'Ground, Flying',
+        'location': 'Abundant Shrine (with Tornadus + Thundurus)'
+      },
       {'name': 'Mythical Pokemon', 'isHeader': 'true'},
-      {'name': 'Victini', 'types': 'Psychic, Fire', 'location': 'Liberty Garden (event)'},
+      {
+        'name': 'Victini',
+        'types': 'Psychic, Fire',
+        'location': 'Liberty Garden (event)'
+      },
       {'name': 'Keldeo', 'types': 'Water, Fighting', 'location': 'Event only'},
-      {'name': 'Meloetta', 'types': 'Normal, Psychic', 'location': 'Event only'},
+      {
+        'name': 'Meloetta',
+        'types': 'Normal, Psychic',
+        'location': 'Event only'
+      },
       {'name': 'Genesect', 'types': 'Bug, Steel', 'location': 'Event only'},
     ],
     'Black 2 & White 2': [
       {'name': 'Tao Trio', 'isHeader': 'true'},
-      {'name': 'Reshiram', 'types': 'Dragon, Fire', 'location': 'Dragonspiral Tower (White 2)'},
-      {'name': 'Zekrom', 'types': 'Dragon, Electric', 'location': 'Dragonspiral Tower (Black 2)'},
-      {'name': 'Kyurem', 'types': 'Dragon, Ice', 'location': 'Giant Chasm (story)'},
+      {
+        'name': 'Reshiram',
+        'types': 'Dragon, Fire',
+        'location': 'Dragonspiral Tower (White 2)'
+      },
+      {
+        'name': 'Zekrom',
+        'types': 'Dragon, Electric',
+        'location': 'Dragonspiral Tower (Black 2)'
+      },
+      {
+        'name': 'Kyurem',
+        'types': 'Dragon, Ice',
+        'location': 'Giant Chasm (story)'
+      },
       {'name': 'Swords of Justice', 'isHeader': 'true'},
       {'name': 'Cobalion', 'types': 'Steel, Fighting', 'location': 'Route 13'},
       {'name': 'Terrakion', 'types': 'Rock, Fighting', 'location': 'Route 22'},
       {'name': 'Virizion', 'types': 'Grass, Fighting', 'location': 'Route 11'},
       {'name': 'Forces of Nature', 'isHeader': 'true'},
-      {'name': 'Tornadus', 'types': 'Flying', 'location': 'Pokemon Dream Radar (Black 2)'},
-      {'name': 'Thundurus', 'types': 'Electric, Flying', 'location': 'Pokemon Dream Radar (White 2)'},
-      {'name': 'Landorus', 'types': 'Ground, Flying', 'location': 'Pokemon Dream Radar'},
+      {
+        'name': 'Tornadus',
+        'types': 'Flying',
+        'location': 'Pokemon Dream Radar (Black 2)'
+      },
+      {
+        'name': 'Thundurus',
+        'types': 'Electric, Flying',
+        'location': 'Pokemon Dream Radar (White 2)'
+      },
+      {
+        'name': 'Landorus',
+        'types': 'Ground, Flying',
+        'location': 'Pokemon Dream Radar'
+      },
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
-      {'name': 'Latias', 'types': 'Dragon, Psychic', 'location': 'Dreamyard (White 2)'},
-      {'name': 'Latios', 'types': 'Dragon, Psychic', 'location': 'Dreamyard (Black 2)'},
+      {
+        'name': 'Latias',
+        'types': 'Dragon, Psychic',
+        'location': 'Dreamyard (White 2)'
+      },
+      {
+        'name': 'Latios',
+        'types': 'Dragon, Psychic',
+        'location': 'Dreamyard (Black 2)'
+      },
       {'name': 'Uxie', 'types': 'Psychic', 'location': 'Nacrene City'},
       {'name': 'Mesprit', 'types': 'Psychic', 'location': 'Celestial Tower'},
       {'name': 'Azelf', 'types': 'Psychic', 'location': 'Route 23'},
-      {'name': 'Heatran', 'types': 'Fire, Steel', 'location': 'Reversal Mountain'},
+      {
+        'name': 'Heatran',
+        'types': 'Fire, Steel',
+        'location': 'Reversal Mountain'
+      },
       {'name': 'Regigigas', 'types': 'Normal', 'location': 'Twist Mountain'},
       {'name': 'Cresselia', 'types': 'Psychic', 'location': 'Marvelous Bridge'},
       {'name': 'Regirock', 'types': 'Rock', 'location': 'Rock Peak Chamber'},
@@ -388,13 +681,37 @@ class _LegendaryPokemonScreenState extends State<LegendaryPokemonScreen> {
     ],
     'X & Y': [
       {'name': 'Aura Trio', 'isHeader': 'true'},
-      {'name': 'Xerneas', 'types': 'Fairy', 'location': 'Team Flare Secret HQ (X)'},
-      {'name': 'Yveltal', 'types': 'Dark, Flying', 'location': 'Team Flare Secret HQ (Y)'},
-      {'name': 'Zygarde', 'types': 'Dragon, Ground', 'location': 'Terminus Cave'},
+      {
+        'name': 'Xerneas',
+        'types': 'Fairy',
+        'location': 'Team Flare Secret HQ (X)'
+      },
+      {
+        'name': 'Yveltal',
+        'types': 'Dark, Flying',
+        'location': 'Team Flare Secret HQ (Y)'
+      },
+      {
+        'name': 'Zygarde',
+        'types': 'Dragon, Ground',
+        'location': 'Terminus Cave'
+      },
       {'name': 'Legendary Birds', 'isHeader': 'true'},
-      {'name': 'Articuno', 'types': 'Ice, Flying', 'location': 'Roaming Kalos (Chespin starter)'},
-      {'name': 'Zapdos', 'types': 'Electric, Flying', 'location': 'Roaming Kalos (Fennekin starter)'},
-      {'name': 'Moltres', 'types': 'Fire, Flying', 'location': 'Roaming Kalos (Froakie starter)'},
+      {
+        'name': 'Articuno',
+        'types': 'Ice, Flying',
+        'location': 'Roaming Kalos (Chespin starter)'
+      },
+      {
+        'name': 'Zapdos',
+        'types': 'Electric, Flying',
+        'location': 'Roaming Kalos (Fennekin starter)'
+      },
+      {
+        'name': 'Moltres',
+        'types': 'Fire, Flying',
+        'location': 'Roaming Kalos (Froakie starter)'
+      },
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
       {'name': 'Mewtwo', 'types': 'Psychic', 'location': 'Pokemon Village'},
       {'name': 'Mythical Pokemon', 'isHeader': 'true'},
@@ -404,161 +721,561 @@ class _LegendaryPokemonScreenState extends State<LegendaryPokemonScreen> {
     ],
     'Omega Ruby & Alpha Sapphire': [
       {'name': 'Weather Trio', 'isHeader': 'true'},
-      {'name': 'Groudon', 'types': 'Ground', 'location': 'Cave of Origin (Omega Ruby)'},
-      {'name': 'Kyogre', 'types': 'Water', 'location': 'Cave of Origin (Alpha Sapphire)'},
-      {'name': 'Rayquaza', 'types': 'Dragon, Flying', 'location': 'Sky Pillar (Delta Episode)'},
+      {
+        'name': 'Groudon',
+        'types': 'Ground',
+        'location': 'Cave of Origin (Omega Ruby)'
+      },
+      {
+        'name': 'Kyogre',
+        'types': 'Water',
+        'location': 'Cave of Origin (Alpha Sapphire)'
+      },
+      {
+        'name': 'Rayquaza',
+        'types': 'Dragon, Flying',
+        'location': 'Sky Pillar (Delta Episode)'
+      },
       {'name': 'Legendary Golems', 'isHeader': 'true'},
       {'name': 'Regirock', 'types': 'Rock', 'location': 'Desert Ruins'},
       {'name': 'Regice', 'types': 'Ice', 'location': 'Island Cave'},
       {'name': 'Registeel', 'types': 'Steel', 'location': 'Ancient Tomb'},
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
-      {'name': 'Latias', 'types': 'Dragon, Psychic', 'location': 'Southern Island (Alpha Sapphire)'},
-      {'name': 'Latios', 'types': 'Dragon, Psychic', 'location': 'Southern Island (Omega Ruby)'},
-      {'name': 'Deoxys', 'types': 'Psychic', 'location': 'Sky Pillar (Delta Episode)'},
+      {
+        'name': 'Latias',
+        'types': 'Dragon, Psychic',
+        'location': 'Southern Island (Alpha Sapphire)'
+      },
+      {
+        'name': 'Latios',
+        'types': 'Dragon, Psychic',
+        'location': 'Southern Island (Omega Ruby)'
+      },
+      {
+        'name': 'Deoxys',
+        'types': 'Psychic',
+        'location': 'Sky Pillar (Delta Episode)'
+      },
       {'name': 'Heatran', 'types': 'Fire, Steel', 'location': 'Scorched Slab'},
       {'name': 'Cresselia', 'types': 'Psychic', 'location': 'Crescent Isle'},
       {'name': 'Uxie', 'types': 'Psychic', 'location': 'Nameless Cavern'},
       {'name': 'Mesprit', 'types': 'Psychic', 'location': 'Nameless Cavern'},
       {'name': 'Azelf', 'types': 'Psychic', 'location': 'Nameless Cavern'},
-      {'name': 'Cobalion', 'types': 'Steel, Fighting', 'location': 'Pathless Plain'},
-      {'name': 'Terrakion', 'types': 'Rock, Fighting', 'location': 'Pathless Plain'},
-      {'name': 'Virizion', 'types': 'Grass, Fighting', 'location': 'Pathless Plain'},
-      {'name': 'Dialga', 'types': 'Steel, Dragon', 'location': 'Soaring (Alpha Sapphire)'},
-      {'name': 'Palkia', 'types': 'Water, Dragon', 'location': 'Soaring (Omega Ruby)'},
-      {'name': 'Reshiram', 'types': 'Dragon, Fire', 'location': 'Fabled Cave (Omega Ruby)'},
-      {'name': 'Zekrom', 'types': 'Dragon, Electric', 'location': 'Fabled Cave (Alpha Sapphire)'},
-      {'name': 'Tornadus', 'types': 'Flying', 'location': 'Soaring (Omega Ruby)'},
-      {'name': 'Thundurus', 'types': 'Electric, Flying', 'location': 'Soaring (Alpha Sapphire)'},
-      {'name': 'Landorus', 'types': 'Ground, Flying', 'location': 'Soaring (with Tornadus + Thundurus)'},
-      {'name': 'Giratina', 'types': 'Ghost, Dragon', 'location': 'Soaring (with Dialga + Palkia)'},
+      {
+        'name': 'Cobalion',
+        'types': 'Steel, Fighting',
+        'location': 'Pathless Plain'
+      },
+      {
+        'name': 'Terrakion',
+        'types': 'Rock, Fighting',
+        'location': 'Pathless Plain'
+      },
+      {
+        'name': 'Virizion',
+        'types': 'Grass, Fighting',
+        'location': 'Pathless Plain'
+      },
+      {
+        'name': 'Dialga',
+        'types': 'Steel, Dragon',
+        'location': 'Soaring (Alpha Sapphire)'
+      },
+      {
+        'name': 'Palkia',
+        'types': 'Water, Dragon',
+        'location': 'Soaring (Omega Ruby)'
+      },
+      {
+        'name': 'Reshiram',
+        'types': 'Dragon, Fire',
+        'location': 'Fabled Cave (Omega Ruby)'
+      },
+      {
+        'name': 'Zekrom',
+        'types': 'Dragon, Electric',
+        'location': 'Fabled Cave (Alpha Sapphire)'
+      },
+      {
+        'name': 'Tornadus',
+        'types': 'Flying',
+        'location': 'Soaring (Omega Ruby)'
+      },
+      {
+        'name': 'Thundurus',
+        'types': 'Electric, Flying',
+        'location': 'Soaring (Alpha Sapphire)'
+      },
+      {
+        'name': 'Landorus',
+        'types': 'Ground, Flying',
+        'location': 'Soaring (with Tornadus + Thundurus)'
+      },
+      {
+        'name': 'Giratina',
+        'types': 'Ghost, Dragon',
+        'location': 'Soaring (with Dialga + Palkia)'
+      },
       {'name': 'Kyurem', 'types': 'Dragon, Ice', 'location': 'Gnarled Den'},
-      {'name': 'Lugia', 'types': 'Psychic, Flying', 'location': 'Sea Mauville (Alpha Sapphire)'},
-      {'name': 'Ho-Oh', 'types': 'Fire, Flying', 'location': 'Sea Mauville (Omega Ruby)'},
+      {
+        'name': 'Lugia',
+        'types': 'Psychic, Flying',
+        'location': 'Sea Mauville (Alpha Sapphire)'
+      },
+      {
+        'name': 'Ho-Oh',
+        'types': 'Fire, Flying',
+        'location': 'Sea Mauville (Omega Ruby)'
+      },
       {'name': 'Raikou', 'types': 'Electric', 'location': 'Trackless Forest'},
       {'name': 'Entei', 'types': 'Fire', 'location': 'Trackless Forest'},
       {'name': 'Suicune', 'types': 'Water', 'location': 'Trackless Forest'},
     ],
     'Sun & Moon': [
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
-      {'name': 'Solgaleo', 'types': 'Psychic, Steel', 'location': 'Altar of the Sunne (Sun)'},
-      {'name': 'Lunala', 'types': 'Psychic, Ghost', 'location': 'Altar of the Moone (Moon)'},
+      {
+        'name': 'Solgaleo',
+        'types': 'Psychic, Steel',
+        'location': 'Altar of the Sunne (Sun)'
+      },
+      {
+        'name': 'Lunala',
+        'types': 'Psychic, Ghost',
+        'location': 'Altar of the Moone (Moon)'
+      },
       {'name': 'Necrozma', 'types': 'Psychic', 'location': 'Ten Carat Hill'},
       {'name': 'Island Guardians', 'isHeader': 'true'},
-      {'name': 'Tapu Koko', 'types': 'Electric, Fairy', 'location': 'Ruins of Conflict'},
-      {'name': 'Tapu Lele', 'types': 'Psychic, Fairy', 'location': 'Ruins of Life'},
-      {'name': 'Tapu Bulu', 'types': 'Grass, Fairy', 'location': 'Ruins of Abundance'},
-      {'name': 'Tapu Fini', 'types': 'Water, Fairy', 'location': 'Ruins of Hope'},
+      {
+        'name': 'Tapu Koko',
+        'types': 'Electric, Fairy',
+        'location': 'Ruins of Conflict'
+      },
+      {
+        'name': 'Tapu Lele',
+        'types': 'Psychic, Fairy',
+        'location': 'Ruins of Life'
+      },
+      {
+        'name': 'Tapu Bulu',
+        'types': 'Grass, Fairy',
+        'location': 'Ruins of Abundance'
+      },
+      {
+        'name': 'Tapu Fini',
+        'types': 'Water, Fairy',
+        'location': 'Ruins of Hope'
+      },
       {'name': 'Ultra Beasts', 'isHeader': 'true'},
-      {'name': 'Nihilego', 'types': 'Rock, Poison', 'location': 'Wela Volcano / Diglett Tunnel'},
-      {'name': 'Buzzwole', 'types': 'Bug, Fighting', 'location': 'Melemele Meadow (Sun)'},
-      {'name': 'Pheromosa', 'types': 'Bug, Fighting', 'location': 'Verdant Cavern (Moon)'},
-      {'name': 'Xurkitree', 'types': 'Electric', 'location': 'Lush Jungle / Memorial Hill'},
-      {'name': 'Celesteela', 'types': 'Steel, Flying', 'location': "Haina Desert / Malie Garden (Moon)"},
-      {'name': 'Kartana', 'types': 'Grass, Steel', 'location': "Malie Garden / Route 17 (Sun)"},
-      {'name': 'Guzzlord', 'types': 'Dark, Dragon', 'location': 'Resolution Cave'},
-      {'name': 'Cosmog', 'types': 'Psychic', 'location': 'Lake of the Sunne/Moone (post-game)'},
+      {
+        'name': 'Nihilego',
+        'types': 'Rock, Poison',
+        'location': 'Wela Volcano / Diglett Tunnel'
+      },
+      {
+        'name': 'Buzzwole',
+        'types': 'Bug, Fighting',
+        'location': 'Melemele Meadow (Sun)'
+      },
+      {
+        'name': 'Pheromosa',
+        'types': 'Bug, Fighting',
+        'location': 'Verdant Cavern (Moon)'
+      },
+      {
+        'name': 'Xurkitree',
+        'types': 'Electric',
+        'location': 'Lush Jungle / Memorial Hill'
+      },
+      {
+        'name': 'Celesteela',
+        'types': 'Steel, Flying',
+        'location': "Haina Desert / Malie Garden (Moon)"
+      },
+      {
+        'name': 'Kartana',
+        'types': 'Grass, Steel',
+        'location': "Malie Garden / Route 17 (Sun)"
+      },
+      {
+        'name': 'Guzzlord',
+        'types': 'Dark, Dragon',
+        'location': 'Resolution Cave'
+      },
+      {
+        'name': 'Cosmog',
+        'types': 'Psychic',
+        'location': 'Lake of the Sunne/Moone (post-game)'
+      },
       {'name': 'Mythical Pokemon', 'isHeader': 'true'},
-      {'name': 'Magearna', 'types': 'Steel, Fairy', 'location': 'QR Code event'},
-      {'name': 'Marshadow', 'types': 'Fighting, Ghost', 'location': 'Event only'},
+      {
+        'name': 'Magearna',
+        'types': 'Steel, Fairy',
+        'location': 'QR Code event'
+      },
+      {
+        'name': 'Marshadow',
+        'types': 'Fighting, Ghost',
+        'location': 'Event only'
+      },
     ],
     'Ultra Sun & Ultra Moon': [
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
-      {'name': 'Solgaleo', 'types': 'Psychic, Steel', 'location': 'Mahalo Trail (Ultra Sun)'},
-      {'name': 'Lunala', 'types': 'Psychic, Ghost', 'location': 'Mahalo Trail (Ultra Moon)'},
-      {'name': 'Necrozma', 'types': 'Psychic', 'location': 'Megalo Tower (story)'},
+      {
+        'name': 'Solgaleo',
+        'types': 'Psychic, Steel',
+        'location': 'Mahalo Trail (Ultra Sun)'
+      },
+      {
+        'name': 'Lunala',
+        'types': 'Psychic, Ghost',
+        'location': 'Mahalo Trail (Ultra Moon)'
+      },
+      {
+        'name': 'Necrozma',
+        'types': 'Psychic',
+        'location': 'Megalo Tower (story)'
+      },
       {'name': 'Island Guardians', 'isHeader': 'true'},
-      {'name': 'Tapu Koko', 'types': 'Electric, Fairy', 'location': 'Ruins of Conflict'},
-      {'name': 'Tapu Lele', 'types': 'Psychic, Fairy', 'location': 'Ruins of Life'},
-      {'name': 'Tapu Bulu', 'types': 'Grass, Fairy', 'location': 'Ruins of Abundance'},
-      {'name': 'Tapu Fini', 'types': 'Water, Fairy', 'location': 'Ruins of Hope'},
+      {
+        'name': 'Tapu Koko',
+        'types': 'Electric, Fairy',
+        'location': 'Ruins of Conflict'
+      },
+      {
+        'name': 'Tapu Lele',
+        'types': 'Psychic, Fairy',
+        'location': 'Ruins of Life'
+      },
+      {
+        'name': 'Tapu Bulu',
+        'types': 'Grass, Fairy',
+        'location': 'Ruins of Abundance'
+      },
+      {
+        'name': 'Tapu Fini',
+        'types': 'Water, Fairy',
+        'location': 'Ruins of Hope'
+      },
       {'name': 'Ultra Wormhole Legendaries', 'isHeader': 'true'},
       {'name': 'Mewtwo', 'types': 'Psychic', 'location': 'Ultra Space Wilds'},
       {'name': 'Raikou', 'types': 'Electric', 'location': 'Ultra Space Wilds'},
       {'name': 'Entei', 'types': 'Fire', 'location': 'Ultra Space Wilds'},
       {'name': 'Suicune', 'types': 'Water', 'location': 'Ultra Space Wilds'},
-      {'name': 'Lugia', 'types': 'Psychic, Flying', 'location': 'Ultra Space Wilds (Ultra Moon)'},
-      {'name': 'Ho-Oh', 'types': 'Fire, Flying', 'location': 'Ultra Space Wilds (Ultra Sun)'},
+      {
+        'name': 'Lugia',
+        'types': 'Psychic, Flying',
+        'location': 'Ultra Space Wilds (Ultra Moon)'
+      },
+      {
+        'name': 'Ho-Oh',
+        'types': 'Fire, Flying',
+        'location': 'Ultra Space Wilds (Ultra Sun)'
+      },
       {'name': 'Regirock', 'types': 'Rock', 'location': 'Ultra Space Wilds'},
       {'name': 'Regice', 'types': 'Ice', 'location': 'Ultra Space Wilds'},
       {'name': 'Registeel', 'types': 'Steel', 'location': 'Ultra Space Wilds'},
-      {'name': 'Latias', 'types': 'Dragon, Psychic', 'location': 'Ultra Space Wilds (Ultra Moon)'},
-      {'name': 'Latios', 'types': 'Dragon, Psychic', 'location': 'Ultra Space Wilds (Ultra Sun)'},
-      {'name': 'Groudon', 'types': 'Ground', 'location': 'Ultra Space Wilds (Ultra Sun)'},
-      {'name': 'Kyogre', 'types': 'Water', 'location': 'Ultra Space Wilds (Ultra Moon)'},
-      {'name': 'Rayquaza', 'types': 'Dragon, Flying', 'location': 'Ultra Space Wilds'},
-      {'name': 'Dialga', 'types': 'Steel, Dragon', 'location': 'Ultra Space Wilds (Ultra Sun)'},
-      {'name': 'Palkia', 'types': 'Water, Dragon', 'location': 'Ultra Space Wilds (Ultra Moon)'},
-      {'name': 'Giratina', 'types': 'Ghost, Dragon', 'location': 'Ultra Space Wilds'},
-      {'name': 'Heatran', 'types': 'Fire, Steel', 'location': 'Ultra Space Wilds'},
+      {
+        'name': 'Latias',
+        'types': 'Dragon, Psychic',
+        'location': 'Ultra Space Wilds (Ultra Moon)'
+      },
+      {
+        'name': 'Latios',
+        'types': 'Dragon, Psychic',
+        'location': 'Ultra Space Wilds (Ultra Sun)'
+      },
+      {
+        'name': 'Groudon',
+        'types': 'Ground',
+        'location': 'Ultra Space Wilds (Ultra Sun)'
+      },
+      {
+        'name': 'Kyogre',
+        'types': 'Water',
+        'location': 'Ultra Space Wilds (Ultra Moon)'
+      },
+      {
+        'name': 'Rayquaza',
+        'types': 'Dragon, Flying',
+        'location': 'Ultra Space Wilds'
+      },
+      {
+        'name': 'Dialga',
+        'types': 'Steel, Dragon',
+        'location': 'Ultra Space Wilds (Ultra Sun)'
+      },
+      {
+        'name': 'Palkia',
+        'types': 'Water, Dragon',
+        'location': 'Ultra Space Wilds (Ultra Moon)'
+      },
+      {
+        'name': 'Giratina',
+        'types': 'Ghost, Dragon',
+        'location': 'Ultra Space Wilds'
+      },
+      {
+        'name': 'Heatran',
+        'types': 'Fire, Steel',
+        'location': 'Ultra Space Wilds'
+      },
       {'name': 'Regigigas', 'types': 'Normal', 'location': 'Ultra Space Wilds'},
-      {'name': 'Cresselia', 'types': 'Psychic', 'location': 'Ultra Space Wilds'},
-      {'name': 'Cobalion', 'types': 'Steel, Fighting', 'location': 'Ultra Space Wilds'},
-      {'name': 'Terrakion', 'types': 'Rock, Fighting', 'location': 'Ultra Space Wilds'},
-      {'name': 'Virizion', 'types': 'Grass, Fighting', 'location': 'Ultra Space Wilds'},
-      {'name': 'Reshiram', 'types': 'Dragon, Fire', 'location': 'Ultra Space Wilds (Ultra Sun)'},
-      {'name': 'Zekrom', 'types': 'Dragon, Electric', 'location': 'Ultra Space Wilds (Ultra Moon)'},
-      {'name': 'Kyurem', 'types': 'Dragon, Ice', 'location': 'Ultra Space Wilds'},
-      {'name': 'Xerneas', 'types': 'Fairy', 'location': 'Ultra Space Wilds (Ultra Sun)'},
-      {'name': 'Yveltal', 'types': 'Dark, Flying', 'location': 'Ultra Space Wilds (Ultra Moon)'},
-      {'name': 'Zygarde', 'types': 'Dragon, Ground', 'location': 'Resolution Cave'},
+      {
+        'name': 'Cresselia',
+        'types': 'Psychic',
+        'location': 'Ultra Space Wilds'
+      },
+      {
+        'name': 'Cobalion',
+        'types': 'Steel, Fighting',
+        'location': 'Ultra Space Wilds'
+      },
+      {
+        'name': 'Terrakion',
+        'types': 'Rock, Fighting',
+        'location': 'Ultra Space Wilds'
+      },
+      {
+        'name': 'Virizion',
+        'types': 'Grass, Fighting',
+        'location': 'Ultra Space Wilds'
+      },
+      {
+        'name': 'Reshiram',
+        'types': 'Dragon, Fire',
+        'location': 'Ultra Space Wilds (Ultra Sun)'
+      },
+      {
+        'name': 'Zekrom',
+        'types': 'Dragon, Electric',
+        'location': 'Ultra Space Wilds (Ultra Moon)'
+      },
+      {
+        'name': 'Kyurem',
+        'types': 'Dragon, Ice',
+        'location': 'Ultra Space Wilds'
+      },
+      {
+        'name': 'Xerneas',
+        'types': 'Fairy',
+        'location': 'Ultra Space Wilds (Ultra Sun)'
+      },
+      {
+        'name': 'Yveltal',
+        'types': 'Dark, Flying',
+        'location': 'Ultra Space Wilds (Ultra Moon)'
+      },
+      {
+        'name': 'Zygarde',
+        'types': 'Dragon, Ground',
+        'location': 'Resolution Cave'
+      },
       {'name': 'Mythical Pokemon', 'isHeader': 'true'},
       {'name': 'Zeraora', 'types': 'Electric', 'location': 'Event only'},
     ],
     "Let's Go Pikachu & Eevee": [
       {'name': 'Legendary Birds', 'isHeader': 'true'},
-      {'name': 'Articuno', 'types': 'Ice, Flying', 'location': 'Seafoam Islands'},
-      {'name': 'Zapdos', 'types': 'Electric, Flying', 'location': 'Power Plant'},
+      {
+        'name': 'Articuno',
+        'types': 'Ice, Flying',
+        'location': 'Seafoam Islands'
+      },
+      {
+        'name': 'Zapdos',
+        'types': 'Electric, Flying',
+        'location': 'Power Plant'
+      },
       {'name': 'Moltres', 'types': 'Fire, Flying', 'location': 'Victory Road'},
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
       {'name': 'Mewtwo', 'types': 'Psychic', 'location': 'Cerulean Cave'},
       {'name': 'Mythical Pokemon', 'isHeader': 'true'},
-      {'name': 'Mew', 'types': 'Psychic', 'location': 'Poke Ball Plus accessory'},
+      {
+        'name': 'Mew',
+        'types': 'Psychic',
+        'location': 'Poke Ball Plus accessory'
+      },
       {'name': 'Meltan', 'types': 'Steel', 'location': 'Pokemon GO transfer'},
-      {'name': 'Melmetal', 'types': 'Steel', 'location': 'Evolve Meltan in Pokemon GO'},
+      {
+        'name': 'Melmetal',
+        'types': 'Steel',
+        'location': 'Evolve Meltan in Pokemon GO'
+      },
     ],
     'Sword & Shield': [
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
-      {'name': 'Zacian', 'types': 'Fairy, Steel', 'location': 'Energy Plant (Sword)'},
-      {'name': 'Zamazenta', 'types': 'Fighting, Steel', 'location': 'Energy Plant (Shield)'},
-      {'name': 'Eternatus', 'types': 'Poison, Dragon', 'location': 'Energy Plant (story)'},
+      {
+        'name': 'Zacian',
+        'types': 'Fairy, Steel',
+        'location': 'Energy Plant (Sword)'
+      },
+      {
+        'name': 'Zamazenta',
+        'types': 'Fighting, Steel',
+        'location': 'Energy Plant (Shield)'
+      },
+      {
+        'name': 'Eternatus',
+        'types': 'Poison, Dragon',
+        'location': 'Energy Plant (story)'
+      },
       {'name': 'Crown Tundra DLC', 'isHeader': 'true'},
-      {'name': 'Calyrex', 'types': 'Psychic, Grass', 'location': 'Crown Tundra (story)'},
-      {'name': 'Glastrier', 'types': 'Ice', 'location': 'Crown Tundra (story choice)'},
-      {'name': 'Spectrier', 'types': 'Ghost', 'location': 'Crown Tundra (story choice)'},
-      {'name': 'Regieleki', 'types': 'Electric', 'location': 'Split-Decision Ruins'},
-      {'name': 'Regidrago', 'types': 'Dragon', 'location': 'Split-Decision Ruins'},
-      {'name': 'Galarian Articuno', 'types': 'Psychic, Flying', 'location': 'Roaming Crown Tundra'},
-      {'name': 'Galarian Zapdos', 'types': 'Fighting, Flying', 'location': 'Roaming Wild Area'},
-      {'name': 'Galarian Moltres', 'types': 'Dark, Flying', 'location': 'Roaming Isle of Armor'},
+      {
+        'name': 'Calyrex',
+        'types': 'Psychic, Grass',
+        'location': 'Crown Tundra (story)'
+      },
+      {
+        'name': 'Glastrier',
+        'types': 'Ice',
+        'location': 'Crown Tundra (story choice)'
+      },
+      {
+        'name': 'Spectrier',
+        'types': 'Ghost',
+        'location': 'Crown Tundra (story choice)'
+      },
+      {
+        'name': 'Regieleki',
+        'types': 'Electric',
+        'location': 'Split-Decision Ruins'
+      },
+      {
+        'name': 'Regidrago',
+        'types': 'Dragon',
+        'location': 'Split-Decision Ruins'
+      },
+      {
+        'name': 'Galarian Articuno',
+        'types': 'Psychic, Flying',
+        'location': 'Roaming Crown Tundra'
+      },
+      {
+        'name': 'Galarian Zapdos',
+        'types': 'Fighting, Flying',
+        'location': 'Roaming Wild Area'
+      },
+      {
+        'name': 'Galarian Moltres',
+        'types': 'Dark, Flying',
+        'location': 'Roaming Isle of Armor'
+      },
       {'name': 'Dynamax Adventures', 'isHeader': 'true'},
       {'name': 'Mewtwo', 'types': 'Psychic', 'location': 'Dynamax Adventures'},
-      {'name': 'Lugia', 'types': 'Psychic, Flying', 'location': 'Dynamax Adventures (Shield)'},
-      {'name': 'Ho-Oh', 'types': 'Fire, Flying', 'location': 'Dynamax Adventures (Sword)'},
-      {'name': 'Kyogre', 'types': 'Water', 'location': 'Dynamax Adventures (Shield)'},
-      {'name': 'Groudon', 'types': 'Ground', 'location': 'Dynamax Adventures (Sword)'},
-      {'name': 'Rayquaza', 'types': 'Dragon, Flying', 'location': 'Dynamax Adventures'},
-      {'name': 'Dialga', 'types': 'Steel, Dragon', 'location': 'Dynamax Adventures (Sword)'},
-      {'name': 'Palkia', 'types': 'Water, Dragon', 'location': 'Dynamax Adventures (Shield)'},
-      {'name': 'Giratina', 'types': 'Ghost, Dragon', 'location': 'Dynamax Adventures'},
-      {'name': 'Reshiram', 'types': 'Dragon, Fire', 'location': 'Dynamax Adventures (Sword)'},
-      {'name': 'Zekrom', 'types': 'Dragon, Electric', 'location': 'Dynamax Adventures (Shield)'},
-      {'name': 'Kyurem', 'types': 'Dragon, Ice', 'location': 'Dynamax Adventures'},
-      {'name': 'Xerneas', 'types': 'Fairy', 'location': 'Dynamax Adventures (Sword)'},
-      {'name': 'Yveltal', 'types': 'Dark, Flying', 'location': 'Dynamax Adventures (Shield)'},
-      {'name': 'Zygarde', 'types': 'Dragon, Ground', 'location': 'Dynamax Adventures'},
-      {'name': 'Solgaleo', 'types': 'Psychic, Steel', 'location': 'Dynamax Adventures (Sword)'},
-      {'name': 'Lunala', 'types': 'Psychic, Ghost', 'location': 'Dynamax Adventures (Shield)'},
-      {'name': 'Necrozma', 'types': 'Psychic', 'location': 'Dynamax Adventures'},
+      {
+        'name': 'Lugia',
+        'types': 'Psychic, Flying',
+        'location': 'Dynamax Adventures (Shield)'
+      },
+      {
+        'name': 'Ho-Oh',
+        'types': 'Fire, Flying',
+        'location': 'Dynamax Adventures (Sword)'
+      },
+      {
+        'name': 'Kyogre',
+        'types': 'Water',
+        'location': 'Dynamax Adventures (Shield)'
+      },
+      {
+        'name': 'Groudon',
+        'types': 'Ground',
+        'location': 'Dynamax Adventures (Sword)'
+      },
+      {
+        'name': 'Rayquaza',
+        'types': 'Dragon, Flying',
+        'location': 'Dynamax Adventures'
+      },
+      {
+        'name': 'Dialga',
+        'types': 'Steel, Dragon',
+        'location': 'Dynamax Adventures (Sword)'
+      },
+      {
+        'name': 'Palkia',
+        'types': 'Water, Dragon',
+        'location': 'Dynamax Adventures (Shield)'
+      },
+      {
+        'name': 'Giratina',
+        'types': 'Ghost, Dragon',
+        'location': 'Dynamax Adventures'
+      },
+      {
+        'name': 'Reshiram',
+        'types': 'Dragon, Fire',
+        'location': 'Dynamax Adventures (Sword)'
+      },
+      {
+        'name': 'Zekrom',
+        'types': 'Dragon, Electric',
+        'location': 'Dynamax Adventures (Shield)'
+      },
+      {
+        'name': 'Kyurem',
+        'types': 'Dragon, Ice',
+        'location': 'Dynamax Adventures'
+      },
+      {
+        'name': 'Xerneas',
+        'types': 'Fairy',
+        'location': 'Dynamax Adventures (Sword)'
+      },
+      {
+        'name': 'Yveltal',
+        'types': 'Dark, Flying',
+        'location': 'Dynamax Adventures (Shield)'
+      },
+      {
+        'name': 'Zygarde',
+        'types': 'Dragon, Ground',
+        'location': 'Dynamax Adventures'
+      },
+      {
+        'name': 'Solgaleo',
+        'types': 'Psychic, Steel',
+        'location': 'Dynamax Adventures (Sword)'
+      },
+      {
+        'name': 'Lunala',
+        'types': 'Psychic, Ghost',
+        'location': 'Dynamax Adventures (Shield)'
+      },
+      {
+        'name': 'Necrozma',
+        'types': 'Psychic',
+        'location': 'Dynamax Adventures'
+      },
       {'name': 'Mythical Pokemon', 'isHeader': 'true'},
-      {'name': 'Kubfu', 'types': 'Fighting', 'location': 'Isle of Armor (story)'},
-      {'name': 'Urshifu', 'types': 'Fighting, Water', 'location': 'Evolve Kubfu at Tower'},
+      {
+        'name': 'Kubfu',
+        'types': 'Fighting',
+        'location': 'Isle of Armor (story)'
+      },
+      {
+        'name': 'Urshifu',
+        'types': 'Fighting, Water',
+        'location': 'Evolve Kubfu at Tower'
+      },
       {'name': 'Zarude', 'types': 'Dark, Grass', 'location': 'Event only'},
     ],
     'Brilliant Diamond & Shining Pearl': [
       {'name': 'Creation Trio', 'isHeader': 'true'},
-      {'name': 'Dialga', 'types': 'Steel, Dragon', 'location': 'Spear Pillar (BD)'},
-      {'name': 'Palkia', 'types': 'Water, Dragon', 'location': 'Spear Pillar (SP)'},
-      {'name': 'Giratina', 'types': 'Ghost, Dragon', 'location': 'Turnback Cave'},
+      {
+        'name': 'Dialga',
+        'types': 'Steel, Dragon',
+        'location': 'Spear Pillar (BD)'
+      },
+      {
+        'name': 'Palkia',
+        'types': 'Water, Dragon',
+        'location': 'Spear Pillar (SP)'
+      },
+      {
+        'name': 'Giratina',
+        'types': 'Ghost, Dragon',
+        'location': 'Turnback Cave'
+      },
       {'name': 'Lake Guardians', 'isHeader': 'true'},
       {'name': 'Uxie', 'types': 'Psychic', 'location': 'Lake Acuity'},
       {'name': 'Mesprit', 'types': 'Psychic', 'location': 'Roaming Sinnoh'},
@@ -572,81 +1289,257 @@ class _LegendaryPokemonScreenState extends State<LegendaryPokemonScreen> {
       {'name': 'Raikou', 'types': 'Electric', 'location': 'Johto Room (SP)'},
       {'name': 'Entei', 'types': 'Fire', 'location': 'Johto Room (SP)'},
       {'name': 'Suicune', 'types': 'Water', 'location': 'Johto Room (SP)'},
-      {'name': 'Lugia', 'types': 'Psychic, Flying', 'location': 'Oceanic Room (SP)'},
-      {'name': 'Ho-Oh', 'types': 'Fire, Flying', 'location': 'Rainbow Room (BD)'},
+      {
+        'name': 'Lugia',
+        'types': 'Psychic, Flying',
+        'location': 'Oceanic Room (SP)'
+      },
+      {
+        'name': 'Ho-Oh',
+        'types': 'Fire, Flying',
+        'location': 'Rainbow Room (BD)'
+      },
       {'name': 'Regirock', 'types': 'Rock', 'location': 'Rock Room'},
       {'name': 'Regice', 'types': 'Ice', 'location': 'Iceberg Room'},
       {'name': 'Registeel', 'types': 'Steel', 'location': 'Iron Room'},
-      {'name': 'Latias', 'types': 'Dragon, Psychic', 'location': 'Soul Room (SP)'},
-      {'name': 'Latios', 'types': 'Dragon, Psychic', 'location': 'Soul Room (BD)'},
+      {
+        'name': 'Latias',
+        'types': 'Dragon, Psychic',
+        'location': 'Soul Room (SP)'
+      },
+      {
+        'name': 'Latios',
+        'types': 'Dragon, Psychic',
+        'location': 'Soul Room (BD)'
+      },
       {'name': 'Groudon', 'types': 'Ground', 'location': 'Tectonic Room (BD)'},
       {'name': 'Kyogre', 'types': 'Water', 'location': 'Oceanic Room (SP)'},
-      {'name': 'Rayquaza', 'types': 'Dragon, Flying', 'location': 'Stratospheric Room'},
-      {'name': 'Articuno', 'types': 'Ice, Flying', 'location': 'Kanto Room (BD)'},
-      {'name': 'Zapdos', 'types': 'Electric, Flying', 'location': 'Kanto Room (BD)'},
-      {'name': 'Moltres', 'types': 'Fire, Flying', 'location': 'Kanto Room (BD)'},
+      {
+        'name': 'Rayquaza',
+        'types': 'Dragon, Flying',
+        'location': 'Stratospheric Room'
+      },
+      {
+        'name': 'Articuno',
+        'types': 'Ice, Flying',
+        'location': 'Kanto Room (BD)'
+      },
+      {
+        'name': 'Zapdos',
+        'types': 'Electric, Flying',
+        'location': 'Kanto Room (BD)'
+      },
+      {
+        'name': 'Moltres',
+        'types': 'Fire, Flying',
+        'location': 'Kanto Room (BD)'
+      },
     ],
     'Legends: Arceus': [
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
-      {'name': 'Dialga', 'types': 'Steel, Dragon', 'location': 'Temple of Sinnoh (story)'},
-      {'name': 'Palkia', 'types': 'Water, Dragon', 'location': 'Temple of Sinnoh (story)'},
-      {'name': 'Giratina', 'types': 'Ghost, Dragon', 'location': 'Turnback Cave (post-game)'},
-      {'name': 'Arceus', 'types': 'Normal', 'location': 'Hall of Origin (complete Pokedex)'},
+      {
+        'name': 'Dialga',
+        'types': 'Steel, Dragon',
+        'location': 'Temple of Sinnoh (story)'
+      },
+      {
+        'name': 'Palkia',
+        'types': 'Water, Dragon',
+        'location': 'Temple of Sinnoh (story)'
+      },
+      {
+        'name': 'Giratina',
+        'types': 'Ghost, Dragon',
+        'location': 'Turnback Cave (post-game)'
+      },
+      {
+        'name': 'Arceus',
+        'types': 'Normal',
+        'location': 'Hall of Origin (complete Pokedex)'
+      },
       {'name': 'Lake Guardians', 'isHeader': 'true'},
       {'name': 'Uxie', 'types': 'Psychic', 'location': 'Lake Acuity (story)'},
-      {'name': 'Mesprit', 'types': 'Psychic', 'location': 'Lake Verity (story)'},
+      {
+        'name': 'Mesprit',
+        'types': 'Psychic',
+        'location': 'Lake Verity (story)'
+      },
       {'name': 'Azelf', 'types': 'Psychic', 'location': 'Lake Valor (story)'},
       {'name': 'Forces of Nature', 'isHeader': 'true'},
       {'name': 'Tornadus', 'types': 'Flying', 'location': 'Bonechill Wastes'},
-      {'name': 'Thundurus', 'types': 'Electric, Flying', 'location': 'Cobalt Coastlands'},
-      {'name': 'Landorus', 'types': 'Ground, Flying', 'location': 'Obsidian Fieldlands'},
-      {'name': 'Enamorus', 'types': 'Fairy, Flying', 'location': 'Crimson Mirelands (post-game)'},
+      {
+        'name': 'Thundurus',
+        'types': 'Electric, Flying',
+        'location': 'Cobalt Coastlands'
+      },
+      {
+        'name': 'Landorus',
+        'types': 'Ground, Flying',
+        'location': 'Obsidian Fieldlands'
+      },
+      {
+        'name': 'Enamorus',
+        'types': 'Fairy, Flying',
+        'location': 'Crimson Mirelands (post-game)'
+      },
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
-      {'name': 'Heatran', 'types': 'Fire, Steel', 'location': 'Lava Dome Sanctum'},
+      {
+        'name': 'Heatran',
+        'types': 'Fire, Steel',
+        'location': 'Lava Dome Sanctum'
+      },
       {'name': 'Regigigas', 'types': 'Normal', 'location': 'Snowpoint Temple'},
       {'name': 'Cresselia', 'types': 'Psychic', 'location': 'Moonview Arena'},
       {'name': 'Mythical Pokemon', 'isHeader': 'true'},
-      {'name': 'Darkrai', 'types': 'Dark', 'location': 'Clamberclaw Cliffs (BDSP save)'},
-      {'name': 'Shaymin', 'types': 'Grass', 'location': 'Floaro Gardens (SwSh save)'},
+      {
+        'name': 'Darkrai',
+        'types': 'Dark',
+        'location': 'Clamberclaw Cliffs (BDSP save)'
+      },
+      {
+        'name': 'Shaymin',
+        'types': 'Grass',
+        'location': 'Floaro Gardens (SwSh save)'
+      },
       {'name': 'Phione', 'types': 'Water', 'location': 'Seaside Hollow'},
-      {'name': 'Manaphy', 'types': 'Water', 'location': 'Seaside Hollow (from Phione quest)'},
+      {
+        'name': 'Manaphy',
+        'types': 'Water',
+        'location': 'Seaside Hollow (from Phione quest)'
+      },
     ],
     'Scarlet & Violet': [
       {'name': 'Legendary Pokemon', 'isHeader': 'true'},
-      {'name': 'Koraidon', 'types': 'Fighting, Dragon', 'location': 'Area Zero (Scarlet)'},
-      {'name': 'Miraidon', 'types': 'Electric, Dragon', 'location': 'Area Zero (Violet)'},
+      {
+        'name': 'Koraidon',
+        'types': 'Fighting, Dragon',
+        'location': 'Area Zero (Scarlet)'
+      },
+      {
+        'name': 'Miraidon',
+        'types': 'Electric, Dragon',
+        'location': 'Area Zero (Violet)'
+      },
       {'name': 'Treasures of Ruin', 'isHeader': 'true'},
-      {'name': 'Wo-Chien', 'types': 'Dark, Grass', 'location': 'Casseroya Lake shrine'},
-      {'name': 'Chien-Pao', 'types': 'Dark, Ice', 'location': 'West Province shrine'},
-      {'name': 'Ting-Lu', 'types': 'Dark, Ground', 'location': 'Socarrat Trail shrine'},
-      {'name': 'Chi-Yu', 'types': 'Dark, Fire', 'location': 'North Province shrine'},
+      {
+        'name': 'Wo-Chien',
+        'types': 'Dark, Grass',
+        'location': 'Casseroya Lake shrine'
+      },
+      {
+        'name': 'Chien-Pao',
+        'types': 'Dark, Ice',
+        'location': 'West Province shrine'
+      },
+      {
+        'name': 'Ting-Lu',
+        'types': 'Dark, Ground',
+        'location': 'Socarrat Trail shrine'
+      },
+      {
+        'name': 'Chi-Yu',
+        'types': 'Dark, Fire',
+        'location': 'North Province shrine'
+      },
       {'name': 'The Teal Mask DLC', 'isHeader': 'true'},
       {'name': 'Ogerpon', 'types': 'Grass', 'location': 'Kitakami (story)'},
-      {'name': 'Munkidori', 'types': 'Poison, Psychic', 'location': 'Kitakami (story)'},
-      {'name': 'Okidogi', 'types': 'Poison, Fighting', 'location': 'Kitakami (story)'},
-      {'name': 'Fezandipiti', 'types': 'Poison, Fairy', 'location': 'Kitakami (story)'},
+      {
+        'name': 'Munkidori',
+        'types': 'Poison, Psychic',
+        'location': 'Kitakami (story)'
+      },
+      {
+        'name': 'Okidogi',
+        'types': 'Poison, Fighting',
+        'location': 'Kitakami (story)'
+      },
+      {
+        'name': 'Fezandipiti',
+        'types': 'Poison, Fairy',
+        'location': 'Kitakami (story)'
+      },
       {'name': 'The Indigo Disk DLC', 'isHeader': 'true'},
-      {'name': 'Terapagos', 'types': 'Normal', 'location': 'Area Zero Underdepths (story)'},
-      {'name': 'Pecharunt', 'types': 'Poison, Ghost', 'location': 'Epilogue: Mochi Mayhem'},
+      {
+        'name': 'Terapagos',
+        'types': 'Normal',
+        'location': 'Area Zero Underdepths (story)'
+      },
+      {
+        'name': 'Pecharunt',
+        'types': 'Poison, Ghost',
+        'location': 'Epilogue: Mochi Mayhem'
+      },
       {'name': 'Snackworth Legendaries', 'isHeader': 'true'},
-      {'name': 'Articuno', 'types': 'Ice, Flying', 'location': 'Snackworth quest'},
-      {'name': 'Zapdos', 'types': 'Electric, Flying', 'location': 'Snackworth quest'},
-      {'name': 'Moltres', 'types': 'Fire, Flying', 'location': 'Snackworth quest'},
+      {
+        'name': 'Articuno',
+        'types': 'Ice, Flying',
+        'location': 'Snackworth quest'
+      },
+      {
+        'name': 'Zapdos',
+        'types': 'Electric, Flying',
+        'location': 'Snackworth quest'
+      },
+      {
+        'name': 'Moltres',
+        'types': 'Fire, Flying',
+        'location': 'Snackworth quest'
+      },
       {'name': 'Raikou', 'types': 'Electric', 'location': 'Snackworth quest'},
       {'name': 'Entei', 'types': 'Fire', 'location': 'Snackworth quest'},
       {'name': 'Suicune', 'types': 'Water', 'location': 'Snackworth quest'},
-      {'name': 'Lugia', 'types': 'Psychic, Flying', 'location': 'Snackworth quest'},
-      {'name': 'Ho-Oh', 'types': 'Fire, Flying', 'location': 'Snackworth quest'},
+      {
+        'name': 'Lugia',
+        'types': 'Psychic, Flying',
+        'location': 'Snackworth quest'
+      },
+      {
+        'name': 'Ho-Oh',
+        'types': 'Fire, Flying',
+        'location': 'Snackworth quest'
+      },
       {'name': 'Groudon', 'types': 'Ground', 'location': 'Snackworth quest'},
       {'name': 'Kyogre', 'types': 'Water', 'location': 'Snackworth quest'},
-      {'name': 'Rayquaza', 'types': 'Dragon, Flying', 'location': 'Snackworth quest'},
-      {'name': 'Cobalion', 'types': 'Steel, Fighting', 'location': 'Snackworth quest'},
-      {'name': 'Terrakion', 'types': 'Rock, Fighting', 'location': 'Snackworth quest'},
-      {'name': 'Virizion', 'types': 'Grass, Fighting', 'location': 'Snackworth quest'},
-      {'name': 'Reshiram', 'types': 'Dragon, Fire', 'location': 'Snackworth quest (Scarlet)'},
-      {'name': 'Zekrom', 'types': 'Dragon, Electric', 'location': 'Snackworth quest (Violet)'},
-      {'name': 'Solgaleo', 'types': 'Psychic, Steel', 'location': 'Snackworth quest (Scarlet)'},
-      {'name': 'Lunala', 'types': 'Psychic, Ghost', 'location': 'Snackworth quest (Violet)'},
+      {
+        'name': 'Rayquaza',
+        'types': 'Dragon, Flying',
+        'location': 'Snackworth quest'
+      },
+      {
+        'name': 'Cobalion',
+        'types': 'Steel, Fighting',
+        'location': 'Snackworth quest'
+      },
+      {
+        'name': 'Terrakion',
+        'types': 'Rock, Fighting',
+        'location': 'Snackworth quest'
+      },
+      {
+        'name': 'Virizion',
+        'types': 'Grass, Fighting',
+        'location': 'Snackworth quest'
+      },
+      {
+        'name': 'Reshiram',
+        'types': 'Dragon, Fire',
+        'location': 'Snackworth quest (Scarlet)'
+      },
+      {
+        'name': 'Zekrom',
+        'types': 'Dragon, Electric',
+        'location': 'Snackworth quest (Violet)'
+      },
+      {
+        'name': 'Solgaleo',
+        'types': 'Psychic, Steel',
+        'location': 'Snackworth quest (Scarlet)'
+      },
+      {
+        'name': 'Lunala',
+        'types': 'Psychic, Ghost',
+        'location': 'Snackworth quest (Violet)'
+      },
       {'name': 'Kubfu', 'types': 'Fighting', 'location': 'Snackworth quest'},
     ],
   };

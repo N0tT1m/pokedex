@@ -2,7 +2,7 @@ import 'pokeapi_service.dart';
 
 /// Helper class to format and transform PokeAPI data into app-friendly structures
 class PokemonDataFormatter {
-  /// Formats Pokemon data from PokeAPI into the structure expected by Search.dart
+  /// Formats Pokemon data from PokeAPI into the structure expected by search.dart
   static Future<Map<String, dynamic>> formatPokemonData(
     Map<String, dynamic> pokemonData,
     Map<String, dynamic> speciesData,
@@ -26,13 +26,11 @@ class PokemonDataFormatter {
         .join(', ');
 
     // Format abilities
-    final abilities = (pokemonData['abilities'] as List)
-        .map((a) {
-          final abilityName = capitalize(a['ability']['name'].replaceAll('-', ' '));
-          final isHidden = a['is_hidden'] == true ? ' (Hidden)' : '';
-          return '$abilityName$isHidden';
-        })
-        .join(', ');
+    final abilities = (pokemonData['abilities'] as List).map((a) {
+      final abilityName = capitalize(a['ability']['name'].replaceAll('-', ' '));
+      final isHidden = a['is_hidden'] == true ? ' (Hidden)' : '';
+      return '$abilityName$isHidden';
+    }).join(', ');
 
     // Format stats
     final stats = <String, dynamic>{};
@@ -42,22 +40,26 @@ class PokemonDataFormatter {
     }
 
     // Extract species data
-    final genera = _getEnglishValue(speciesData['genera'], 'genus') ?? 'Unknown Species';
+    final genera =
+        _getEnglishValue(speciesData['genera'], 'genus') ?? 'Unknown Species';
     final captureRate = speciesData['capture_rate']?.toString() ?? 'N/A';
     final baseFriendship = speciesData['base_happiness']?.toString() ?? 'N/A';
-    final growthRate = capitalize(speciesData['growth_rate']?['name']?.replaceAll('-', ' ') ?? 'N/A');
+    final growthRate = capitalize(
+        speciesData['growth_rate']?['name']?.replaceAll('-', ' ') ?? 'N/A');
     final genderRate = _formatGenderRate(speciesData['gender_rate']);
 
     // Format egg groups
     final eggGroups = (speciesData['egg_groups'] as List?)
-        ?.map((eg) => capitalize(eg['name'].replaceAll('-', ' ')))
-        .join(', ') ?? 'N/A';
+            ?.map((eg) => capitalize(eg['name'].replaceAll('-', ' ')))
+            .join(', ') ??
+        'N/A';
 
     // Calculate EV yield
     final evYield = _formatEvYield(pokemonData['stats']);
 
     // Get flavor text (Pokedex entry)
-    final flavorText = _getEnglishFlavorText(speciesData['flavor_text_entries']);
+    final flavorText =
+        _getEnglishFlavorText(speciesData['flavor_text_entries']);
 
     // Format evolution chain
     final evolutionChain = evolutionData != null
@@ -70,14 +72,22 @@ class PokemonDataFormatter {
       'name': name,
       'id': id,
       'flavorText': flavorText,
-      'titles': ['Pokédex Data', 'Training', 'Breeding', 'Base Stats', 'Evolution'],
+      'titles': [
+        'Pokédex Data',
+        'Training',
+        'Breeding',
+        'Base Stats',
+        'Evolution'
+      ],
       'data': {
         'Pokédex Data': {
           'National №': id.toString().padLeft(4, '0'),
           'Type': types,
           'Species': genera,
-          'Height': '${(height / 10).toStringAsFixed(1)} m (${_metersToFeet(height / 10)})',
-          'Weight': '${(weight / 10).toStringAsFixed(1)} kg (${_kgToLbs(weight / 10)} lbs)',
+          'Height':
+              '${(height / 10).toStringAsFixed(1)} m (${_metersToFeet(height / 10)})',
+          'Weight':
+              '${(weight / 10).toStringAsFixed(1)} kg (${_kgToLbs(weight / 10)} lbs)',
           'Abilities': abilities,
         },
         'Training': {
@@ -100,8 +110,10 @@ class PokemonDataFormatter {
   }
 
   /// Formats evolution chain recursively as a tree structure
-  static Map<String, dynamic> _formatEvolutionChain(Map<String, dynamic> chain) {
-    Map<String, dynamic> processNode(Map<String, dynamic> node, String? evolutionDetails) {
+  static Map<String, dynamic> _formatEvolutionChain(
+      Map<String, dynamic> chain) {
+    Map<String, dynamic> processNode(
+        Map<String, dynamic> node, String? evolutionDetails) {
       final speciesName = node['species']['name'];
       final speciesId = PokeApiService.extractIdFromUrl(node['species']['url']);
 
@@ -109,7 +121,8 @@ class PokemonDataFormatter {
       final evolvesTo = node['evolves_to'] as List?;
       if (evolvesTo != null && evolvesTo.isNotEmpty) {
         for (var evolution in evolvesTo) {
-          final details = _formatEvolutionDetails(evolution['evolution_details']);
+          final details =
+              _formatEvolutionDetails(evolution['evolution_details']);
           children.add(processNode(evolution, details));
         }
       }
@@ -186,7 +199,8 @@ class PokemonDataFormatter {
         conditions.add('while raining');
       }
       if (partySpecies != null) {
-        conditions.add('with ${capitalize(partySpecies.replaceAll('-', ' '))} in party');
+        conditions.add(
+            'with ${capitalize(partySpecies.replaceAll('-', ' '))} in party');
       }
       if (partyType != null) {
         conditions.add('with ${capitalize(partyType)} type in party');
@@ -273,7 +287,9 @@ class PokemonDataFormatter {
 
   /// Gets English flavor text from flavor text entries
   static String _getEnglishFlavorText(List<dynamic>? entries) {
-    if (entries == null || entries.isEmpty) return 'No Pokédex entry available.';
+    if (entries == null || entries.isEmpty) {
+      return 'No Pokédex entry available.';
+    }
 
     for (var entry in entries) {
       if (entry['language']['name'] == 'en') {
@@ -332,8 +348,9 @@ class PokemonDataFormatter {
     final id = pokemon['id'] ?? index;
     final name = capitalize(pokemon['name']);
     final types = (pokemon['types'] as List?)
-        ?.map((t) => capitalize(t['type']['name']))
-        .toList() ?? [];
+            ?.map((t) => capitalize(t['type']['name']))
+            .toList() ??
+        [];
 
     final sprites = pokemon['sprites'];
     final imageUrl = sprites?['other']?['official-artwork']?['front_default'] ??

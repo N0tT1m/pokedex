@@ -22,7 +22,8 @@ class NuzlockeRun extends HiveObject {
   int get aliveCount => encounters.where((e) => e.status == 'alive').length;
   int get deadCount => encounters.where((e) => e.status == 'dead').length;
   int get boxedCount => encounters.where((e) => e.status == 'boxed').length;
-  List<NuzlockeEncounter> get team => encounters.where((e) => e.status == 'alive' && e.inParty).toList();
+  List<NuzlockeEncounter> get team =>
+      encounters.where((e) => e.status == 'alive' && e.inParty).toList();
 }
 
 class NuzlockeEncounter {
@@ -63,15 +64,17 @@ class NuzlockeRunAdapter extends TypeAdapter<NuzlockeRun> {
       rules: (fields[3] as List).cast<String>(),
       startDate: fields[4] as DateTime,
       isActive: fields[5] as bool? ?? true,
-      encounters: encountersList.map((m) => NuzlockeEncounter(
-        pokemonName: m['pokemonName'] ?? '',
-        nickname: m['nickname'],
-        routeName: m['routeName'] ?? '',
-        status: m['status'] ?? 'alive',
-        level: m['level'],
-        deathDetails: m['deathDetails'],
-        inParty: m['inParty'] ?? false,
-      )).toList(),
+      encounters: encountersList
+          .map((m) => NuzlockeEncounter(
+                pokemonName: m['pokemonName'] ?? '',
+                nickname: m['nickname'],
+                routeName: m['routeName'] ?? '',
+                status: m['status'] ?? 'alive',
+                level: m['level'],
+                deathDetails: m['deathDetails'],
+                inParty: m['inParty'] ?? false,
+              ))
+          .toList(),
     );
   }
 
@@ -92,15 +95,17 @@ class NuzlockeRunAdapter extends TypeAdapter<NuzlockeRun> {
       ..writeByte(5)
       ..write(obj.isActive)
       ..writeByte(6)
-      ..write(obj.encounters.map((e) => {
-        'pokemonName': e.pokemonName,
-        'nickname': e.nickname,
-        'routeName': e.routeName,
-        'status': e.status,
-        'level': e.level,
-        'deathDetails': e.deathDetails,
-        'inParty': e.inParty,
-      }).toList());
+      ..write(obj.encounters
+          .map((e) => {
+                'pokemonName': e.pokemonName,
+                'nickname': e.nickname,
+                'routeName': e.routeName,
+                'status': e.status,
+                'level': e.level,
+                'deathDetails': e.deathDetails,
+                'inParty': e.inParty,
+              })
+          .toList());
   }
 
   @override

@@ -5,7 +5,7 @@ import '../../theme/app_theme.dart';
 import '../pokemon/pokemon_detail_sheet.dart' show PokemonDetailPage;
 
 class LocationGuideScreen extends StatefulWidget {
-  const LocationGuideScreen({Key? key}) : super(key: key);
+  const LocationGuideScreen({super.key});
 
   @override
   State<LocationGuideScreen> createState() => _LocationGuideScreenState();
@@ -16,67 +16,151 @@ const _kGameGroups = [
   {
     'generation': 'Generation I',
     'games': [
-      {'name': 'Red / Blue', 'abbrs': ['R', 'B'], 'color': 0xFFE53935},
-      {'name': 'Yellow', 'abbrs': ['Y'], 'color': 0xFFFDD835},
+      {
+        'name': 'Red / Blue',
+        'abbrs': ['R', 'B'],
+        'color': 0xFFE53935
+      },
+      {
+        'name': 'Yellow',
+        'abbrs': ['Y'],
+        'color': 0xFFFDD835
+      },
     ],
   },
   {
     'generation': 'Generation II',
     'games': [
-      {'name': 'Gold / Silver', 'abbrs': ['G', 'S'], 'color': 0xFFFF8F00},
-      {'name': 'Crystal', 'abbrs': ['C'], 'color': 0xFF00ACC1},
+      {
+        'name': 'Gold / Silver',
+        'abbrs': ['G', 'S'],
+        'color': 0xFFFF8F00
+      },
+      {
+        'name': 'Crystal',
+        'abbrs': ['C'],
+        'color': 0xFF00ACC1
+      },
     ],
   },
   {
     'generation': 'Generation III',
     'games': [
-      {'name': 'Ruby / Sapphire', 'abbrs': ['R', 'S'], 'color': 0xFFE53935},
-      {'name': 'Emerald', 'abbrs': ['E'], 'color': 0xFF43A047},
-      {'name': 'FireRed / LeafGreen', 'abbrs': ['FR', 'LG'], 'color': 0xFFFF7043},
+      {
+        'name': 'Ruby / Sapphire',
+        'abbrs': ['R', 'S'],
+        'color': 0xFFE53935
+      },
+      {
+        'name': 'Emerald',
+        'abbrs': ['E'],
+        'color': 0xFF43A047
+      },
+      {
+        'name': 'FireRed / LeafGreen',
+        'abbrs': ['FR', 'LG'],
+        'color': 0xFFFF7043
+      },
     ],
   },
   {
     'generation': 'Generation IV',
     'games': [
-      {'name': 'Diamond / Pearl', 'abbrs': ['D', 'P'], 'color': 0xFF1E88E5},
-      {'name': 'Platinum', 'abbrs': ['Pt'], 'color': 0xFF757575},
-      {'name': 'HeartGold / SoulSilver', 'abbrs': ['HG', 'SS'], 'color': 0xFFFFB300},
+      {
+        'name': 'Diamond / Pearl',
+        'abbrs': ['D', 'P'],
+        'color': 0xFF1E88E5
+      },
+      {
+        'name': 'Platinum',
+        'abbrs': ['Pt'],
+        'color': 0xFF757575
+      },
+      {
+        'name': 'HeartGold / SoulSilver',
+        'abbrs': ['HG', 'SS'],
+        'color': 0xFFFFB300
+      },
     ],
   },
   {
     'generation': 'Generation V',
     'games': [
-      {'name': 'Black / White', 'abbrs': ['B', 'W'], 'color': 0xFF546E7A},
-      {'name': 'Black 2 / White 2', 'abbrs': ['B2', 'W2'], 'color': 0xFF546E7A},
+      {
+        'name': 'Black / White',
+        'abbrs': ['B', 'W'],
+        'color': 0xFF546E7A
+      },
+      {
+        'name': 'Black 2 / White 2',
+        'abbrs': ['B2', 'W2'],
+        'color': 0xFF546E7A
+      },
     ],
   },
   {
     'generation': 'Generation VI',
     'games': [
-      {'name': 'X / Y', 'abbrs': ['X', 'Y'], 'color': 0xFF3949AB},
-      {'name': 'Omega Ruby / Alpha Sapphire', 'abbrs': ['OR', 'AS'], 'color': 0xFFE53935},
+      {
+        'name': 'X / Y',
+        'abbrs': ['X', 'Y'],
+        'color': 0xFF3949AB
+      },
+      {
+        'name': 'Omega Ruby / Alpha Sapphire',
+        'abbrs': ['OR', 'AS'],
+        'color': 0xFFE53935
+      },
     ],
   },
   {
     'generation': 'Generation VII',
     'games': [
-      {'name': 'Sun / Moon', 'abbrs': ['M', 'S'], 'color': 0xFFFF8F00},
-      {'name': 'Ultra Sun / Ultra Moon', 'abbrs': ['US', 'UM'], 'color': 0xFFFF7043},
-      {'name': "Let's Go Pikachu / Eevee", 'abbrs': ['LGP', 'LGE'], 'color': 0xFFFDD835},
+      {
+        'name': 'Sun / Moon',
+        'abbrs': ['M', 'S'],
+        'color': 0xFFFF8F00
+      },
+      {
+        'name': 'Ultra Sun / Ultra Moon',
+        'abbrs': ['US', 'UM'],
+        'color': 0xFFFF7043
+      },
+      {
+        'name': "Let's Go Pikachu / Eevee",
+        'abbrs': ['LGP', 'LGE'],
+        'color': 0xFFFDD835
+      },
     ],
   },
   {
     'generation': 'Generation VIII',
     'games': [
-      {'name': 'Sword / Shield', 'abbrs': ['Sw', 'Sh'], 'color': 0xFF1E88E5},
-      {'name': 'Brilliant Diamond / Shining Pearl', 'abbrs': ['BD', 'SP'], 'color': 0xFF29B6F6},
-      {'name': 'Legends: Arceus', 'abbrs': ['LA'], 'color': 0xFF00897B},
+      {
+        'name': 'Sword / Shield',
+        'abbrs': ['Sw', 'Sh'],
+        'color': 0xFF1E88E5
+      },
+      {
+        'name': 'Brilliant Diamond / Shining Pearl',
+        'abbrs': ['BD', 'SP'],
+        'color': 0xFF29B6F6
+      },
+      {
+        'name': 'Legends: Arceus',
+        'abbrs': ['LA'],
+        'color': 0xFF00897B
+      },
     ],
   },
   {
     'generation': 'Generation IX',
     'games': [
-      {'name': 'Scarlet / Violet', 'abbrs': ['S', 'V'], 'color': 0xFF7B1FA2},
+      {
+        'name': 'Scarlet / Violet',
+        'abbrs': ['S', 'V'],
+        'color': 0xFF7B1FA2
+      },
     ],
   },
 ];
@@ -115,13 +199,15 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
 
   Future<void> _loadAvailableGames() async {
     try {
-      final response = await Requests.get('${PokeApiService.baseUrl}/location/games');
+      final response =
+          await Requests.get('${PokeApiService.baseUrl}/location/games');
       if (response.statusCode == 200) {
         final data = response.json();
         final games = List<Map<String, dynamic>>.from(data['games'] ?? []);
         if (mounted) {
           setState(() {
-            _availableAbbrs = games.map((g) => g['abbreviation'] as String).toSet();
+            _availableAbbrs =
+                games.map((g) => g['abbreviation'] as String).toSet();
           });
         }
       }
@@ -129,10 +215,14 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
   }
 
   Future<void> _loadRoutes() async {
-    setState(() { _isLoadingRoutes = true; _routesByRegion = {}; });
+    setState(() {
+      _isLoadingRoutes = true;
+      _routesByRegion = {};
+    });
 
     try {
-      final regionsResp = await Requests.get('${PokeApiService.baseUrl}/location/regions');
+      final regionsResp =
+          await Requests.get('${PokeApiService.baseUrl}/location/regions');
       if (regionsResp.statusCode != 200) {
         setState(() => _isLoadingRoutes = false);
         return;
@@ -161,7 +251,10 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
         if (entry.value.isNotEmpty) grouped[entry.key] = entry.value;
       }
 
-      setState(() { _routesByRegion = grouped; _isLoadingRoutes = false; });
+      setState(() {
+        _routesByRegion = grouped;
+        _isLoadingRoutes = false;
+      });
     } catch (e) {
       setState(() => _isLoadingRoutes = false);
     }
@@ -185,7 +278,8 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
             '${PokeApiService.baseUrl}/location/region/${_enc(region)}/route/${_enc(route)}?game=${_enc(abbr)}',
           );
           if (r.statusCode == 200) {
-            final enc = List<Map<String, dynamic>>.from(r.json()['encounters'] ?? []);
+            final enc =
+                List<Map<String, dynamic>>.from(r.json()['encounters'] ?? []);
             for (final e in enc) {
               final key = '${e['pokemon_name']}|${e['encounter_method']}';
               if (!seen.contains(key)) {
@@ -197,18 +291,21 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
         } catch (_) {}
       }));
 
-      all.sort((a, b) => (a['pokemon_name'] as String).compareTo(b['pokemon_name'] as String));
+      all.sort((a, b) =>
+          (a['pokemon_name'] as String).compareTo(b['pokemon_name'] as String));
 
       // Enrich with sprite + types in parallel (same pattern as game_version_filter)
       await Future.wait(all.map((enc) async {
         try {
           final name = (enc['pokemon_name'] as String).toLowerCase();
-          final r = await Requests.get('${PokeApiService.baseUrl}/pokemon/$name');
+          final r =
+              await Requests.get('${PokeApiService.baseUrl}/pokemon/$name');
           if (r.statusCode == 200) {
             final d = r.json();
-            enc['sprite'] = d['sprites']?['other']?['official-artwork']?['front_default']
-                ?? d['sprites']?['front_default']
-                ?? '';
+            enc['sprite'] = d['sprites']?['other']?['official-artwork']
+                    ?['front_default'] ??
+                d['sprites']?['front_default'] ??
+                '';
             enc['id'] = d['id'] ?? 0;
             final typeList = d['types'] as List? ?? [];
             enc['types'] = typeList.map((t) {
@@ -219,7 +316,10 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
         } catch (_) {}
       }));
 
-      setState(() { _encounters = all; _isLoadingEncounters = false; });
+      setState(() {
+        _encounters = all;
+        _isLoadingEncounters = false;
+      });
     } catch (e) {
       setState(() => _isLoadingEncounters = false);
     }
@@ -285,26 +385,38 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
                 group['generation'] as String,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF616161)),
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF616161)),
               ),
             ),
             ...games.map((game) {
               final color = Color(game['color'] as int);
               final abbrs = List<String>.from(game['abbrs'] as List);
-              final hasData = _availableAbbrs.isEmpty || abbrs.any((a) => _availableAbbrs.contains(a));
+              final hasData = _availableAbbrs.isEmpty ||
+                  abbrs.any((a) => _availableAbbrs.contains(a));
               return Opacity(
                 opacity: hasData ? 1.0 : 0.4,
                 child: Card(
                   margin: const EdgeInsets.only(bottom: 8),
                   child: ListTile(
-                    leading: Icon(Icons.catching_pokemon, color: color, size: 32),
-                    title: Text(game['name'] as String, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: !hasData ? const Text('No encounter data', style: TextStyle(fontSize: 11, color: Colors.grey)) : null,
+                    leading:
+                        Icon(Icons.catching_pokemon, color: color, size: 32),
+                    title: Text(game['name'] as String,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: !hasData
+                        ? const Text('No encounter data',
+                            style: TextStyle(fontSize: 11, color: Colors.grey))
+                        : null,
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: hasData ? () {
-                      setState(() => _selectedGame = Map<String, dynamic>.from(game as Map));
-                      _loadRoutes();
-                    } : null,
+                    onTap: hasData
+                        ? () {
+                            setState(() => _selectedGame =
+                                Map<String, dynamic>.from(game as Map));
+                            _loadRoutes();
+                          }
+                        : null,
                   ),
                 ),
               );
@@ -344,7 +456,10 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
         child: Text(
           region,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF616161)),
+          style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF616161)),
         ),
       ));
       for (final route in _routesByRegion[region]!) {
@@ -352,7 +467,8 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
           margin: const EdgeInsets.fromLTRB(8, 0, 8, 4),
           child: ListTile(
             leading: const Icon(Icons.location_on, color: Colors.blue),
-            title: Text(route, style: const TextStyle(fontWeight: FontWeight.bold)),
+            title: Text(route,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => _loadEncounters(region, route),
           ),
@@ -360,7 +476,8 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
       }
     }
 
-    return ListView(padding: const EdgeInsets.only(bottom: 12), children: items);
+    return ListView(
+        padding: const EdgeInsets.only(bottom: 12), children: items);
   }
 
   // ── Encounter list ────────────────────────────────────────────────────────
@@ -389,7 +506,11 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
 
     final filtered = _searchQuery.isEmpty
         ? _encounters
-        : _encounters.where((e) => (e['pokemon_name'] as String).toLowerCase().contains(_searchQuery)).toList();
+        : _encounters
+            .where((e) => (e['pokemon_name'] as String)
+                .toLowerCase()
+                .contains(_searchQuery))
+            .toList();
 
     return Column(
       children: [
@@ -400,14 +521,18 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
             decoration: InputDecoration(
               hintText: 'Search Pokemon...',
               prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               filled: true,
               fillColor: Colors.white,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
                       icon: const Icon(Icons.clear),
-                      onPressed: () => setState(() { _searchCtrl.clear(); _searchQuery = ''; }),
+                      onPressed: () => setState(() {
+                        _searchCtrl.clear();
+                        _searchQuery = '';
+                      }),
                     )
                   : null,
             ),
@@ -415,77 +540,95 @@ class _LocationGuideScreenState extends State<LocationGuideScreen> {
           ),
         ),
         if (filtered.isEmpty)
-          const Expanded(child: Center(child: Text('No Pokemon match your search', style: TextStyle(color: Colors.grey)))),
+          const Expanded(
+              child: Center(
+                  child: Text('No Pokemon match your search',
+                      style: TextStyle(color: Colors.grey)))),
         if (filtered.isNotEmpty)
-        Expanded(child: ListView.builder(
-          padding: const EdgeInsets.all(8),
-          itemCount: filtered.length,
-          itemBuilder: (context, index) {
-            final enc = filtered[index];
-        final pokemonName = enc['pokemon_name'] as String? ?? '';
-        final method = enc['encounter_method'] as String? ?? '';
-        final rarity = enc['rarity'] as String? ?? '';
-        final levelRange = enc['level_range'] as String? ?? '';
-        final timeOfDay = enc['time_of_day'] as String? ?? '';
-        final sprite = enc['sprite'] as String? ?? '';
-        final id = enc['id'] as int? ?? 0;
-        final types = List<String>.from(enc['types'] as List? ?? []);
+          Expanded(
+              child: ListView.builder(
+            padding: const EdgeInsets.all(8),
+            itemCount: filtered.length,
+            itemBuilder: (context, index) {
+              final enc = filtered[index];
+              final pokemonName = enc['pokemon_name'] as String? ?? '';
+              final method = enc['encounter_method'] as String? ?? '';
+              final rarity = enc['rarity'] as String? ?? '';
+              final levelRange = enc['level_range'] as String? ?? '';
+              final timeOfDay = enc['time_of_day'] as String? ?? '';
+              final sprite = enc['sprite'] as String? ?? '';
+              final id = enc['id'] as int? ?? 0;
+              final types = List<String>.from(enc['types'] as List? ?? []);
 
-        final details = [
-          if (method.isNotEmpty) method,
-          if (levelRange.isNotEmpty) 'Lv $levelRange',
-          if (rarity.isNotEmpty) rarity,
-          if (timeOfDay.isNotEmpty) timeOfDay,
-        ].join(' · ');
+              final details = [
+                if (method.isNotEmpty) method,
+                if (levelRange.isNotEmpty) 'Lv $levelRange',
+                if (rarity.isNotEmpty) rarity,
+                if (timeOfDay.isNotEmpty) timeOfDay,
+              ].join(' · ');
 
-        return Card(
-          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            leading: SizedBox(
-              width: 56,
-              height: 56,
-              child: sprite.isNotEmpty
-                  ? Image.network(
-                      sprite,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.catching_pokemon, size: 40),
-                    )
-                  : const Icon(Icons.catching_pokemon, size: 40),
-            ),
-            title: Row(
-              children: [
-                Text(pokemonName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(width: 8),
-                ...types.map((t) => Container(
-                  margin: const EdgeInsets.only(right: 4),
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: AppTheme.typeColors[t] ?? Colors.grey,
-                    borderRadius: BorderRadius.circular(8),
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                child: ListTile(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  leading: SizedBox(
+                    width: 56,
+                    height: 56,
+                    child: sprite.isNotEmpty
+                        ? Image.network(
+                            sprite,
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, __, ___) =>
+                                const Icon(Icons.catching_pokemon, size: 40),
+                          )
+                        : const Icon(Icons.catching_pokemon, size: 40),
                   ),
-                  child: Text(t, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                )),
-              ],
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (id > 0)
-                  Text('#${id.toString().padLeft(4, '0')}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                if (details.isNotEmpty)
-                  Text(details, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-              ],
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => PokemonDetailPage(pokemonName: pokemonName.toLowerCase())),
-            ),
-          ),
-        );
-      },
-        )),
+                  title: Row(
+                    children: [
+                      Text(pokemonName,
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(width: 8),
+                      ...types.map((t) => Container(
+                            margin: const EdgeInsets.only(right: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppTheme.typeColors[t] ?? Colors.grey,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(t,
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold)),
+                          )),
+                    ],
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (id > 0)
+                        Text('#${id.toString().padLeft(4, '0')}',
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.grey)),
+                      if (details.isNotEmpty)
+                        Text(details,
+                            style: const TextStyle(
+                                fontSize: 11, color: Colors.grey)),
+                    ],
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => PokemonDetailPage(
+                            pokemonName: pokemonName.toLowerCase())),
+                  ),
+                ),
+              );
+            },
+          )),
       ],
     );
   }

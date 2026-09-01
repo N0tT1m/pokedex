@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import '../models/saved_pokemon.dart';
 import '../models/pokemon_team.dart';
@@ -168,7 +169,7 @@ class PokemonStorageService {
         imported++;
       } catch (e) {
         // Skip invalid entries
-        print('Failed to import Pokemon: $e');
+        debugPrint('Failed to import Pokemon: $e');
       }
     }
     return imported;
@@ -184,7 +185,7 @@ class PokemonStorageService {
         imported++;
       } catch (e) {
         // Skip invalid entries
-        print('Failed to import team: $e');
+        debugPrint('Failed to import team: $e');
       }
     }
     return imported;
@@ -203,7 +204,8 @@ class PokemonStorageService {
     // Average IVs
     double avgIVs = 0;
     if (pokemon.isNotEmpty) {
-      avgIVs = pokemon.map((p) => p.totalIVs).reduce((a, b) => a + b) / pokemon.length;
+      avgIVs = pokemon.map((p) => p.totalIVs).reduce((a, b) => a + b) /
+          pokemon.length;
     }
 
     // Shiny count

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io' show Platform;
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:pokedex/Widgets/Search.dart';
-import 'package:pokedex/Widgets/HomePage.dart';
+import 'package:pokedex/Widgets/search.dart';
+import 'package:pokedex/Widgets/home_page.dart';
 import 'package:pokedex/Widgets/game_version_filter.dart';
 import 'package:pokedex/Widgets/my_pokemon.dart';
 import 'package:pokedex/Widgets/calculators.dart';
@@ -148,7 +148,8 @@ class _PokedexTab extends StatefulWidget {
   State<_PokedexTab> createState() => _PokedexTabState();
 }
 
-class _PokedexTabState extends State<_PokedexTab> with SingleTickerProviderStateMixin {
+class _PokedexTabState extends State<_PokedexTab>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -175,7 +176,11 @@ class _PokedexTabState extends State<_PokedexTab> with SingleTickerProviderState
               children: [
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text('PokeDex', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                  child: Text('PokeDex',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold)),
                 ),
                 TabBar(
                   controller: _tabController,

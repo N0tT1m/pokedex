@@ -4,7 +4,7 @@ import '../../services/iv_calculator_service.dart';
 import '../../services/pokeapi_service.dart';
 
 class NatureChartScreen extends StatefulWidget {
-  const NatureChartScreen({Key? key}) : super(key: key);
+  const NatureChartScreen({super.key});
 
   @override
   State<NatureChartScreen> createState() => _NatureChartScreenState();
@@ -69,9 +69,22 @@ class _NatureChartScreenState extends State<NatureChartScreen> {
               dataRowMinHeight: 32,
               dataRowMaxHeight: 36,
               columns: const [
-                DataColumn(label: Text('Nature', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                DataColumn(label: Text('+10%', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.green))),
-                DataColumn(label: Text('-10%', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.red))),
+                DataColumn(
+                    label: Text('Nature',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 12))),
+                DataColumn(
+                    label: Text('+10%',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: Colors.green))),
+                DataColumn(
+                    label: Text('-10%',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: Colors.red))),
               ],
               rows: IVCalculatorService.allNatures.map((nature) {
                 String increased = '-';
@@ -79,7 +92,8 @@ class _NatureChartScreenState extends State<NatureChartScreen> {
 
                 // Try API data first, fall back to hardcoded modifiers
                 final apiEntry = _apiNatureData[nature.toLowerCase()];
-                if (apiEntry != null && apiEntry['increased_stat']!.isNotEmpty) {
+                if (apiEntry != null &&
+                    apiEntry['increased_stat']!.isNotEmpty) {
                   increased = apiEntry['increased_stat']!;
                   decreased = apiEntry['decreased_stat']!;
                 } else {
@@ -94,21 +108,27 @@ class _NatureChartScreenState extends State<NatureChartScreen> {
 
                 return DataRow(
                   color: WidgetStateProperty.resolveWith((states) {
-                    return isNeutral ? Colors.grey.withValues(alpha: 0.1) : null;
+                    return isNeutral
+                        ? Colors.grey.withValues(alpha: 0.1)
+                        : null;
                   }),
                   cells: [
-                    DataCell(Text(nature, style: TextStyle(
-                      fontWeight: isNeutral ? FontWeight.normal : FontWeight.bold,
-                      fontSize: 13,
-                    ))),
-                    DataCell(Text(increased, style: TextStyle(
-                      color: increased != '-' ? Colors.green : Colors.grey,
-                      fontSize: 13,
-                    ))),
-                    DataCell(Text(decreased, style: TextStyle(
-                      color: decreased != '-' ? Colors.red : Colors.grey,
-                      fontSize: 13,
-                    ))),
+                    DataCell(Text(nature,
+                        style: TextStyle(
+                          fontWeight:
+                              isNeutral ? FontWeight.normal : FontWeight.bold,
+                          fontSize: 13,
+                        ))),
+                    DataCell(Text(increased,
+                        style: TextStyle(
+                          color: increased != '-' ? Colors.green : Colors.grey,
+                          fontSize: 13,
+                        ))),
+                    DataCell(Text(decreased,
+                        style: TextStyle(
+                          color: decreased != '-' ? Colors.red : Colors.grey,
+                          fontSize: 13,
+                        ))),
                   ],
                 );
               }).toList(),
@@ -121,12 +141,21 @@ class _NatureChartScreenState extends State<NatureChartScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
-                    Text('Quick Reference', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('Quick Reference',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(height: 8),
-                    Text('Physical Attackers: Adamant (+Atk/-SpA) or Jolly (+Spe/-SpA)', style: TextStyle(fontSize: 12)),
-                    Text('Special Attackers: Modest (+SpA/-Atk) or Timid (+Spe/-Atk)', style: TextStyle(fontSize: 12)),
-                    Text('Physical Walls: Impish (+Def/-SpA) or Bold (+Def/-Atk)', style: TextStyle(fontSize: 12)),
-                    Text('Special Walls: Careful (+SpD/-SpA) or Calm (+SpD/-Atk)', style: TextStyle(fontSize: 12)),
+                    Text(
+                        'Physical Attackers: Adamant (+Atk/-SpA) or Jolly (+Spe/-SpA)',
+                        style: TextStyle(fontSize: 12)),
+                    Text(
+                        'Special Attackers: Modest (+SpA/-Atk) or Timid (+Spe/-Atk)',
+                        style: TextStyle(fontSize: 12)),
+                    Text(
+                        'Physical Walls: Impish (+Def/-SpA) or Bold (+Def/-Atk)',
+                        style: TextStyle(fontSize: 12)),
+                    Text(
+                        'Special Walls: Careful (+SpD/-SpA) or Calm (+SpD/-Atk)',
+                        style: TextStyle(fontSize: 12)),
                   ],
                 ),
               ),
